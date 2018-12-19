@@ -106,9 +106,9 @@ classdef gmshGeo
 			end
             hold off
             axis equal
-			%h=legend(intnames,'Interpreter', 'none');
+			h=legend(intnames,'Interpreter', 'none');
 			fontSize=14;
-			%set(h,'FontSize',fontSize);
+			set(h,'FontSize',fontSize);
 			xlabel('e_1','fontSize',fontSize);
 			ylabel('e_2','fontSize',fontSize);
 			if strcmpi(getMTEXpref('xAxisDirection'),'east') && strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
