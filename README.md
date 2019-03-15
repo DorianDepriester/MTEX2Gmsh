@@ -7,3 +7,17 @@ The file named [Example.m](https://github.com/DorianDepriester/mtex2Gmsh/blob/ma
 ## Reference
 The corresponding paper is still under review. In the meantime, please cite this code using the related DOI :
 [![DOI](https://zenodo.org/badge/137471547.svg)](https://zenodo.org/badge/latestdoi/137471547)
+
+or use the following entry in BibTeX :
+```
+@misc{mtex2Gmsh,
+    author       = {Dorian Depriester},
+    title        = {{MTEX2Gmsh}},
+    month        = march,
+    year         = 2019,
+    doi          = {10.5281/zenodo.2595052},
+    version      = {V1.0},
+    publisher    = {Zenodo},
+    url          = {https://github.com/DorianDepriester/mtex2Gmsh}
+}
+```
