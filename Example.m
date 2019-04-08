@@ -23,7 +23,7 @@ figure
 plot(G);			% Plot surfaces
 
 %% Generate Gmsh-readable file and export the mesh
-savegeo(G,'small.geo','ElementSize',100,'gradient',1);
+savegeo(G,'small.geo','thickness',50,'elementType','Tet');
 
 % Export grain properties
 exportGrainProps(G,'small.csv');

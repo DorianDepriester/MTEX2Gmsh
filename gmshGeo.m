@@ -164,7 +164,7 @@ classdef gmshGeo
             addOptional(p,'ElementSize',0);
             addOptional(p,'thickness',0);
             addOptional(p,'gradient',0);
-            addOptional(p,'ElementType','Tri');
+            addOptional(p,'ElementType','Wedge');
             addOptional(p,'Curvature',0);
             addOptional(p,'Medium',[0 0 0]);
             addOptional(p,'MediumElementSize',0);
@@ -183,8 +183,8 @@ classdef gmshGeo
             thickness=p.Results.thickness;
 			if thickness==0
 				thickness=defaultElementSize;
-			end			
-            Quad= strcmpi(p.Results.ElementType,'Quad');
+			end
+			elem_type= p.Results.ElementType;
 			Curv=p.Results.Curvature;
 			if Curv~=0
 				if slope~=0
@@ -340,8 +340,8 @@ classdef gmshGeo
 					writeSequence(ffid,'Plane Surface',i,PlaneSurface{i}*10);	% Times 10 to keep consistent with with previous hack
 				end
                 
-                %% Use quandrangular elements
-                if Quad
+                %% Use quandrangular elements for 2D meshing
+                if strcmpi(elem_type, 'Brick')
                     fprintf(ffid,'\n// Quadrangular elements\n');
 					fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
                 end
@@ -349,50 +349,58 @@ classdef gmshGeo
                 %% Extrusions
 				fprintf(ffid,'\n// 3D geometry\n');
 				fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
-				fprintf(ffid,'Surface{1:%i};\n\t',n_surfaces);				
-				fprintf(ffid,'Layers{1}; Recombine;\n}\n');
+				fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
+				fprintf(ffid,'\tLayers{1};');
+				if ~strcmpi(elem_type, 'Tet') && ~strcmpi(elem_type, 'Tetrahedron')
+					fprintf(ffid,'Recombine;');
+				end
+				fprintf(ffid,'\n}\n');
 				
 				%% Add surrounding medium (if requested)
 				if medium
+					n_surfaces_tot=n_surfaces+1; % At least, one more surface exists (surrounding the ROI)
 					waitbar(step/n_steps,h,'Adding surrounding medium...')
 					fprintf(ffid,'\n// Add surrounding medium\n');
 					
 					% Create a volume beneath the grains
 					BL=borderLoop(obj);
-					fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	% Extrude each segment of the outer boundary and keep indices of the resulting segments
-					writeSequence(ffid,'Line',[],abs(BL));
-					fprintf(ffid,'};\n');
-					n_loops=n_loops+1;
-					fprintf(ffid,'Line Loop(%i)={',n_loops*10);			% Line loop on the opposite side of the ROI
-					for i=1:length(BL)
-						j=(i-1)*4;	% Index of the opposite segment from segment i
-						if BL(i)>0
-							fprintf(ffid,'L[%i]',j);
-						else
-							fprintf(ffid,'-L[%i]',j);	% Segments are oriented with respect to their parents
+					if dz>thickness		% Add medium below the ROI
+						fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	% Extrude each segment of the outer boundary and keep indices of the resulting segments
+						writeSequence(ffid,'Line',[],abs(BL));
+						fprintf(ffid,'};\n');
+						n_loops=n_loops+1;
+						fprintf(ffid,'Line Loop(%i)={',n_loops*10);			% Line loop on the opposite side of the ROI
+						for i=1:length(BL)
+							j=(i-1)*4;	% Index of the opposite segment from segment i
+							if BL(i)>0
+								fprintf(ffid,'L[%i]',j);
+							else
+								fprintf(ffid,'-L[%i]',j);	% Segments are oriented with respect to their parents
+							end
+							if i~=length(BL)
+								fprintf(ffid,',');
+							else
+								fprintf(ffid,'};\n');
+							end
+							if mod(i,50)==0
+								fprintf(ffid,'\n\t');
+							end
 						end
-						if i~=length(BL)
-							fprintf(ffid,',');
-						else
-							fprintf(ffid,'};\n');
+						id_SurfaceLoop=n_surfaces+1;
+						writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops*10);
+						fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
+						for i=1:length(BL)	% List of side surfaces (results from extrusions)
+							j=i*4-3;
+							fprintf(ffid,'L[%i],',j);
+							if mod(i,50)==0
+								fprintf(ffid,'\n\t');
+							end
 						end
-						if mod(i,50)==0
-							fprintf(ffid,'\n\t');
-						end
+						fprintf(ffid,'\n\t');
+						fprintf(ffid,'1:%i\n};\n',n_surfaces+1); % List of upper faces (original grains)
+						writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
+						n_surfaces_tot=n_surfaces_tot+2;	% Two more surfaces are necessaray 
 					end
-					id_SurfaceLoop=n_surfaces+1;
-					writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops*10);
-					fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
-					for i=1:length(BL)	% List of side surfaces (results from extrusions)
-						j=i*4-3;
-						fprintf(ffid,'L[%i],',j);
-						if mod(i,50)==0
-							fprintf(ffid,'\n\t');
-						end
-					end
-					fprintf(ffid,'\n\t');
-					fprintf(ffid,'1:%i\n};\n',n_surfaces+1); % List of upper faces (original grains)
-					writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
 					
 					% Create a volume surrounding the ROI
 					n_loops=n_loops+1;
@@ -400,8 +408,10 @@ classdef gmshGeo
 					n_loops=n_loops+1;
 					writeSequence(ffid,'Line Loop',n_loops*10,BL);							% Outer boundaries of the ROI/Inner boundaries of the medium
 					writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]*10);% Upper surface of the medium
-					fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
-					fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
+					if dz>thickness	
+						fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
+						fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
+					end
 					fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
 					fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
 					fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
@@ -430,7 +440,7 @@ classdef gmshGeo
 					end
 				end
 				if medium
-					writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces+3);
+					writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces_tot);
 				end
 
                 %% Mesh
