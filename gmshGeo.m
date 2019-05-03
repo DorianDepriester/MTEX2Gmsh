@@ -733,6 +733,7 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 		jmax=max(j,jmax);
 
 		for k=1:length(InnerLoops)
+			new=true;			
 			for j=1:size(LineLoops,1);
 				if isempty(LineLoops{j})
 					break
