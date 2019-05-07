@@ -7,7 +7,7 @@ thisDir = os.path.dirname(thisPath)
 toolset = getAFXApp().getAFXMainWindow().getPluginToolset()
 toolset.registerGuiMenuButton(
     buttonText='MTEX2abaqus', 
-    object=Activator(os.path.join(thisDir, 'mTEX2abaqusDB.py')),
+    object=Activator(os.path.join(thisDir, 'mTEX2AbaqusDB.py')),
     kernelInitString='import AbaqusImport',
     messageId=AFXMode.ID_ACTIVATE,
     icon=None,

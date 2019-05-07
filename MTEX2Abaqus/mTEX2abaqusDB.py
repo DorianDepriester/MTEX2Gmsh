@@ -14,5 +14,5 @@ RsgLabel(p='VFrame_3', text='Select the INP file you want to import', useBoldFon
 RsgVerticalAligner(name='VAligner_1', p='VFrame_3', pl=0, pr=0, pt=0, pb=0)
 RsgFileTextField(p='VAligner_1', ncols=43, labelText='Mesh file:', keyword='inpFileName', default='', patterns='*.inp')
 RsgFileTextField(p='VAligner_1', ncols=43, labelText='Grain properties:', keyword='CSVfileName', default='<leave empty if the CSV file is in the same folder>', patterns='*.csv')
-RsgCheckButton(p='VFrame_3', text='Cohesive elements at grain boundaries', keyword='cohesive', default=False)
+RsgCheckButton(p='VFrame_3', text='Cohesive elements at grain boundaries (experimental!)', keyword='cohesive', default=False)
 dialogBox.show()
