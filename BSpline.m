@@ -1,11 +1,15 @@
-function [Xbs,Ybs] = BSpline(X,Y,nint)
+function [Xbs,Ybs] = BSpline(X,Y,varargin)
 %BSPLINE computes the B-spline approximation.
-% [Xbs,Ybs]=BSPLINE(X,Y) returns the coordinates (Xbs,Ybs) using squared 
-% B-spline approximation.
-% BSPLINE(X,Y,n) use n interpolation points per interval (default: 10)
-	if nargin<3
-		nint=10;
-	end
+% [Xbs,Ybs]=BSPLINE(X,Y) returns the coordinates (Xbs,Ybs) using 2nd order 
+% B-spline approximation with 10 points per interval.
+% BSPLINE(...,'order',n) Use n -th order approximation
+% BSPLINE(...,'nint',m) gives m points per interval
+
+	p = inputParser;
+	addOptional(p,'order',2)
+	addOptional(p,'nint',10)
+	parse(p,varargin{:}); 
+	
 	npt=numel(X);
 	if npt~=numel(Y)
 		error('X and Y must contain the same number of elements')
@@ -14,11 +18,12 @@ function [Xbs,Ybs] = BSpline(X,Y,nint)
  		Xbs=X(:);
  		Ybs=Y(:);
  		return
- 	end
-	nint=nint*(npt-1)+1;
+	end
+	nint=p.Results.nint;
+	nint=nint*(npt-1)+1;	% Overall number of queried points
 	y = linspace(0,1,nint);
 
-	order=3;
+	order=min(p.Results.order+1,npt);
 	Xl = zeros(order);
 	Yl = zeros(order);
 	t = [zeros(1,order-1),linspace(0,1,npt-order+2),ones(1,order-1)];

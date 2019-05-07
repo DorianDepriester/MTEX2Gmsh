@@ -146,8 +146,8 @@ classdef gmshGeo
 		%  the default element size).
 		%	- SAVEGEO(...,'ElementType',type) sets the element type used
 		%  for meshing. It can be:
-		%		-'Tri' (default) for triangular (2D)/Wedge (3D) elements,
-		%		-'Quad' for quadrangular (2D)/Brick (3D) elements.
+		%		-'Wedge' (default) for Wedge elements,
+		%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
 		%	- SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
 		%	np==0 disables this option (default).
