@@ -93,11 +93,11 @@ classdef gmshGeo
 					lineID=lineSet(j);
 					if isempty(lineList) || ismember(lineID,lineList)
 						pendingLines(lineID)=0;
-						x=obj.V(obj.Segments{lineID,1},1)';
-						y=obj.V(obj.Segments{lineID,1},2)';
-						[Xbs,Ybs] = BSpline(x,y);
-						X=[X; NaN; Xbs];
-						Y=[Y; NaN; Ybs];
+						x=obj.V(obj.Segments{lineID,1},1);
+						y=obj.V(obj.Segments{lineID,1},2);
+						XYbs=BSpline([x,y],'order',2);
+						X=[X; NaN; XYbs(:,1)];
+						Y=[Y; NaN; XYbs(:,2)];
 					end
 				end
 				p=plot(X,Y);
