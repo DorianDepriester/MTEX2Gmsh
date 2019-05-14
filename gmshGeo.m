@@ -93,9 +93,14 @@ classdef gmshGeo
 					lineID=lineSet(j);
 					if isempty(lineList) || ismember(lineID,lineList)
 						pendingLines(lineID)=0;
-						x=obj.V(obj.Segments{lineID,1},1);
-						y=obj.V(obj.Segments{lineID,1},2);
-						XYbs=BSpline([x,y],'order',2);
+						Vids=obj.Segments{lineID,1};
+						x=obj.V(Vids,1);
+						y=obj.V(Vids,2);
+						if Vids(1)==Vids(end)
+							XYbs=BSpline([x(1:end-1),y(1:end-1)],'order',2,'periodic',true);
+						else
+							XYbs=BSpline([x,y],'order',2);
+						end
 						X=[X; NaN; XYbs(:,1)];
 						Y=[Y; NaN; XYbs(:,2)];
 					end
