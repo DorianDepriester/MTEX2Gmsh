@@ -112,10 +112,10 @@ classdef gmshGeo
             hold off
             axis equal
 			h=legend(intnames,'Interpreter', 'none');
-			fontSize=14;
-			set(h,'FontSize',fontSize);
-			xlabel('e_1','fontSize',fontSize);
-			ylabel('e_2','fontSize',fontSize);
+ 			fontSize=14;
+ 			set(h,'FontSize',fontSize);
+			xlabel('e_1','Interpreter', 'tex');
+			ylabel('e_2','Interpreter', 'tex');
 			if strcmpi(getMTEXpref('xAxisDirection'),'east') && strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
 				set(gca,'Ydir','reverse')
 			elseif strcmpi(getMTEXpref('xAxisDirection'),'north')
