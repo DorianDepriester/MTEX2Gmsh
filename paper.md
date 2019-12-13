@@ -20,8 +20,6 @@ bibliography: paper.bib
 
 # Summary
 
-Micromechanics of polycrystalline aggregates consists in evaluating the thermo-mechanical behaviour of the aggregates at their grain scale. It is of great interest for investigating the influence of grain morphology (size and shape) and crystallographic texture on the macroscopic behaviour. If the investigated material is subjected to macroscopic deformation, the local strain can be obtained either experimentally, thanks to full-field measurement methods such as microgrid technique [@Allais:1994] or Digital Image Correlation (DIC) [@Hild:2002], or thanks to numerical simulation of the microstructure. The latter needs to take into account the mechanical heterogeneities (due to the different constituents) and the anisotropy of each phase, depending on its crystalline orientation.
-
 
 
 # References
