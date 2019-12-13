@@ -28,6 +28,8 @@ Orientation Imaging Microscopy (OIM), usually made from Electron Backscatter Dif
 In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to first generate a mesh based on either EBSD or reconstructed grains. In this mesh, the Graind Boundaries (GBs) must be accurately described since they play an important role in the overall behaviour of aggregates. Indeed, it is known that GBs increase the energy of the materials. The interfacial energy between two adjacent grains due to their boundary depends, among other parameters, on their misorientation and on the surface normal of the boundary [@Priester:2012]. In addition, @Zhong:2017 mentioned that the GB curvature is one of the most important properties of a microstructure. For instance, the driving force for grain growth depends on the local curvature of the GBs.
 
 This software provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software [@Geuzaine:2009].
+
+
 ![Schematic representation of the proposed algorithm](GraphicalAbstract.png)
 
 
