@@ -17,6 +17,7 @@ date: 13 december 2019
 bibliography: paper.bib
 
 # Summary
+
 Micromechanics of polycrystalline aggregates consists in evaluating the thermo-mechanical behaviour of the aggregates at their grain scale. It is of great interest for investigating the influence of grain morphology (size and shape) and crystallographic texture on the macroscopic behaviour. If the investigated material is subjected to macroscopic deformation, the local strain can be obtained either experimentally, thanks to full-field measurement methods such as microgrid technique [@Allais:1994] or Digital Image Correlation (DIC) [@Hild:2002], or thanks to numerical simulation of the microstructure. The latter needs to take into account the mechanical heterogeneities (due to the different constituents) and the anisotropy of each phase, depending on its crystalline orientation.
 
 Orientation Imaging Microscopy (OIM), usually made from Electron Backscatter Diffraction (EBSD) data, is now widely used in the literature for investigating the grain morphology and local crystal orientations in crystalline materials. Raw EBSD data can be considered as matrices of measurements of crystallographic data: each dot contains information about the phase and its orientation at the corresponding position.
