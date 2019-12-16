@@ -39,7 +39,7 @@ In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to
 
 The criterion used by the previous authors for defining the GBs, called weight in the context of graph theory, was speciffcally designed for cubic phases. The geometry was meshed using the Gmsh software [@Geuzaine:2009].
 
-This software provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software. Figure 1 schematically illustrates the proposed algorithm. The program allows to mesh the volume with a couple of options, such as:
+The proposed software, named [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh), provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software. Figure 1 schematically illustrates the proposed algorithm. The program allows to mesh the volume with a couple of options, such as:
 
 * increasing element size with increasing distance from the grains boundaries;
 * element type (tetrahedron, wedge or brick elements);
@@ -48,7 +48,7 @@ This software provides a customisable and robust method for generating a 2D mesh
 This sofware comes with an Abaqus plugin for importing the mesh and allocating the phase and Euler Angles of each grain.
 
 
-![Schematic representation of the proposed algorithm: 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
+![Schematic representation of the algorithm used in [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh): 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
 
 
 # References
