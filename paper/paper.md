@@ -48,7 +48,7 @@ The proposed software, named [`MTEX2Gmsh`](https://github.com/DorianDepriester/m
 This sofware comes with an Abaqus plugin for importing the mesh and allocating the phase and Euler Angles of each grain.
 
 
-![Schematic representation of the algorithm used in [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh): 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
+![Schematic representation of the algorithm used in `MTEX2Gmsh`: 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
 
 
 # References
