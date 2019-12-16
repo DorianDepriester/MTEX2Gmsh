@@ -1,5 +1,5 @@
 ---
-title: 'Polycrystalline FEM representation: a tool for generating 2D meshes from EBSD data'
+title: 'MTEX2Gmsh: a tool for generating 2D meshes from EBSD data'
 tags:
   - Polycrystals
   - FEM
@@ -27,10 +27,15 @@ Orientation Imaging Microscopy (OIM), usually made from Electron Backscatter Dif
 
 In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to first generate a mesh based on either EBSD or reconstructed grains. In this mesh, the Graind Boundaries (GBs) must be accurately described since they play an important role in the overall behaviour of aggregates. Indeed, it is known that GBs increase the energy of the materials. The interfacial energy between two adjacent grains due to their boundary depends, among other parameters, on their misorientation and on the surface normal of the boundary [@Priester:2012]. In addition, @Zhong:2017 mentioned that the GB curvature is one of the most important properties of a microstructure. For instance, the driving force for grain growth depends on the local curvature of the GBs.
 
-This software provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software [@Geuzaine:2009]. Figure 1 illustrates the proposed algorithm.
+This software provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software [@Geuzaine:2009]. Figure 1 schematically illustrates the proposed algorithm. The program allows to mesh the volume with a couple of options, such as:
+* increasing element size with increasing distance from the grains boundaries,
+* element type (tetrahedron, wedge or brick elements),
+* nesting the Region of Interest (ROI) into a larger medium.
+
+This sofware comes with an Abaqus plugin for importing the mesh and allocating the phase and Euler Angles of each grain.
 
 
-![Schematic representation of the proposed algorithm: once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map. Then, each grain boundary is divided into TJ-to-TJ segments. All those segments are smoothed using Bspline approximation. This decription of the grains can be converted into Gmsh-readable files, allowing to mesh efficiently. This smoothing allows very accurate difinition of the grain boundaries, with limited serration (usually intrioduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
+![Schematic representation of the proposed algorithm: 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
 
 
 # References
