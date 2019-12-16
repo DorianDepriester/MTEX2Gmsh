@@ -1,0 +1,50 @@
+{
+  "name": "MTEX2Gmsh",
+  "description": "Generate meshes from EBSD data",
+  "version": "1.0",
+  "keywords": [
+    "polycrystal",
+    "FEM",
+    "Numerical simulation",
+    "crystal plasticity"
+  ],
+  "contributors": [
+    {
+      "name": "Regis Kubler",
+      "email": "regis.kubler@ensam.eu",
+      "web": ""
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "Dorian Depriester",
+      "email": "dorian.depriester@ensam.eu",
+      "web": "https://github.com/DorianDepriester/"
+    }
+  ],
+  "demos": [
+    "https://github.com/DorianDepriester/mtex2Gmsh/blob/master/Example.m"
+  ],
+  "dependencies": {
+    "Matlab": ">2013b",
+    "Gmsh": ">3.0.7",
+    "MTEX": "5.0.3"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/DorianDepriester/mtex2Gmsh.git"
+    },
+    {
+      "type": "svn",
+      "url": "https://github.com/DorianDepriester/mtex2Gmsh.git"
+    }
+  ],
+  "licenses": [
+    {
+      "name": "MIT",
+      "url": "https://github.com/DorianDepriester/mtex2Gmsh/blob/master/LICENSE"
+    }
+  ],
+  "homepage": "https://github.com/DorianDepriester/mtex2Gmsh"
+}
