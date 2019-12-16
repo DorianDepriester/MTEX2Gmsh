@@ -28,18 +28,18 @@ Micromechanics of polycrystalline aggregates consists in evaluating the thermo-m
 
 Orientation Imaging Microscopy (OIM), usually made from Electron Backscatter Diffraction (EBSD) data, is now widely used in the literature for investigating the grain morphology and local crystal orientations in crystalline materials. Raw EBSD data can be considered as matrices of measurements of crystallographic data: each dot contains information about the phase and its orientation at the corresponding position.
 
-In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to first generate a mesh based on either EBSD or reconstructed grains. In this mesh, the Graind Boundaries (GBs) must be accurately described since they play an important role in the overall behaviour of aggregates. Indeed, it is known that GBs increase the energy of the materials. The interfacial energy between two adjacent grains due to their boundary depends, among other parameters, on their misorientation and on the surface normal of the boundary [@Priester:2012]. In addition, @Zhong:2017 mentioned that the GB curvature is one of the most important properties of a microstructure. For instance, the driving force for grain growth depends on the local curvature of the GBs.
+In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to first generate a mesh based on either EBSD or reconstructed grains. In this mesh, the Grain Boundaries (GBs) must be accurately described since they play an important role in the overall behaviour of aggregates. Indeed, it is known that GBs increase the energy of the materials. The interfacial energy between two adjacent grains due to their boundary depends, among other parameters, on their misorientation and on the surface normal of the boundary [@Priester:2012]. In addition, @Zhong:2017 mentioned that the GB curvature is one of the most important properties of a microstructure. For instance, the driving force for grain growth depends on the local curvature of the GBs.
 
-@Latypov:2016 have proposed a program to generate regular pseudo-3D mesh, consisting in brick elements with only one element in thickness. Nevertheless, because of the regular structure, the GBs can not be smoothly described. In addition, the element size must be constant, possibly resulting in a huge number of elements, depending on the size and the spatial resolution of the orientation map. @Dancette:2016 have proposed the following method to generate a conforming mesh with smooth GBs:
+@Latypov:2016 proposed a program to generate regular pseudo-3D mesh, consisting in brick elements with only one element in thickness. Nevertheless, because of the regular structure, the GBs can not be smoothly described. In addition, the element size must be constant, possibly resulting in a huge number of elements, depending on the size and the spatial resolution of the orientation map. @Dancette:2016 proposed the following method to generate a conforming mesh with smooth GBs:
 
 * computation of the GBs based on a proper criterion;
 * grain reconstruction using a graph theory -based method;
 * spline interpolation of the GBs;
 * meshing.
 
-The criterion used by the previous authors for defining the GBs, called weight in the context of graph theory, was speciffcally designed for cubic phases. The geometry was meshed using the Gmsh software [@Geuzaine:2009].
+The criterion used by the previous authors for defining the GBs, called weight in the context of graph theory, was specially designed for cubic phases. The geometry was meshed using the Gmsh software [@Geuzaine:2009].
 
-The proposed software, named [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh), provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software. Figure 1 schematically illustrates the proposed algorithm. The program allows to mesh the volume with a couple of options, such as:
+The proposed software, named [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh), provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software. Figure 1 schematically illustrates the proposed algorithm. [`MTEX2Gmsh`](https://github.com/DorianDepriester/mtex2Gmsh) allows to mesh the volume with a couple of options, such as:
 
 * increasing element size with increasing distance from the grains boundaries;
 * element type (tetrahedron, wedge or brick elements);
@@ -48,7 +48,7 @@ The proposed software, named [`MTEX2Gmsh`](https://github.com/DorianDepriester/m
 This sofware comes with an Abaqus plugin for importing the mesh and allocating the phase and Euler Angles of each grain.
 
 
-![Schematic representation of the algorithm used in `MTEX2Gmsh`: 1) once the grains are reconstructed thank to MTEX [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decription of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate difinitions of the grain boundaries, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
+![Schematic representation of the algorithm used in `MTEX2Gmsh`: 1) once the grains are reconstructed using to `MTEX` [@Bachmann:2011], the algorithm fetches all triple junctions (TJ) in the whole map; 2) each grain boundary is divided into TJ-to-TJ segments; 3) all those segments are smoothed using Bspline approximation; 3) this decriptions of the grains can be converted into Gmsh-readable files, allowing to mesh the whole region efficiently. The Bspline approximation results in very accurate definitions of the GBs, with limited serration (usually introduced by the EBSD resolution) and limited number of elements.](GraphicalAbstract.png)
 
 
 # References
