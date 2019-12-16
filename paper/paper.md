@@ -31,16 +31,19 @@ Orientation Imaging Microscopy (OIM), usually made from Electron Backscatter Dif
 In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to first generate a mesh based on either EBSD or reconstructed grains. In this mesh, the Graind Boundaries (GBs) must be accurately described since they play an important role in the overall behaviour of aggregates. Indeed, it is known that GBs increase the energy of the materials. The interfacial energy between two adjacent grains due to their boundary depends, among other parameters, on their misorientation and on the surface normal of the boundary [@Priester:2012]. In addition, @Zhong:2017 mentioned that the GB curvature is one of the most important properties of a microstructure. For instance, the driving force for grain growth depends on the local curvature of the GBs.
 
 @Latypov:2016 have proposed a program to generate regular pseudo-3D mesh, consisting in brick elements with only one element in thickness. Nevertheless, because of the regular structure, the GBs can not be smoothly described. In addition, the element size must be constant, possibly resulting in a huge number of elements, depending on the size and the spatial resolution of the orientation map. @Dancette:2016 have proposed the following method to generate a conforming mesh with smooth GBs:
-- computation of the GBs based on a proper criterion,
-- grain reconstruction using a graph theory -based method,
-- spline interpolation of the GBs,
-- meshing.
+
+* computation of the GBs based on a proper criterion;
+* grain reconstruction using a graph theory -based method;
+* spline interpolation of the GBs;
+* meshing.
+
 The criterion used by the previous authors for defining the GBs, called weight in the context of graph theory, was speciffcally designed for cubic phases. The geometry was meshed using the Gmsh software [@Geuzaine:2009].
 
 This software provides a customisable and robust method for generating a 2D mesh based on EBSD with smooth and accurate definition of the GBs. It is based on the MTEX toolbox for Matlab [@Bachmann:2011] and the Gmsh software. Figure 1 schematically illustrates the proposed algorithm. The program allows to mesh the volume with a couple of options, such as:
-- increasing element size with increasing distance from the grains boundaries,
-- element type (tetrahedron, wedge or brick elements),
-- nesting the Region of Interest (ROI) into a larger medium.
+
+* increasing element size with increasing distance from the grains boundaries;
+* element type (tetrahedron, wedge or brick elements);
+* nesting the Region of Interest (ROI) into a larger medium.
 
 This sofware comes with an Abaqus plugin for importing the mesh and allocating the phase and Euler Angles of each grain.
 
