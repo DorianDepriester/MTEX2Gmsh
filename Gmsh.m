@@ -1,7 +1,9 @@
 function varargout=Gmsh(inputFilePath,outputFilePath)
-%GMSH Executes Gmsh in Matlab
+%GMSH Execute Gmsh whithin Matlab.
 %   GMSH(INPUT,OUTPUT) runs the Gmsh sofware using the geometry specified
-%   in INPUT and exports the mesh in the specified OUTPUT file.
+%   in INPUT and exports the mesh in the specified OUTPUT file. Gmsh must 
+%   belong to the PATH of your operating system.
+%
 %	The OUTPUT argument can be:
 %		- file extension (eg. '.inp'). In this case, the output file
 %		is at the same location as the input file and is named identically
@@ -9,6 +11,20 @@ function varargout=Gmsh(inputFilePath,outputFilePath)
 %		- file format (eg 'INP'). This is just a shortcut for the
 %		corresponding file extension (eg 'INP' -> '.inp').
 %		- full path (eg 'example.inp')
+%
+%   By default, the returned message from Gmsh is printed in the Matlab's 
+%   command window.
+%
+%   s=GMSH(...) saves the message a string.
+%
+
+    %% Check if Gmsh can be run
+    if ispc
+        r=system('WHERE gmsh');
+        if r~=0
+            error('Install Gmsh and add it to the PATH environment variable first.')
+        end
+    end
 	
 	%% Remove file extension from input file
 	[inputPath,inputFileName,~] = fileparts(inputFilePath);
