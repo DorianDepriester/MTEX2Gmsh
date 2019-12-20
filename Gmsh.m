@@ -17,14 +17,6 @@ function varargout=Gmsh(inputFilePath,outputFilePath)
 %
 %   s=GMSH(...) saves the message a string.
 %
-
-    %% Check if Gmsh can be run
-    if ispc
-        r=system('WHERE gmsh');
-        if r~=0
-            error('Install Gmsh and add it to the PATH environment variable first.')
-        end
-    end
 	
 	%% Remove file extension from input file
 	[inputPath,inputFileName,~] = fileparts(inputFilePath);
