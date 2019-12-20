@@ -1,17 +1,20 @@
 classdef gmshGeo
     
     properties
-        V=[];
-        Segments=cell(0,1);
-        Grains=table;
-        SingularPoints=[];
-		Interfaces=struct;
+        V=[];               % Vertices (BSpline knots)
+        Segments=cell(0,1); % Lists of knots, defining the BSplines
+        Grains=table;       % Table summurizing the properties of each grain
+        SingularPoints=[];  % List of singular points (Triple junctions, corners etc.)
+		Interfaces=struct;  % Phase-to-phase interfaces
     end
     
     methods
         function G=gmshGeo(grains)
-        %Object constructor.
-        % Computes the gmshGeo object from a set of grains (grain2d object)
+        %GMSHGEO Object constructor.
+        % Computes the GMSHGEO object from a set of grains (grain2d
+        % object).
+		%
+		% See also savegeo, exportGrainProps
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
@@ -73,8 +76,13 @@ classdef gmshGeo
         end
         
         function plot(obj,varargin)
-        %Plots the segments found in each grains.
-        % PLOT(Gmsh) plots all the segments found.
+        %PLOT Plot the segments found in each grains.
+        % PLOT(Object) plots all the segments.
+		%
+		% PLOT(Object,I) with I an array of integers, plots only the grains
+		% whose indices belong to I.
+		%
+		% See also plotElementSize
  			if nargin>1
  				GrainIDs=varargin{1};
 				lineList=uint16(segmentList(obj,GrainIDs));
@@ -138,30 +146,40 @@ classdef gmshGeo
         end
         
         function savegeo(obj,filepath,varargin)
-        %Saves the geometry as an input file for Gmsh (*.geo).
-        %	- SAVEGEO(Gmsh,filepath) saves the geometry in the
-        % corresponding file path. The element size for meshing is equalt
-        % to the EBSD resolution.
-		%	- SAVEGEO(...,'ElementSize',value) results in element sizes
-		%  equal to the given value.
-		%	- SAVEGEO(...,'Thickness',value) sets an extrusion thickness
-		%  equal to the given value (equal to element size by default).
-        %	- SAVEGEO(...,'gradient',k) results in elements with size equal
-        %  to s+k*d (d being the distance from the nearest boundary and s 
-		%  the default element size).
-		%	- SAVEGEO(...,'ElementType',type) sets the element type used
-		%  for meshing. It can be:
+        %SAVEGEO Save the geometry as an input file for Gmsh (*.geo).
+        %	SAVEGEO(Object,filepath) saves the geometry in the
+        %	corresponding file path. The element size for meshing is equal
+        %	to the EBSD resolution.
+        %
+		%	SAVEGEO(...,'ElementSize',value) results in element sizes
+		%	equal to the given value.
+        %
+		%	SAVEGEO(...,'Thickness',value) sets an extrusion thickness
+		%	equal to the given value (equal to element size by default).
+        %
+        %	SAVEGEO(...,'gradient',k) results in elements with size equal
+        %	to s+k*d (d being the distance from the nearest boundary and s 
+		%	the default element size).
+        %
+		%	SAVEGEO(...,'ElementType',type) sets the element type used
+		%	for meshing. It can be:
 		%		-'Wedge' (default) for Wedge elements,
 		%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
-		%	- SAVEGEO(...,'Curvature',np) sets the element sizes to be
+        %		-'Tet' for tetrahedrons.
+        %
+		%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
 		%	np==0 disables this option (default).
-		%	- SAVEGEO(...,'medium',S) embeds the ROI inside a
-		%	cuboid of size S=[dx dy dz]. The element size in the medium is
-		%	increasing with increasing distance from the ROI. The mesh in
-		%	the medium is composed of tetrahedron elements.
-		%	- SAVEGEO(...,'medium',S,'mediumElementSize',value) sets the
-		%   element size at the corners of the medium to the given value.
+        %
+		%	SAVEGEO(...,'medium',S) embeds the ROI inside a cuboid of size 
+        %	S=[dx dy dz]. The element size in the medium is	increasing with
+		%	increasing distance from the ROI. The mesh in the medium is 
+		%	composed of tetrahedron elements.
+        %
+		%	SAVEGEO(...,'medium',S,'mediumElementSize',value) sets the
+		%	element size at the corners of the medium to the given value.
+		%
+		%	See also plot, plotElementSize
 			version='1.0';	% MTEX2Gmsh version
 		
 			%% Parse optional parameters
@@ -474,12 +492,19 @@ classdef gmshGeo
 		end
         
         function plotElementSize(obj,minSize,slope,varargin)
-        %Plots the map of the element size when gradient is enabled.
-        %   -PLOTELEMENTSIZE(obj,minSize,slope) computes the field
-        % corresponding to minSize+slope*d, with d the distance from the
-        % nearest vertex. Then it plots it as a 2D map.
-        %   -PLOTELEMENTSIZE(...,'samples',n) uses n samples in each
-        %   directions (default is 200).
+        %PLOTELEMENTSIZE Plots the map of the element size when gradient is 
+		%enabled.
+		%
+        %	PLOTELEMENTSIZE(obj,minSize,slope) computes the field
+        %	corresponding to minSize+slope*d, with d the distance from the
+        %	nearest vertex. Then it plots it as a 2D map.
+		%
+        %	PLOTELEMENTSIZE(...,'samples',n) uses n samples in each
+        %	directions (default is 200).
+		%	This function is intended check whether the slope value	for
+		%	writing the .geo file is correct fits the user's needs.
+		%
+		%	See also plot, savegeo
             p = inputParser;
 			addOptional(p,'samples',200);
             parse(p,varargin{:});
@@ -510,11 +535,13 @@ classdef gmshGeo
 		end      
 
 		function exportGrainProps(obj,filename)
-		%Exports grain properties (IDs, phase and orientation) as ASCII
-		%data in a CSV file.
-		% EXPORTGRAINPROPS(G,'filename') exports grain properties stored
-		% in the G object (of class gmshGeo) in the ASCII file named
-		% 'filename'.
+		%EXPORTGRAINPROPS Exports grain properties (IDs, phase and 
+		%orientation) as ASCII data in a CSV file.
+		%
+		% EXPORTGRAINPROPS(Object,'filename') exports grain properties
+		% stored in Object in the ASCII file named 'filename'.
+		%
+		% See also savegeo
 			set(0,'DefaultTextInterpreter','none');
 			h = waitbar(0,'Grain properties','Name','Writing the CSV file...');
 			ffid = fopen(filename, 'w');
@@ -531,6 +558,14 @@ classdef gmshGeo
 		end
 		
 		function s=evalElementSize(obj)
+			%EVALELEMENTSIZE Automatically evaluate the element size.
+			% EVALELEMENTSIZE(Object) computes the mean node-to-node
+			% distance in each segment.
+			%
+			% Note: the value from EVALELEMENTSIZE is used by default in
+			% the savegeo method.
+			%
+			% See also savegeo
 			segmts=obj.Segments;
 			nseg=length(segmts);
 			d=zeros(nseg,1);
@@ -550,11 +585,16 @@ classdef gmshGeo
 		end
 		
 		function segmts=simplify(obj,varargin)
-			%%Applies the Douglas-Peucker algorithm to reduce the number of
-			%%points in each segment.
-			%   SIMPLIFY(G) reduces the number elements with penalty lenght
-			% equal to one tenth of the default element size.
-			%   SIMPLIFY(G,epsilon) uses epsilon as the penalty length.
+			%SIMPLIFY Applies the Douglas-Peucker algorithm to reduce the number of
+			%points in each segment.
+			%
+			%	SIMPLIFY(Object) reduces the number elements with penalty 
+			%	lenght equal to one tenth of the default element size.
+			%
+			%	SIMPLIFY(Object,epsilon) uses epsilon as the penalty
+			%	length.
+			%
+			% See also plot
 			if nargin==1
 				epsilon=obj.evalElementSize/10;
 			else
@@ -569,6 +609,7 @@ classdef gmshGeo
 		end
 
 		function s=size(obj)
+            %SIZE Dimensions of the ROI.
 			s.numberOfGrains=height(obj.Grains);
 			vtx=obj.V;
 			xmin=min(vtx(:,1));

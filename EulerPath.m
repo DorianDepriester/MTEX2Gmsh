@@ -1,4 +1,12 @@
 function polys=EulerPath(F,datatype)
+%EULERPATH Compute the Euler path of a graph.
+%
+%	EULERPATH(F,DTYPE) where F is an N-2 array defining the connectivity
+%	between nodes (defined by their indices). The return value is a cell 
+%	array defined by nodes indices written in the DTYPE datatype (can be
+%	'uint8', 'uint16', 'uint32' or 'uint64').
+%
+%	See also computeSegments
 
 vtx_list=unique(F);
 mult=hist(single(F(:)),single(vtx_list))';

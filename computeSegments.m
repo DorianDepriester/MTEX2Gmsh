@@ -1,13 +1,16 @@
 function [segment_sequences,outLoop,inLoops,V,sp] = computeSegments(grains)
-%COMPUTESEGMENTS computes the triple pointto-triple point
-%segments forming each grain.
-% [s,p]=COMPUTESEGMENTS(grains,tp) return the list
-% of segments s and the partitions p of the surface as follows:
-% p is a cell array, the same size as the grains data. Each compenent
-% contain the series of loops (outer and inner). Each one of the latter
-% consists in a series of indices, refering to the segments IDs.
+%COMPUTESEGMENTS Compute the triple point-to-triple point segments defining
+% each grain.
+%
+% [s,out,in,V,TJ]=COMPUTESEGMENTS(grains) returns:
+%	- s: a list a segments, defined by the nodes' indices
+%	- out: the list of outer loops, defined by the segments' indices
+%	- int: the list of inner loops, defined by the segments' indices
+%	- V: the coordinates of the nodes
+%	- sp: indices of special points (triple junctions, corners etc.)
+%
+%	See also gmshGeo
 
-% end points of the segments
 tp=grains.triplePoints.id;              % Triple points
 qp=calcQuadruplePoints(grains);         % Quadruple points
 bp=doublePtOnBound(grains);             % Double points on the boundaries of the ROI
