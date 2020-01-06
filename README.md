@@ -19,10 +19,10 @@ or use the following entry in BibTeX :
 @misc{mtex2Gmsh,
     author       = {Dorian Depriester},
     title        = {{MTEX2Gmsh}},
-    month        = march,
+    month        = dec,
     year         = 2019,
-    doi          = {10.5281/zenodo.2595052},
-    version      = {V1.0},
+    doi          = {10.5281/zenodo.3588421},
+    version      = {1.0},
     publisher    = {Zenodo},
     url          = {https://github.com/DorianDepriester/mtex2Gmsh}
 }
