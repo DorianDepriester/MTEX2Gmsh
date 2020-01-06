@@ -27,8 +27,8 @@
   ],
   "dependencies": {
     "Matlab": ">2013b",
-    "Gmsh": ">3.0.7",
-    "MTEX": "5.0.3"
+    "Gmsh": ">4.4.1",
+    "MTEX": "5.1.1"
   },
   "repositories": [
     {
