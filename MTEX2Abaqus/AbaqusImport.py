@@ -22,14 +22,14 @@ def importEBSD(inpFileName,CSVfileName,cohesive):
 		# Load grain properties
 		try:
 			file = open(CSVfileName, "r")
-			reader = csv.DictReader(file,delimiter='\t',lineterminator='\n',quoting = csv.QUOTE_NONNUMERIC)
+			reader = csv.DictReader(file,delimiter='\t',lineterminator='\n')
 			grainId=[];phase=[];phi1=[];Phi=[];phi2=[]
 			for row in reader:
 				grainId.append(int(row['GrainID']),)
 				phase.append(row['Phase'],)
-				phi1.append(row['phi1'],)
-				Phi.append(row['Phi'],)
-				phi2.append(row['phi2'],)
+				phi1.append(float(row['phi1']),)
+				Phi.append(float(row['Phi']),)
+				phi2.append(float(row['phi2']),)
 			file.close()
 		except IOError:
 			print 'Error:',CSVfileName,'not found.'
