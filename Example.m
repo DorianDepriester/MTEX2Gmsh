@@ -16,9 +16,6 @@ plot(G);			% Plot the geometry
 
 %% Generate the mesh and save it
 mesh(G,'small.inp','thickness',50,'elementType','Brick');
-% This command is equivalent to:
-%	savegeo(G,'small.geo','thickness',50,'elementType','Brick');
-%	Gmsh('small.geo','inp')
 
 %% Export grain properties
 exportGrainProps(G,'small.csv');

@@ -182,7 +182,7 @@ classdef gmshGeo
 		%	h=SAVEGEO(...) returns the full filepath where the geometry has
 		%	been saved.
 		%
-		%	See also mesh, Gmsh.
+		%	See also mesh.
 		
 			version='1.0';	% MTEX2Gmsh version
 		
@@ -538,20 +538,10 @@ classdef gmshGeo
 			%	element size at the corners of the medium to the given 
 			%	value.
 			%
-			%	NOTE: MESH(obj,outputFile,optArgs) is a shortcut for
-			%		savegeo(obj,'tempfile.geo',optArgs)
-			%		Gmsh('tempfile.geo',outputFile)
-			%	where 'tempfile.geo' is a temporary file, automatically
-			%	deleted afterwards.
-			%
-			%	See also savegeo, Gmsh.
+			%	See also savegeo.
 			tmp_file=obj.savegeo(tempname,varargin{:});	% Save the geometry into a temp file
-			outputPath=fileparts(outputFilePath);
-			if isempty(outputPath)
-				% If the output file path is empty, save the mesh in the current working directory
-				outputFilePath=[pwd filesep outputFilePath];
-			end
-			Gmsh(tmp_file,outputFilePath)
+			str=sprintf('gmsh "%s" -o "%s" -3',tmp_file,outputFilePath);
+			system(str);
 			delete(tmp_file)	% delete temp file
 		end
         
@@ -605,7 +595,7 @@ classdef gmshGeo
 		% EXPORTGRAINPROPS(Object,'filename') exports grain properties
 		% stored in Object in the ASCII file named 'filename'.
 		%
-		% See also savegeo Gmsh.
+		% See also savegeo.
 			data=obj.Grains(:,{'GrainID','Phase','phi1','Phi','phi2'});
 			writetable(data,filename,'delimiter','\t','QuoteStrings',true)
 		end
