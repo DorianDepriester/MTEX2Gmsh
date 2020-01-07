@@ -151,11 +151,11 @@ classdef gmshGeo
         %	corresponding file path. The element size for meshing is equal
         %	to the EBSD resolution.
         %
-		%	SAVEGEO(...,'ElementSize',value) results in element sizes
-		%	equal to the given value.
+		%	SAVEGEO(...,'ElementSize',s) results in element sizes equal to 
+		%	s.
         %
-		%	SAVEGEO(...,'Thickness',value) sets an extrusion thickness
-		%	equal to the given value (equal to element size by default).
+		%	SAVEGEO(...,'Thickness',t) sets an extrusion thickness
+		%	equal to t (equal to element size by default).
         %
         %	SAVEGEO(...,'gradient',k) results in elements with size equal
         %	to s+k*d (d being the distance from the nearest boundary and s 
@@ -182,7 +182,7 @@ classdef gmshGeo
 		%	h=SAVEGEO(...) returns the full filepath where the geometry has
 		%	been saved.
 		%
-		%	See also mesh, Gmsh, plotElementSize.
+		%	See also mesh, Gmsh.
 		
 			version='1.0';	% MTEX2Gmsh version
 		
@@ -500,23 +500,51 @@ classdef gmshGeo
 		end
 		
 		function mesh(obj,outputFilePath,varargin)
-			%MESH run Gmsh, mesh the geometry and export the mesh into the
+			%MESH Mesh the geometry and export the mesh into the
 			%requested file.
 			%
-			% MESH(obj,outputFile,...) meshes the geometry and saves the 
-			% results at the specified location. If the latter is only a 
-			% filename (no path), the mesh is saved in the current working
-			% directory.
+			%	MESH(obj,outputFile) meshes the geometry and saves the 
+			%	results at the specified location. If the latter is only a 
+			%	filename (no path), the mesh is saved in the current 
+			%	working directory. The element size is roughly equal to the
+			%	EBSD resolution.
 			%
-			% MESH(obj,outputFile,optArgs) is a shortcut for:
-			%	savegeo(obj,'tempfile.geo',optArgs)
-			%	Gmsh('tempfile.geo',outputFile)
-			% where 'tempfile.geo' is a temporary file, automatically
-			% deleted afterward. The optional arguments are passed to the
-			% savegeo method.
+			%	MESH(...,'ElementSize',s) results in element sizes
+			%	equal to S.
 			%
-			% See also savegeo, Gmsh.
-			
+			%	MESH(...,'Thickness',t) sets an extrusion thickness equal
+			%	to T (equal to element size by default).
+			%
+			%	MESH(...,'gradient',k) results in elements with size equal
+			%	to s+k*d (d being the distance from the nearest boundary 
+			%	and s the default element size).
+			%
+			%	MESH(...,'ElementType',type) sets the element type used
+			%	for meshing. It can be:
+			%		-'Wedge' (default) for Wedge elements,
+			%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
+			%		-'Tet' for tetrahedrons.
+			%
+			%	MESH(...,'Curvature',np) sets the element sizes to be
+			%	computed depending on the local curvature (np nodes per 2 
+			%	pi). np==0 disables this option (default).
+			%
+			%	MESH(...,'medium',S) embeds the ROI inside a cuboid of size 
+			%	S=[dx dy dz]. The element size in the medium is	increasing
+			%	with increasing distance from the ROI. The mesh in the 
+			%	medium is composed of tetrahedron elements.
+			%
+			%	MESH(...,'medium',S,'mediumElementSize',value) sets the 
+			%	element size at the corners of the medium to the given 
+			%	value.
+			%
+			%	NOTE: MESH(obj,outputFile,optArgs) is a shortcut for
+			%		savegeo(obj,'tempfile.geo',optArgs)
+			%		Gmsh('tempfile.geo',outputFile)
+			%	where 'tempfile.geo' is a temporary file, automatically
+			%	deleted afterwards.
+			%
+			%	See also savegeo, Gmsh.
 			tmp_file=obj.savegeo(tempname,varargin{:});	% Save the geometry into a temp file
 			outputPath=fileparts(outputFilePath);
 			if isempty(outputPath)
