@@ -52,7 +52,7 @@ function varargout=Gmsh(inputFilePath,outputFilePath)
 	end
 	
 	%% Format and run the command line
-	str=sprintf('gmsh %s -o %s -3',inputFilePath,outputFilePath);	
+	str=sprintf('gmsh "%s" -o "%s" -3',inputFilePath,outputFilePath);	
 	if nargout==0
 		system(str);												% Run Gmsh
 	else
