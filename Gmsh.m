@@ -15,7 +15,7 @@ function varargout=Gmsh(inputFilePath,outputFilePath)
 %   By default, the returned message from Gmsh is printed in the Matlab's 
 %   command window.
 %
-%   s=GMSH(...) saves the message a string.
+%   s=GMSH(...) saves the message as a string.
 %
 %	See also gmshGeo/mesh gmshGeo/savegeo
 	

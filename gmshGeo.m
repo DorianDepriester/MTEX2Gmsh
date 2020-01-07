@@ -510,7 +510,7 @@ classdef gmshGeo
 			%	EBSD resolution.
 			%
 			%	MESH(...,'ElementSize',s) results in element sizes
-			%	equal to S.
+			%	equal to s.
 			%
 			%	MESH(...,'Thickness',t) sets an extrusion thickness equal
 			%	to T (equal to element size by default).
