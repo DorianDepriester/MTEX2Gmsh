@@ -348,7 +348,7 @@ classdef gmshGeo
                         delete(h)
                         return
 					end					
-					writeSequence(ffid,'Line Loop',10*i,LineLoops{i});	% label times 10 in order to avoid label conflict with OpenCASCADE (bug)
+					writeSequence(ffid,'Line Loop',i,LineLoops{i});	% label times 10 in order to avoid label conflict with OpenCASCADE (bug)
 				end
 
                 %% Surfaces
@@ -360,7 +360,7 @@ classdef gmshGeo
                         delete(h)
                         return
                     end                    
-					writeSequence(ffid,'Plane Surface',i,PlaneSurface{i}*10);	% Times 10 to keep consistent with with previous hack
+					writeSequence(ffid,'Plane Surface',i,PlaneSurface{i});
 				end
                 
                 %% Use quandrangular elements for 2D meshing
@@ -392,7 +392,7 @@ classdef gmshGeo
 						writeSequence(ffid,'Line',[],abs(BL));
 						fprintf(ffid,'};\n');
 						n_loops=n_loops+1;
-						fprintf(ffid,'Line Loop(%i)={',n_loops*10);			% Line loop on the opposite side of the ROI
+						fprintf(ffid,'Line Loop(%i)={',n_loops);			% Line loop on the opposite side of the ROI
 						for i=1:length(BL)
 							j=(i-1)*4;	% Index of the opposite segment from segment i
 							if BL(i)>0
@@ -410,7 +410,7 @@ classdef gmshGeo
 							end
 						end
 						id_SurfaceLoop=n_surfaces+1;
-						writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops*10);
+						writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops);
 						fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
 						for i=1:length(BL)	% List of side surfaces (results from extrusions)
 							j=i*4-3;
@@ -427,10 +427,10 @@ classdef gmshGeo
 					
 					% Create a volume surrounding the ROI
 					n_loops=n_loops+1;
-					writeSequence(ffid,'Line Loop',n_loops*10,n_segments-3:n_segments);		% Outer boundaries of the medium					
+					writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		% Outer boundaries of the medium					
 					n_loops=n_loops+1;
-					writeSequence(ffid,'Line Loop',n_loops*10,BL);							% Outer boundaries of the ROI/Inner boundaries of the medium
-					writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]*10);% Upper surface of the medium
+					writeSequence(ffid,'Line Loop',n_loops,BL);							% Outer boundaries of the ROI/Inner boundaries of the medium
+					writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);% Upper surface of the medium
 					if dz>thickness	
 						fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
 						fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);

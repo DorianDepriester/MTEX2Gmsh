@@ -150,9 +150,6 @@ function [ segments,idx ] = addSequence(segments,Seq,phaseID)
 		elseif isequal(flipud(Seq),seg_idx)
 			idx=-idx_loc;
 			return
-		elseif Seq(1)==Seq(end) && seg_idx(1)==seg_idx(end) && all(unique(Seq)==unique(seg_idx))
-			idx=idx_loc;
-			return
 		end
 	end
 	if idx==0
