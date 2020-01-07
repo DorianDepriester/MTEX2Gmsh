@@ -7,18 +7,19 @@ ebsd = ebsd('indexed');									% Remove unindexed points
 selected_grains = grains(grains.grainSize > 1);			% Outlier removal
 ebsd = ebsd(selected_grains);
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);	% Update grains
+plot(grains)
 
 %% gmshGeo stuff
 G=gmshGeo(grains);	% Format data structure
-
 figure
-plot(G);			% Plot surfaces
+plot(G);			% Plot the geometry
 
-%% Generate Gmsh-readable file and export the mesh
-savegeo(G,'small.geo','thickness',50,'elementType','Brick');
+%% Generate the mesh and save it
+mesh(G,'small.inp','thickness',50,'elementType','Brick');
+% This command is equivalent to:
+%	savegeo(G,'small.geo','thickness',50,'elementType','Brick');
+%	Gmsh('small.geo','inp')
 
 %% Export grain properties
 exportGrainProps(G,'small.csv');
-Gmsh('small.geo','inp')
-
 

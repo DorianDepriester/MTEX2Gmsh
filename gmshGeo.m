@@ -14,7 +14,7 @@ classdef gmshGeo
         % Computes the GMSHGEO object from a set of grains (grain2d
         % object).
 		%
-		% See also savegeo, exportGrainProps
+		% See also savegeo, mesh, exportGrainProps.
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
@@ -145,7 +145,7 @@ classdef gmshGeo
 			end
         end
         
-        function savegeo(obj,filepath,varargin)
+        function fh=savegeo(obj,filepath,varargin)
         %SAVEGEO Save the geometry as an input file for Gmsh (*.geo).
         %	SAVEGEO(Object,filepath) saves the geometry in the
         %	corresponding file path. The element size for meshing is equal
@@ -179,7 +179,11 @@ classdef gmshGeo
 		%	SAVEGEO(...,'medium',S,'mediumElementSize',value) sets the
 		%	element size at the corners of the medium to the given value.
 		%
-		%	See also plot, plotElementSize
+		%	h=SAVEGEO(...) returns the full filepath where the geometry has
+		%	been saved.
+		%
+		%	See also mesh, Gmsh, plotElementSize.
+		
 			version='1.0';	% MTEX2Gmsh version
 		
 			%% Parse optional parameters
@@ -488,7 +492,39 @@ classdef gmshGeo
 				end
 				
             fclose(ffid);
-            delete(h);            
+            delete(h);
+			
+			if nargout==1
+				fh=filepath;
+			end
+		end
+		
+		function mesh(obj,outputFilePath,varargin)
+			%MESH run Gmsh, mesh the geometry and export the mesh into the
+			%requested file.
+			%
+			% MESH(obj,outputFile,...) meshes the geometry and saves the 
+			% results at the specified location. If the latter is only a 
+			% filename (no path), the mesh is saved in the current working
+			% directory.
+			%
+			% MESH(obj,outputFile,optArgs) is a shortcut for:
+			%	savegeo(obj,'tempfile.geo',optArgs)
+			%	Gmsh('tempfile.geo',outputFile)
+			% where 'tempfile.geo' is a temporary file, automatically
+			% deleted afterward. The optional arguments are passed to the
+			% savegeo method.
+			%
+			% See also savegeo, Gmsh.
+			
+			tmp_file=obj.savegeo(tempname,varargin{:});	% Save the geometry into a temp file
+			outputPath=fileparts(outputFilePath);
+			if isempty(outputPath)
+				% If the output file path is empty, save the mesh in the current working directory
+				outputFilePath=[pwd filesep outputFilePath];
+			end
+			Gmsh(tmp_file,outputFilePath)
+			delete(tmp_file)	% delete temp file
 		end
         
         function plotElementSize(obj,minSize,slope,varargin)
@@ -504,7 +540,7 @@ classdef gmshGeo
 		%	This function is intended check whether the slope value	for
 		%	writing the .geo file is correct fits the user's needs.
 		%
-		%	See also plot, savegeo
+		%	See also plot, savegeo.
             p = inputParser;
 			addOptional(p,'samples',200);
             parse(p,varargin{:});
@@ -541,7 +577,7 @@ classdef gmshGeo
 		% EXPORTGRAINPROPS(Object,'filename') exports grain properties
 		% stored in Object in the ASCII file named 'filename'.
 		%
-		% See also savegeo
+		% See also savegeo Gmsh.
 			data=obj.Grains(:,{'GrainID','Phase','phi1','Phi','phi2'});
 			writetable(data,filename,'delimiter','\t','QuoteStrings',true)
 		end
@@ -554,7 +590,7 @@ classdef gmshGeo
 			% Note: the value from EVALELEMENTSIZE is used by default in
 			% the savegeo method.
 			%
-			% See also savegeo
+			% See also savegeo.
 			segmts=obj.Segments;
 			nseg=length(segmts);
 			d=zeros(nseg,1);
@@ -583,7 +619,7 @@ classdef gmshGeo
 			%	SIMPLIFY(Object,epsilon) uses epsilon as the penalty
 			%	length.
 			%
-			% See also plot
+			% See also plot.
 			if nargin==1
 				epsilon=obj.evalElementSize/10;
 			else
