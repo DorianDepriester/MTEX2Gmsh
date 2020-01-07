@@ -19,7 +19,7 @@ classdef gmshGeo
 				error('Input argument must be of class grain2d');
 			end
             [Segmts,OuterLoop,InnerLoops,G.V,G.SingularPoints]=computeSegments(grains);
-			Id=grains.id;
+			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(grains.phaseId)';
 			ng=length(grains);
@@ -31,7 +31,7 @@ classdef gmshGeo
 				[phi1(i),Phi(i),phi2(i)]=Euler(grains(i).meanOrientation,convention);
 			end
 			waitbar(1,h,'Tabular formating');
-			G.Grains=table(Id,Phase,OuterLoop,InnerLoops,phi1,Phi,phi2);
+			G.Grains=table(GrainID,Phase,OuterLoop,InnerLoops,phi1,Phi,phi2);
 			close(h);
 			
 			
@@ -109,8 +109,8 @@ classdef gmshGeo
 						else
 							XYbs=BSpline([x,y],'order',2);
 						end
-						X=[X; NaN; XYbs(:,1)];
-						Y=[Y; NaN; XYbs(:,2)];
+						X=[X; NaN; XYbs(:,1)]; %#ok<AGROW>
+						Y=[Y; NaN; XYbs(:,2)]; %#ok<AGROW>
 					end
 				end
 				p=plot(X,Y);
@@ -445,7 +445,7 @@ classdef gmshGeo
 				
                 %% Physical volumes
 				grainPrefix='Grain';
-				Ids=obj.Grains.Id(:);
+				Ids=obj.Grains.GrainID(:);
                 fprintf(ffid,'\n// Sets\n');
 				if all(Ids==(1:n_surfaces)')	% Grains are numbered subsequently
 					waitbar(step/n_steps,h,'Physical volumes');
@@ -542,19 +542,8 @@ classdef gmshGeo
 		% stored in Object in the ASCII file named 'filename'.
 		%
 		% See also savegeo
-			set(0,'DefaultTextInterpreter','none');
-			h = waitbar(0,'Grain properties','Name','Writing the CSV file...');
-			ffid = fopen(filename, 'w');
-			fprintf(ffid,'"GrainID"\t"Phase"\t"phi1"\t"Phi"\t"phi2"\n');
-			G=obj.Grains;
-			ng=height(G);
-			for i=1:ng
-				waitbar(i/ng,h);
-				Phase=G.Phase(i);
-				fprintf(ffid,'%i\t"%s"\t%g\t%g\t%g\n',G.Id(i),Phase{1},G.phi1(i),G.Phi(i),G.phi2(i));
-			end
-			fclose(ffid);
-			close(h);
+			data=obj.Grains(:,{'GrainID','Phase','phi1','Phi','phi2'});
+			writetable(data,filename,'delimiter','\t','QuoteStrings',true)
 		end
 		
 		function s=evalElementSize(obj)
