@@ -761,7 +761,7 @@ function remains=DouglasPeucker(V,epsilon)
 end
 
 function  segIDs  = segmentList(G,GrainIDs)
-	t=ismember(G.Grains.Id,GrainIDs);
+	t=ismember(G.Grains.GrainID,GrainIDs);
 	%% Outer loops
 	Out=G.Grains{t,3};
 	Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise

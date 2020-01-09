@@ -38,23 +38,23 @@ end
 for ig=1:ng
 	waitbar(ig/(2*ng),h);
     F=grains(ig).boundary.F;
-	polys=EulerCycles(F)';	% Compute outer an inner loops
-    nb_loops=length(polys);
+    polys=EulerPath(F,datatype);	% Compute outer an inner loops
+    nb_loops=size(polys,1);
     surface=cell(nb_loops,1);
     for id_bound=1:nb_loops
-        poly=cast(polys{id_bound}',datatype);	% Cast the integers to the requested format (uint8, unit16 etc.)
+        poly=polys{id_bound};
         sp_loc=sp(ismember(sp,poly));
         if ~isempty(sp_loc)
             if poly(end)==poly(1)
                 poly(end)=[];                   % 'Open' the loop before shifting
             end
             id_start=find(poly==sp_loc(1),1,'first');
-            poly=circshift(poly,[-id_start+1,0]);	% Starts from a special point
+            poly=circshift(poly,-id_start+1);	% Starts from a special point
         end
         n_tp=length(sp_loc);
         segments=cell(n_tp+1,1);        
         if poly(end)~=poly(1)
-            poly(end+1)=poly(1);                %#ok<AGROW> % (re)close the loop
+            poly(end+1)=poly(1);                % (re)close the loop
         end
         Seq=zeros(length(poly),1,datatype);
         id_seq=0;
