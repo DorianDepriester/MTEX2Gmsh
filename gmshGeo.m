@@ -342,7 +342,7 @@ classdef gmshGeo
 						delete(h)
 						return
 					end					
-					writeSequence(ffid,'Line Loop',i,LineLoops{i});	%	label times 10 in order to avoid label conflict with OpenCASCADE (bug)
+					writeSequence(ffid,'Line Loop',i,LineLoops{i});
 				end
 
 				%%	Surfaces
