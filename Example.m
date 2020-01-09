@@ -1,4 +1,4 @@
-%% MTEX stuff
+%% MTEX stuff 
 plotx2east
 mtexdata small
 ebsd = ebsd('indexed');									% Remove unindexed points
@@ -9,14 +9,14 @@ ebsd = ebsd(selected_grains);
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);	% Update grains
 plot(grains)
 
-%% gmshGeo stuff
+%% gmshGeo stuff 
 G=gmshGeo(grains);	% Format data structure
 figure
 plot(G);			% Plot the geometry
 
-%% Generate the mesh and save it
+%% Generate the mesh and save it 
 mesh(G,'small.inp','thickness',50,'elementType','Brick');
 
-%% Export grain properties
+%% Export grain properties 
 exportGrainProps(G,'small.csv');
 

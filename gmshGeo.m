@@ -1,16 +1,16 @@
 classdef gmshGeo
     
     properties
-        V=[];               % Vertices (BSpline knots)
-        Segments=cell(0,1); % Lists of knots, defining the BSplines
-        Grains=table;       % Table summurizing the properties of each grain
-        SingularPoints=[];  % List of singular points (Triple junctions, corners etc.)
-		Interfaces=struct;  % Phase-to-phase interfaces
+		V=[];		       %	Vertices (BSpline knots)
+		Segments=cell(0,1); %	Lists of knots, defining the BSplines
+		Grains=table;       %	Table summurizing the properties of each grain
+		SingularPoints=[];  %	List of singular points (Triple junctions, corners etc.)
+		Interfaces=struct;  %	Phase-to-phase interfaces
     end
     
     methods
-        function G=gmshGeo(grains)
-        %GMSHGEO Object constructor.
+		function G=gmshGeo(grains)
+		%GMSHGEO Object constructor.
 		%
 		%	GMSHGEO(GRAINS) constructs an instance of class GMSHGEO, from
 		%	the object GRAINS (of class grain2d).
@@ -25,11 +25,11 @@ classdef gmshGeo
 		%	given phase. E.g.: obj('Forsterite') will keep only the data
 		%	related to the phase named Forsterite.
 		%
-		% See also calcGrains, mesh, exportGrainProps.
+		%	See also calcGrains, mesh, exportGrainProps.
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
-            [Segmts,OuterLoop,InnerLoops,G.V,G.SingularPoints]=computeSegments(grains);
+		    [Segmts,OuterLoop,InnerLoops,G.V,G.SingularPoints]=computeSegments(grains);
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(grains.phaseId)';
@@ -47,7 +47,7 @@ classdef gmshGeo
 			
 			
 			
-			% Initialize the list of phase-to-phase interfaces
+			%	Initialize the list of phase-to-phase interfaces
 			np=length(grains.mineralList);			
 			for i=1:np
 				for j=i:np
@@ -59,10 +59,10 @@ classdef gmshGeo
 					end
 				end
 			end
-			border='Border';	% Name for the domain boundary
+			border='Border';	%	Name for the domain boundary
 			GB.(border)=uint16([]);
 			
-			% Fetch the interfaces
+			%	Fetch the interfaces
 			for ids=1:size(Segmts,1)
 				ph2ph=Segmts{ids,2};
 				i=min(ph2ph);
@@ -77,18 +77,18 @@ classdef gmshGeo
 				GB.(strname)=[GB.(strname) ids];
 			end
 			
-			% Remove empty sets
+			%	Remove empty sets
 			fn = fieldnames(GB);
 			tf = cellfun(@(c) isempty(GB.(c)), fn);
 			
-			% Update properties
+			%	Update properties
 			G.Interfaces = rmfield(GB, fn(tf));
 			G.Segments=Segmts(:,1);
-        end
-        
-        function plot(obj,varargin)
-        %PLOT Plot the segments found in each grains.
-        %	PLOT(obj) plots all the segments.
+		end
+		
+		function plot(obj,varargin)
+		%PLOT Plot the segments found in each grains.
+		%	PLOT(obj) plots all the segments.
 		%
 		%	PLOT(obj(I)) plots the segments of grains whose indices are
 		%	given by the array I.
@@ -96,7 +96,7 @@ classdef gmshGeo
 		%	PLOT(obj(P)) plots the segments of grains of phase P only,
 		%	where P is a string.
 		%
-		% See also plotElementSize
+		%	See also plotElementSize
 			if isempty(obj.Grains) || isequal(obj.Grains,struct)
 				warning('Empty set. Nothing to plot.')
 				return
@@ -125,47 +125,47 @@ classdef gmshGeo
 				set(p,'Color',C(i,:),'LineWidth',2);
 				hold on
 			end
-            hold off
-            axis equal
+		    hold off
+		    axis equal
 			h=legend(intnames,'Interpreter', 'none');
  			fontSize=14;
  			set(h,'FontSize',fontSize);
 			xlabel('x');
 			ylabel('y');
 			setPlotOrientation
-        end
-        
-        function fh=savegeo(obj,filepath,varargin)
-        %SAVEGEO Save the geometry as an input file for Gmsh (*.geo).
-        %	SAVEGEO(Object,filepath) saves the geometry in the
-        %	corresponding file path. The element size for meshing is equal
-        %	to the EBSD resolution.
-        %
+		end
+		
+		function fh=savegeo(obj,filepath,varargin)
+		%SAVEGEO Save the geometry as an input file for Gmsh (*.geo).
+		%	SAVEGEO(Object,filepath) saves the geometry in the
+		%	corresponding file path. The element size for meshing is equal
+		%	to the EBSD resolution.
+		%
 		%	SAVEGEO(...,'ElementSize',s) results in element sizes equal to 
 		%	s.
-        %
+		%
 		%	SAVEGEO(...,'Thickness',t) sets an extrusion thickness
 		%	equal to t (equal to element size by default).
-        %
-        %	SAVEGEO(...,'gradient',k) results in elements with size equal
-        %	to s+k*d (d being the distance from the nearest boundary and s 
+		%
+		%	SAVEGEO(...,'gradient',k) results in elements with size equal
+		%	to s+k*d (d being the distance from the nearest boundary and s 
 		%	the default element size).
-        %
+		%
 		%	SAVEGEO(...,'ElementType',type) sets the element type used
 		%	for meshing. It can be:
 		%		-'Wedge' (default) for Wedge elements,
 		%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
-        %		-'Tet' for tetrahedrons.
-        %
+		%		-'Tet' for tetrahedrons.
+		%
 		%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
 		%	np==0 disables this option (default).
-        %
+		%
 		%	SAVEGEO(...,'medium',S) embeds the ROI inside a cuboid of size 
-        %	S=[dx dy dz]. The element size in the medium is	increasing with
+		%	S=[dx dy dz]. The element size in the medium is	increasing with
 		%	increasing distance from the ROI. The mesh in the medium is 
 		%	composed of tetrahedron elements.
-        %
+		%
 		%	SAVEGEO(...,'medium',S,'mediumElementSize',value) sets the
 		%	element size at the corners of the medium to the given value.
 		%
@@ -174,30 +174,30 @@ classdef gmshGeo
 		%
 		%	See also mesh.
 		
-			version='1.0';	% MTEX2Gmsh version
+			version='1.0';	%	MTEX2Gmsh version
 		
-			%% Parse optional parameters
-            p = inputParser;
-            addOptional(p,'ElementSize',0);
-            addOptional(p,'thickness',0);
-            addOptional(p,'gradient',0);
-            addOptional(p,'ElementType','Wedge');
-            addOptional(p,'Curvature',0);
-            addOptional(p,'Medium',[0 0 0]);
-            addOptional(p,'MediumElementSize',0);
-            parse(p,varargin{:}); 
+			%%	Parse optional parameters
+		    p = inputParser;
+		    addOptional(p,'ElementSize',0);
+		    addOptional(p,'thickness',0);
+		    addOptional(p,'gradient',0);
+		    addOptional(p,'ElementType','Wedge');
+		    addOptional(p,'Curvature',0);
+		    addOptional(p,'Medium',[0 0 0]);
+		    addOptional(p,'MediumElementSize',0);
+		    parse(p,varargin{:}); 
 			
-            defaultElementSize=p.Results.ElementSize;
+		    defaultElementSize=p.Results.ElementSize;
 			medium=~isequal([0 0 0],p.Results.Medium);
 			mediumElementSize=p.Results.MediumElementSize;
-			if ~medium && mediumElementSize % Missing option 'medium'
+			if ~medium && mediumElementSize %	Missing option 'medium'
 				error('Specify the size of the embedding medium first with option ''medium''.');
 			end
 			if defaultElementSize==0
-				defaultElementSize=obj.evalElementSize;	% Compute the mean node-to-node distance
+				defaultElementSize=obj.evalElementSize;	%	Compute the mean node-to-node distance
 			end		
-            slope=p.Results.gradient;
-            thickness=p.Results.thickness;
+		    slope=p.Results.gradient;
+		    thickness=p.Results.thickness;
 			if thickness==0
 				thickness=defaultElementSize;
 			end
@@ -205,23 +205,23 @@ classdef gmshGeo
 			Curv=p.Results.Curvature;
 			if Curv~=0
 				if slope~=0
-                    warning('Non constant element sizes at boundaries are inconsistent with the ''gradient'' option. You might get unexeptected results.');
+				    warning('Non constant element sizes at boundaries are inconsistent with the ''gradient'' option. You might get unexeptected results.');
 				end
 			end
 			if numel(thickness)>1
-                warning('The thickness must be a scalar value. I''m using the first value.');
+				warning('The thickness must be a scalar value. I''m using the first value.');
 				thickness=thickness(1);
 			end			
 			
-			%% Format file path
-            [~,~,fext] = fileparts(filepath);
+			%%	Format file path
+		    [~,~,fext] = fileparts(filepath);
 			if(~strcmpi(fext,'.geo'))
-                filepath = [filepath '.geo'];	% Append the extension if missing
+				filepath = [filepath '.geo'];	%	Append the extension if missing
 			end	
-            segments=obj.Segments;
-            vtx=obj.V;				
+		    segments=obj.Segments;
+		    vtx=obj.V;				
 
-			%% The microstructure is embedded in a medium
+			%%	The microstructure is embedded in a medium
 			if medium
 				dx=p.Results.Medium(1);
 				dy=p.Results.Medium(2);
@@ -231,7 +231,7 @@ classdef gmshGeo
 				ymin=min(vtx(:,2));
 				ymax=max(vtx(:,2));
 				ROI=obj.size.ROI;
-				dmin=min([([dx dy]-ROI)/2 dz-thickness]);	% Track the minimum distance between ROI and boundaries of the medium
+				dmin=min([([dx dy]-ROI)/2 dz-thickness]);	%	Track the minimum distance between ROI and boundaries of the medium
 				if dmin<0
 					error('The dimensions of the medium must be larger than that of the ROI ([%g %g %g]).',ROI,thickness);
 				end
@@ -244,126 +244,126 @@ classdef gmshGeo
 				vtx=[vtx; C1; C2; C3; C4;];
 				n_segments=length(segments);
 				new_segments=[n_vtx+1 n_vtx+2; n_vtx+2 n_vtx+3; n_vtx+3 n_vtx+4; n_vtx+4 n_vtx+1];
-				new_segments=cast(new_segments,'like',segments{1});	% The news segments must be of the same type as the other ones.
-				segments{n_segments+1}=new_segments(1,:)';			% Add them to the segment list
+				new_segments=cast(new_segments,'like',segments{1});	%	The news segments must be of the same type as the other ones.
+				segments{n_segments+1}=new_segments(1,:)';			%	Add them to the segment list
 				segments{n_segments+2}=new_segments(2,:)';
 				segments{n_segments+3}=new_segments(3,:)';
 				segments{n_segments+4}=new_segments(4,:)';
 				if mediumElementSize==0
-					q=1.5;	% Geometric scale for element size in the medium
-					n=log(1+dmin/defaultElementSize*(q-1))/log(q);	% number of elements with geometric increasing size
+					q=1.5;	%	Geometric scale for element size in the medium
+					n=log(1+dmin/defaultElementSize*(q-1))/log(q);	%	number of elements with geometric increasing size
 					mediumElementSize=defaultElementSize*q^n;
 				end						
 			end
 			
-			%% Numbering the Line Loops
-			[LineLoops,PlaneSurface]=uniqueLoops(obj.Grains);	% Remove duplicates in Line loops
+			%%	Numbering the Line Loops
+			[LineLoops,PlaneSurface]=uniqueLoops(obj.Grains);	%	Remove duplicates in Line loops
 			
-            %% Waitbar
-            n_vtx=size(vtx,1);
-            vtxUsed=ismember(1:n_vtx,cell2mat(segments));
+		    %%	Waitbar
+		    n_vtx=size(vtx,1);
+		    vtxUsed=ismember(1:n_vtx,cell2mat(segments));
 			
-            n_segments=length(segments);			
-            n_loops=length(LineLoops);			
-            n_surfaces=height(obj.Grains);
-            n_steps=n_vtx+n_segments+n_surfaces+n_loops;
-            step=0;
-            set(0,'DefaultTextInterpreter','none');
-            h = waitbar(0,filepath,'Name','Writing the GEO file...','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
-            setappdata(h,'canceling',0)
+		    n_segments=length(segments);			
+		    n_loops=length(LineLoops);			
+		    n_surfaces=height(obj.Grains);
+		    n_steps=n_vtx+n_segments+n_surfaces+n_loops;
+		    step=0;
+		    set(0,'DefaultTextInterpreter','none');
+		    h = waitbar(0,filepath,'Name','Writing the GEO file...','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+		    setappdata(h,'canceling',0)
 
-            ffid = fopen(filepath, 'w');
-				%% Heading
+		    ffid = fopen(filepath, 'w');
+				%%	Heading
 				fprintf(ffid,'// File generated with MTEX2Gmsh (v %s) on %s\n\n',version,datestr(now));
 				
-                %% Mesh parameters
+				%%	Mesh parameters
 				thicknessName='th';
 				defaultElementSizeName='e_min';
 				mediumThicknessName='th_med';
 				mediumElementSizeName='e_med';
-                fprintf(ffid,'// Mesh parameters\n');
-                fprintf(ffid,'%s=%g;\n',thicknessName,thickness);
-                fprintf(ffid,'%s=%g;\n',defaultElementSizeName,defaultElementSize);
+				fprintf(ffid,'// Mesh parameters\n');
+				fprintf(ffid,'%s=%g;\n',thicknessName,thickness);
+				fprintf(ffid,'%s=%g;\n',defaultElementSizeName,defaultElementSize);
 				if medium
 					fprintf(ffid,'%s=%g;\n',mediumThicknessName,dz);
 					fprintf(ffid,'%s=%g;\n',mediumElementSizeName,mediumElementSize);
 					n_steps=n_steps+1;					
 				end
 				
-				%% Set Kernel Geometry
+				%%	Set Kernel Geometry
 				if Curv~=0
 					fprintf(ffid,'\nSetFactory("OpenCASCADE");\t // Faster computation of the local curvature\n');
 				else
 					fprintf(ffid,'\nSetFactory("Built-in");\t // Supports squared BSplines\n');					
 				end				
 
-                %% Vertices
-                fprintf(ffid,'\n// Vertices\n');		
-                for i=1:n_vtx
-                    step=step+1;
-                    waitbar(step/n_steps,h,'Vertices coordinates')
-                    if getappdata(h,'canceling')
-                        delete(h)
-                        return
-                    end
-                    if vtxUsed(i)
+				%%	Vertices
+				fprintf(ffid,'\n// Vertices\n');		
+				for i=1:n_vtx
+				    step=step+1;
+				    waitbar(step/n_steps,h,'Vertices coordinates')
+				    if getappdata(h,'canceling')
+						delete(h)
+						return
+				    end
+				    if vtxUsed(i)
 						if medium
-							fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),mediumElementSizeName);	% If the medium is requested, use the related element size by default. Will be overwritten hereafter.
+							fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),mediumElementSizeName);	%	If the medium is requested, use the related element size by default. Will be overwritten hereafter.
 						else
 							fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),defaultElementSizeName);
 						end
-                    end
-                end
+				    end
+				end
 
-                %% (B-)Splines
-                fprintf(ffid,'\n// Grain boundaries\n');		
+				%%	(B-)Splines
+				fprintf(ffid,'\n// Grain boundaries\n');		
 				for i=1:n_segments
-                    step=step+1;
-                    waitbar(step/n_steps,h,'Sections of boundaries')
+				    step=step+1;
+				    waitbar(step/n_steps,h,'Sections of boundaries')
 					if getappdata(h,'canceling')
-                        delete(h)
-                        return
+						delete(h)
+						return
 					end
 					if length(segments{i})==2
 						writeSequence(ffid,'Line',i,segments{i});
 					elseif length(segments{i})==3 && Curv~=0
-						writeSequence(ffid,'Spline',i,segments{i});	% OpenCASCADE does not support squared BSpline
+						writeSequence(ffid,'Spline',i,segments{i});	%	OpenCASCADE does not support squared BSpline
 					else
 						writeSequence(ffid,'BSpline',i,segments{i});				
 					end
 				end
 				
-				%% Loops
+				%%	Loops
 				fprintf(ffid,'\n// Closed Loops\n');
 				for i=1:n_loops
 					step=step+1;
 					waitbar(step/n_steps,h,'Line loops')
 					if getappdata(h,'canceling')
-                        delete(h)
-                        return
+						delete(h)
+						return
 					end					
-					writeSequence(ffid,'Line Loop',i,LineLoops{i});	% label times 10 in order to avoid label conflict with OpenCASCADE (bug)
+					writeSequence(ffid,'Line Loop',i,LineLoops{i});	%	label times 10 in order to avoid label conflict with OpenCASCADE (bug)
 				end
 
-                %% Surfaces
-                fprintf(ffid,'\n// Grains\n');
+				%%	Surfaces
+				fprintf(ffid,'\n// Grains\n');
 				for i=1:n_surfaces
-                    step=step+1;
-                    waitbar(step/n_steps,h,'Individual grains')
-                    if getappdata(h,'canceling')
-                        delete(h)
-                        return
-                    end                    
+				    step=step+1;
+				    waitbar(step/n_steps,h,'Individual grains')
+				    if getappdata(h,'canceling')
+						delete(h)
+						return
+				    end				    
 					writeSequence(ffid,'Plane Surface',i,PlaneSurface{i});
 				end
-                
-                %% Use quandrangular elements for 2D meshing
-                if strcmpi(elem_type, 'Brick')
-                    fprintf(ffid,'\n// Quadrangular elements\n');
+				
+				%%	Use quandrangular elements for 2D meshing
+				if strcmpi(elem_type, 'Brick')
+				    fprintf(ffid,'\n// Quadrangular elements\n');
 					fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
-                end
+				end
 
-                %% Extrusions
+				%%	Extrusions
 				fprintf(ffid,'\n// 3D geometry\n');
 				fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
 				fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
@@ -373,26 +373,26 @@ classdef gmshGeo
 				end
 				fprintf(ffid,'\n}\n');
 				
-				%% Add surrounding medium (if requested)
+				%%	Add surrounding medium (if requested)
 				if medium
-					n_surfaces_tot=n_surfaces+1; % At least, one more surface exists (surrounding the ROI)
+					n_surfaces_tot=n_surfaces+1; %	At least, one more surface exists (surrounding the ROI)
 					waitbar(step/n_steps,h,'Adding surrounding medium...')
 					fprintf(ffid,'\n// Add surrounding medium\n');
 					
-					% Create a volume beneath the grains
+					%	Create a volume beneath the grains
 					BL=borderLoop(obj);
-					if dz>thickness		% Add medium below the ROI
-						fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	% Extrude each segment of the outer boundary and keep indices of the resulting segments
+					if dz>thickness		%	Add medium below the ROI
+						fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	%	Extrude each segment of the outer boundary and keep indices of the resulting segments
 						writeSequence(ffid,'Line',[],abs(BL));
 						fprintf(ffid,'};\n');
 						n_loops=n_loops+1;
-						fprintf(ffid,'Line Loop(%i)={',n_loops);			% Line loop on the opposite side of the ROI
+						fprintf(ffid,'Line Loop(%i)={',n_loops);			%	Line loop on the opposite side of the ROI
 						for i=1:length(BL)
-							j=(i-1)*4;	% Index of the opposite segment from segment i
+							j=(i-1)*4;	%	Index of the opposite segment from segment i
 							if BL(i)>0
 								fprintf(ffid,'L[%i]',j);
 							else
-								fprintf(ffid,'-L[%i]',j);	% Segments are oriented with respect to their parents
+								fprintf(ffid,'-L[%i]',j);	%	Segments are oriented with respect to their parents
 							end
 							if i~=length(BL)
 								fprintf(ffid,',');
@@ -406,7 +406,7 @@ classdef gmshGeo
 						id_SurfaceLoop=n_surfaces+1;
 						writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops);
 						fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
-						for i=1:length(BL)	% List of side surfaces (results from extrusions)
+						for i=1:length(BL)	%	List of side surfaces (results from extrusions)
 							j=i*4-3;
 							fprintf(ffid,'L[%i],',j);
 							if mod(i,50)==0
@@ -414,17 +414,17 @@ classdef gmshGeo
 							end
 						end
 						fprintf(ffid,'\n\t');
-						fprintf(ffid,'1:%i\n};\n',n_surfaces+1); % List of upper faces (original grains)
+						fprintf(ffid,'1:%i\n};\n',n_surfaces+1); %	List of upper faces (original grains)
 						writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
-						n_surfaces_tot=n_surfaces_tot+2;	% Two more surfaces are necessaray 
+						n_surfaces_tot=n_surfaces_tot+2;	%	Two more surfaces are necessaray 
 					end
 					
-					% Create a volume surrounding the ROI
+					%	Create a volume surrounding the ROI
 					n_loops=n_loops+1;
-					writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		% Outer boundaries of the medium					
+					writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		%	Outer boundaries of the medium					
 					n_loops=n_loops+1;
-					writeSequence(ffid,'Line Loop',n_loops,BL);							% Outer boundaries of the ROI/Inner boundaries of the medium
-					writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);% Upper surface of the medium
+					writeSequence(ffid,'Line Loop',n_loops,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
+					writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
 					if dz>thickness	
 						fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
 						fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
@@ -433,26 +433,26 @@ classdef gmshGeo
 					fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
 					fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
 					
-					% Set the correct element size in the ROI
+					%	Set the correct element size in the ROI
 					fprintf(ffid,'Characteristic Length {1:%i} = %s;\n',n_vtx-4,defaultElementSizeName);
 				end
 				
-                %% Physical volumes
+				%%	Physical volumes
 				grainPrefix='Grain';
 				Ids=obj.Grains.GrainID(:);
-                fprintf(ffid,'\n// Sets\n');
-				if all(Ids==(1:n_surfaces)')	% Grains are numbered subsequently
+				fprintf(ffid,'\n// Sets\n');
+				if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
 					waitbar(step/n_steps,h,'Physical volumes');
 					fprintf(ffid,'For k In {1:%i}\n',n_surfaces);
 					fprintf(ffid,'\tPhysical Volume(Sprintf("%s_%%g",k))={k};\n',grainPrefix);
 					fprintf(ffid,'EndFor\n');
-				else							% Instead, use the ID given by MTEX
+				else							%	Instead, use the ID given by MTEX
 					for i=1:n_surfaces
 						step=step+1;
 						waitbar(step/n_steps,h,'Physical volumes')
 						if getappdata(h,'canceling')
 							return
-						end                    
+						end				    
 						fprintf(ffid,'Physical Volume("%s_%i")={%i};\n',grainPrefix,Ids(i),i);
 					end
 				end
@@ -460,29 +460,29 @@ classdef gmshGeo
 					writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces_tot);
 				end
 
-                %% Mesh
-                fprintf(ffid,'\n// Mesh\n');
-                fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
+				%%	Mesh
+				fprintf(ffid,'\n// Mesh\n');
+				fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
 				if Curv~=0
 					fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
 					fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
 				end
-				if slope~=0                
-                    fprintf(ffid,'Field[1] = Attractor;\n');
-                    fprintf(ffid,'Field[1].EdgesList ={1:%i};\n',n_segments);
-                    fprintf(ffid,'Field[2] = MathEval;\n');
-                    fprintf(ffid,'Field[2].F = "F1*%g+%g";\n',slope,defaultElementSize(1));
-                    fprintf(ffid,'Background Field=2;\n');
-                    fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=0;\n');
-                    fprintf(ffid,'Mesh 2;\n');
-                    fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');				
+				if slope~=0				
+				    fprintf(ffid,'Field[1] = Attractor;\n');
+				    fprintf(ffid,'Field[1].EdgesList ={1:%i};\n',n_segments);
+				    fprintf(ffid,'Field[2] = MathEval;\n');
+				    fprintf(ffid,'Field[2].F = "F1*%g+%g";\n',slope,defaultElementSize(1));
+				    fprintf(ffid,'Background Field=2;\n');
+				    fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=0;\n');
+				    fprintf(ffid,'Mesh 2;\n');
+				    fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');				
 				end
 				if medium
-					fprintf(ffid,'Mesh.Algorithm3D=4;\n'); % Use 'Frontal' algorithm for hybrid structured/unstructured grids
+					fprintf(ffid,'Mesh.Algorithm3D=4;\n'); %	Use 'Frontal' algorithm for hybrid structured/unstructured grids
 				end
 				
-            fclose(ffid);
-            delete(h);
+		    fclose(ffid);
+		    delete(h);
 			
 			if nargout==1
 				fh=filepath;
@@ -529,54 +529,54 @@ classdef gmshGeo
 			%	value.
 			%
 			%	See also savegeo.
-			tmp_file=obj.savegeo(tempname,varargin{:});	% Save the geometry into a temp file
+			tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
 			str=sprintf('gmsh "%s" -o "%s" -3',tmp_file,outputFilePath);
 			system(str);
-			delete(tmp_file)	% delete temp file
+			delete(tmp_file)	%	delete temp file
 		end
-        
-        function plotElementSize(obj,minSize,slope,varargin)
-        %PLOTELEMENTSIZE Plots the map of the element size when gradient is 
+		
+		function plotElementSize(obj,minSize,slope,varargin)
+		%PLOTELEMENTSIZE Plots the map of the element size when gradient is 
 		%enabled.
 		%
-        %	PLOTELEMENTSIZE(obj,minSize,slope) computes the field
-        %	corresponding to minSize+slope*d, with d the distance from the
-        %	nearest vertex. Then it plots it as a 2D map.
+		%	PLOTELEMENTSIZE(obj,minSize,slope) computes the field
+		%	corresponding to minSize+slope*d, with d the distance from the
+		%	nearest vertex. Then it plots it as a 2D map.
 		%
-        %	PLOTELEMENTSIZE(...,'samples',n) uses n samples in each
-        %	directions (default is 200).
+		%	PLOTELEMENTSIZE(...,'samples',n) uses n samples in each
+		%	directions (default is 200).
 		%
 		%	This function is intended to check whether the slope value for
 		%	writing the .geo file is correct fits the user's needs.
 		%
 		%	See also plot, savegeo.
-            p = inputParser;
+		    p = inputParser;
 			addOptional(p,'samples',200);
-            parse(p,varargin{:});
-            npt=p.Results.samples;
+		    parse(p,varargin{:});
+		    npt=p.Results.samples;
 
-            vtx=obj.V;
-            Xmin=min(vtx(:,1));
-            Xmax=max(vtx(:,1));
-            Ymin=min(vtx(:,2));
-            Ymax=max(vtx(:,2));
+		    vtx=obj.V;
+		    Xmin=min(vtx(:,1));
+		    Xmax=max(vtx(:,1));
+		    Ymin=min(vtx(:,2));
+		    Ymax=max(vtx(:,2));
 
-            Xlin=linspace(Xmin,Xmax,npt);
-            Ylin=linspace(Ymin,Ymax,npt);
-            [X,Y]=meshgrid(Xlin,Ylin);
-            dist=inf(npt);
-            h=waitbar(0,'Computing the distances from each vertex...');
-            nV=size(vtx,1);
-            for i=1:nV
-                waitbar(i/nV,h);
-                disti=(X-vtx(i,1)).^2+(Y-vtx(i,2)).^2;
-                dist=min(dist,disti);
-            end
-            dist=sqrt(dist);
-            elemSize=minSize+slope*dist;
-            close(h)
-            imagesc(Xlin,Ylin,elemSize);
-            colorbar
+		    Xlin=linspace(Xmin,Xmax,npt);
+		    Ylin=linspace(Ymin,Ymax,npt);
+		    [X,Y]=meshgrid(Xlin,Ylin);
+		    dist=inf(npt);
+		    h=waitbar(0,'Computing the distances from each vertex...');
+		    nV=size(vtx,1);
+		    for i=1:nV
+				waitbar(i/nV,h);
+				disti=(X-vtx(i,1)).^2+(Y-vtx(i,2)).^2;
+				dist=min(dist,disti);
+		    end
+		    dist=sqrt(dist);
+		    elemSize=minSize+slope*dist;
+		    close(h)
+		    imagesc(Xlin,Ylin,elemSize);
+		    colorbar
 			axis equal
 			xlabel('x');
 			ylabel('y');
@@ -587,23 +587,23 @@ classdef gmshGeo
 		%EXPORTGRAINPROPS Exports grain properties (IDs, phase and 
 		%orientation) as ASCII data in a CSV file.
 		%
-		% EXPORTGRAINPROPS(Object,'filename') exports grain properties
-		% stored in Object in the ASCII file named 'filename'.
+		%	EXPORTGRAINPROPS(Object,'filename') exports grain properties
+		%	stored in Object in the ASCII file named 'filename'.
 		%
-		% See also savegeo.
+		%	See also savegeo.
 			data=obj.Grains(:,{'GrainID','Phase','phi1','Phi','phi2'});
 			writetable(data,filename,'delimiter','\t','QuoteStrings',true)
 		end
 		
 		function s=evalElementSize(obj)
 			%EVALELEMENTSIZE Automatically evaluate the element size.
-			% EVALELEMENTSIZE(Object) computes the mean node-to-node
-			% distance in each segment.
+			%	EVALELEMENTSIZE(Object) computes the mean node-to-node
+			%	distance in each segment.
 			%
-			% Note: the value from EVALELEMENTSIZE is used by default in
-			% the savegeo method.
+			%	Note: the value from EVALELEMENTSIZE is used by default in
+			%	the savegeo method.
 			%
-			% See also savegeo.
+			%	See also savegeo.
 			segmts=obj.Segments;
 			nseg=length(segmts);
 			d=zeros(nseg,1);
@@ -632,7 +632,7 @@ classdef gmshGeo
 			%	SIMPLIFY(Object,epsilon) uses epsilon as the penalty
 			%	length.
 			%
-			% See also plot.
+			%	See also plot.
 			if nargin==1
 				epsilon=obj.evalElementSize/10;
 			else
@@ -647,7 +647,7 @@ classdef gmshGeo
 		end
 
 		function s=size(obj)
-            %SIZE Dimensions of the ROI.
+		    %SIZE Dimensions of the ROI.
 			s.numberOfGrains=height(obj.Grains);
 			vtx=obj.V;
 			xmin=min(vtx(:,1));
@@ -661,7 +661,7 @@ classdef gmshGeo
 	
 	methods (Hidden=true)
 		function sref=subsref(obj,s)
-		   % obj(i) only selects the data related to the i-th grain
+		   %	obj(i) only selects the data related to the i-th grain
 			switch s(1).type
 				case '.'
 					sref=builtin('subsref',obj,s);
@@ -673,7 +673,7 @@ classdef gmshGeo
 						error('Only single index can be used here. Consider using an array of indices instead.')
 					end						
 
-					%% Select the grains in the table
+					%%	Select the grains in the table
 					if all(cellfun(@(x) isnumeric(x),k))
 						rows=k{:};
 						if any(rows<1)
@@ -688,18 +688,18 @@ classdef gmshGeo
 					grain_tab=grain_tab(rows,:);
 					sref.Grains=grain_tab;
 
-					%% Keep only the related segments
+					%%	Keep only the related segments
 					if isempty(grain_tab)
 						sref.Interfaces=[];
 					else
 						Out=grain_tab{:,3};
-						Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise
+						Out_segIDs=abs(vertcat(Out{:})); %	Concatenate loop-wise
 						In=grain_tab{:,4};
-						In=vertcat(In{:});				% Concatenate grain-wise
-						In_segIDs=abs(vertcat(In{:}));	% Concatenate loop-wise 
+						In=vertcat(In{:});				%	Concatenate grain-wise
+						In_segIDs=abs(vertcat(In{:}));	%	Concatenate loop-wise 
 						segIDs=unique([Out_segIDs; In_segIDs]);
 
-						%% Update the interfaces
+						%%	Update the interfaces
 						intnames=fieldnames(sref.Interfaces);
 						for i=1:length(intnames)
 							interface=cast(sref.Interfaces.(intnames{i}),'like',segIDs);
@@ -729,16 +729,16 @@ end
 		
 function writeSequence(ffid,title,idx,Seq)
     if ~isempty(Seq)
-        if isempty(idx)
-            fprintf(ffid,'%s{%i',title,Seq(1));
+		if isempty(idx)
+		    fprintf(ffid,'%s{%i',title,Seq(1));
 		else
 			if isnumeric(idx)
 				fprintf(ffid,'%s(%i)={%i',title,idx,Seq(1));
 			else
 				fprintf(ffid,'%s(%s)={%i',title,idx,Seq(1));
 			end
-        end
-        n=length(Seq);
+		end
+		n=length(Seq);
 		if n==1
 			fprintf(ffid,'};\n');
 		else
@@ -788,8 +788,8 @@ function remains=DouglasPeucker(V,epsilon)
 		Pdg=zeros(npt,1);
 		Pdg(1)=1;
 		Pdg(end)=npt;
-		if X(1) == X(end) && Y(1)==Y(end)	% Closed loop
-			mid=round(npt/2);				% Add mid-point
+		if X(1) == X(end) && Y(1)==Y(end)	%	Closed loop
+			mid=round(npt/2);				%	Add mid-point
 			Pdg(mid)=mid;
 		end
 		d=inf;
@@ -830,12 +830,12 @@ function segList = borderLoop(G)
 	p=EulerPath(F,dataType);
 	p=p{1};
 	nseg=length(p)-1;
-	segList=zeros(nseg,1,dataType);			% Cast the segment list like that of other loops
+	segList=zeros(nseg,1,dataType);			%	Cast the segment list like that of other loops
 	for i=1:nseg
 		I=find(F(:,1)==p(i) & F(:,2)==p(i+1),1,'first');
 		if isempty(I)
 			I=find(F(:,2)==p(i) & F(:,1)==p(i+1),1,'first');
-			segList(i)=-cast(Border(I),dataType);	% Border(I) is unsigned 
+			segList(i)=-cast(Border(I),dataType);	%	Border(I) is unsigned 
 		else
 			segList(i)=Border(I);
 		end
@@ -847,9 +847,9 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 	h=waitbar(0,'Removing loop duplicates','Name','Closed loops');
 	n_grains=height(Grains);
 	PlaneSurface=cell(height(Grains),1);
-	nLoops=n_grains+sum(cellfun(@length,Grains.InnerLoops));	% Overall number of loops
+	nLoops=n_grains+sum(cellfun(@length,Grains.InnerLoops));	%	Overall number of loops
 	LineLoops=cell(nLoops,1);
-	jmax=0;	% Number of unique loops
+	jmax=0;	%	Number of unique loops
 	for i=1:n_grains
 		waitbar(i/n_grains,h);
 		OuterLoop=Grains.OuterLoop{i};
