@@ -130,8 +130,8 @@ classdef gmshGeo
 			h=legend(intnames,'Interpreter', 'none');
  			fontSize=14;
  			set(h,'FontSize',fontSize);
-			xlabel('e_1','Interpreter', 'tex');
-			ylabel('e_2','Interpreter', 'tex');
+			xlabel('x');
+			ylabel('y');
 			setPlotOrientation
         end
         
@@ -578,8 +578,8 @@ classdef gmshGeo
             imagesc(Xlin,Ylin,elemSize);
             colorbar
 			axis equal
-			xlabel('e_1','Interpreter', 'tex');
-			ylabel('e_2','Interpreter', 'tex');
+			xlabel('x');
+			ylabel('y');
 			setPlotOrientation			
 		end      
 
