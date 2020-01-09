@@ -132,25 +132,7 @@ classdef gmshGeo
  			set(h,'FontSize',fontSize);
 			xlabel('e_1','Interpreter', 'tex');
 			ylabel('e_2','Interpreter', 'tex');
-			if strcmpi(getMTEXpref('xAxisDirection'),'east') && strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
-				set(gca,'Ydir','reverse')
-			elseif strcmpi(getMTEXpref('xAxisDirection'),'north')
-				if strcmpi(getMTEXpref('zAxisDirection'),'outOfPlane')
-					set(gca,'Ydir','reverse')
-				end
-				view([90 -90])
-			elseif strcmpi(getMTEXpref('xAxisDirection'),'west')
-				set(gca,'Xdir','reverse')
-				if strcmpi(getMTEXpref('zAxisDirection'),'outOfPlane')
-					set(gca,'Ydir','reverse')
-				end
-			elseif strcmpi(getMTEXpref('xAxisDirection'),'south')
-				view([90 -90])
-				set(gca,'Xdir','reverse')
-				if strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
-					set(gca,'Ydir','reverse')
-				end
-			end
+			setPlotOrientation
         end
         
         function fh=savegeo(obj,filepath,varargin)
@@ -563,7 +545,8 @@ classdef gmshGeo
 		%
         %	PLOTELEMENTSIZE(...,'samples',n) uses n samples in each
         %	directions (default is 200).
-		%	This function is intended check whether the slope value	for
+		%
+		%	This function is intended to check whether the slope value for
 		%	writing the .geo file is correct fits the user's needs.
 		%
 		%	See also plot, savegeo.
@@ -594,6 +577,10 @@ classdef gmshGeo
             close(h)
             imagesc(Xlin,Ylin,elemSize);
             colorbar
+			axis equal
+			xlabel('e_1','Interpreter', 'tex');
+			ylabel('e_2','Interpreter', 'tex');
+			setPlotOrientation			
 		end      
 
 		function exportGrainProps(obj,filename)
@@ -905,4 +892,26 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 	end
 	LineLoops=LineLoops(1:jmax);
 	close(h);
+end
+
+function setPlotOrientation
+	if strcmpi(getMTEXpref('xAxisDirection'),'east') && strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
+		set(gca,'Ydir','reverse')
+	elseif strcmpi(getMTEXpref('xAxisDirection'),'north')
+		if strcmpi(getMTEXpref('zAxisDirection'),'outOfPlane')
+			set(gca,'Ydir','reverse')
+		end
+		view([90 -90])
+	elseif strcmpi(getMTEXpref('xAxisDirection'),'west')
+		set(gca,'Xdir','reverse')
+		if strcmpi(getMTEXpref('zAxisDirection'),'outOfPlane')
+			set(gca,'Ydir','reverse')
+		end
+	elseif strcmpi(getMTEXpref('xAxisDirection'),'south')
+		view([90 -90])
+		set(gca,'Xdir','reverse')
+		if strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
+			set(gca,'Ydir','reverse')
+		end
+	end	
 end
