@@ -673,60 +673,69 @@ classdef gmshGeo
 	end
 	
 	methods (Hidden=true)
-			function sref=subsref(obj,s)
+		function sref=subsref(obj,s)
 		   % obj(i) only selects the data related to the i-th grain
-				switch s(1).type
-					case '.'
-						sref=builtin('subsref',obj,s);
-					case '()'
-						sref=obj;
-						grain_tab=sref.Grains;
-						k = s.subs;
-						if length(k)>1
-							error('Only single index can be used here. Consider using an array of indices instead.')
-						end						
+			switch s(1).type
+				case '.'
+					sref=builtin('subsref',obj,s);
+				case '()'
+					sref=obj;
+					grain_tab=sref.Grains;
+					k = s.subs;
+					if length(k)>1
+						error('Only single index can be used here. Consider using an array of indices instead.')
+					end						
 
-						%% Select the grains in the table
-						if all(cellfun(@(x) isnumeric(x),k))
-							rows=k{:};
-							if any(rows<1)
-								error('Indices should be stricly positive.')
-							end
-							if any(rows>height(grain_tab))
-								error('The index is larger than the number of grains (%i here).',height(grain_tab))
-							end
-						else
-							rows=strcmp(grain_tab.Phase,k);
+					%% Select the grains in the table
+					if all(cellfun(@(x) isnumeric(x),k))
+						rows=k{:};
+						if any(rows<1)
+							error('Indices should be stricly positive.')
 						end
-						grain_tab=grain_tab(rows,:);
-						sref.Grains=grain_tab;
-						
-						%% Keep only the related segments
-						if isempty(grain_tab)
-							sref.Interfaces=[];
-						else
-							Out=grain_tab{:,3};
-							Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise
-							In=grain_tab{:,4};
-							In=vertcat(In{:});				% Concatenate grain-wise
-							In_segIDs=abs(vertcat(In{:}));	% Concatenate loop-wise 
-							segIDs=unique([Out_segIDs; In_segIDs]);
+						if any(rows>height(grain_tab))
+							error('The index is larger than the number of grains (%i here).',height(grain_tab))
+						end
+					else
+						rows=strcmp(grain_tab.Phase,k);
+					end
+					grain_tab=grain_tab(rows,:);
+					sref.Grains=grain_tab;
 
-							%% Update the interfaces
-							intnames=fieldnames(sref.Interfaces);
-							for i=1:length(intnames)
-								interface=cast(sref.Interfaces.(intnames{i}),'like',segIDs);
-								sref.Interfaces.(intnames{i})=interface(ismember(interface,segIDs));
-								if isempty(sref.Interfaces.(intnames{i}))
-									sref.Interfaces=rmfield(sref.Interfaces,intnames{i});
-								end
+					%% Keep only the related segments
+					if isempty(grain_tab)
+						sref.Interfaces=[];
+					else
+						Out=grain_tab{:,3};
+						Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise
+						In=grain_tab{:,4};
+						In=vertcat(In{:});				% Concatenate grain-wise
+						In_segIDs=abs(vertcat(In{:}));	% Concatenate loop-wise 
+						segIDs=unique([Out_segIDs; In_segIDs]);
+
+						%% Update the interfaces
+						intnames=fieldnames(sref.Interfaces);
+						for i=1:length(intnames)
+							interface=cast(sref.Interfaces.(intnames{i}),'like',segIDs);
+							sref.Interfaces.(intnames{i})=interface(ismember(interface,segIDs));
+							if isempty(sref.Interfaces.(intnames{i}))
+								sref.Interfaces=rmfield(sref.Interfaces,intnames{i});
 							end
 						end
-					case '{}'
-						error('gmshGeo:subsref',...
-							'Not a supported subscripted reference')
-				end
+					end
+				case '{}'
+					error('gmshGeo:subsref',...
+						'Not a supported subscripted reference')
 			end
+		end
+		
+		function k = end(obj,~,n)
+		%%Overload the end method
+			if n>1
+				error('Only single index can be used.')
+			else
+				k=height(obj.Grains);
+			end
+		end
 	end
 		
 end
