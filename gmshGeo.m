@@ -11,10 +11,21 @@ classdef gmshGeo
     methods
         function G=gmshGeo(grains)
         %GMSHGEO Object constructor.
-        % Computes the GMSHGEO object from a set of grains (grain2d
-        % object).
 		%
-		% See also savegeo, mesh, exportGrainProps.
+		%	GMSHGEO(GRAINS) constructs an instance of class GMSHGEO, from
+		%	the object GRAINS (of class grain2d).
+		%
+		%	The returned object contains the full descriptions of both the
+		%	geometries and crystallographic properties of each grain (phase
+		%	and orientations).
+		%
+		%	Note that single indexing helps to navigate within those
+		%	descriptions. For instance: obj(5) will select the data of the
+		%	5th grain only. One can also select a series of grains from a
+		%	given phase. E.g.: obj('Forsterite') will keep only the data
+		%	related to the phase named Forsterite.
+		%
+		% See also calcGrains, mesh, exportGrainProps.
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
@@ -77,19 +88,19 @@ classdef gmshGeo
         
         function plot(obj,varargin)
         %PLOT Plot the segments found in each grains.
-        % PLOT(Object) plots all the segments.
+        %	PLOT(obj) plots all the segments.
 		%
-		% PLOT(Object,I) with I an array of integers, plots only the grains
-		% whose indices belong to I.
+		%	PLOT(obj(I)) plots the segments of grains whose indices are
+		%	given by the array I.
+		%
+		%	PLOT(obj(P)) plots the segments of grains of phase P only,
+		%	where P is a string.
 		%
 		% See also plotElementSize
- 			if nargin>1
- 				GrainIDs=varargin{1};
-				lineList=uint16(segmentList(obj,GrainIDs));
-			else
-				lineList=[];
+			if isempty(obj.Grains) || isequal(obj.Grains,struct)
+				warning('Empty set. Nothing to plot.')
+				return
 			end
-            pendingLines=true(length(obj.Segments),1);
 			intnames=fieldnames(obj.Interfaces);
 			nInt=length(intnames);
 			C=lines(nInt);
@@ -99,21 +110,18 @@ classdef gmshGeo
 				X=[];Y=[];
 				for j=1:length(lineSet)
 					lineID=lineSet(j);
-					if isempty(lineList) || ismember(lineID,lineList)
-						pendingLines(lineID)=0;
-						Vids=obj.Segments{lineID,1};
-						x=obj.V(Vids,1);
-						y=obj.V(Vids,2);
-						if Vids(1)==Vids(end)
-							XYbs=BSpline([x(1:end-1),y(1:end-1)],'order',2,'periodic',true);
-						else
-							XYbs=BSpline([x,y],'order',2);
-						end
-						X=[X; NaN; XYbs(:,1)]; %#ok<AGROW>
-						Y=[Y; NaN; XYbs(:,2)]; %#ok<AGROW>
+					Vids=obj.Segments{lineID,1};
+					x=obj.V(Vids,1);
+					y=obj.V(Vids,2);
+					if Vids(1)==Vids(end)
+						XYbs=BSpline([x(1:end-1),y(1:end-1)],'order',2,'periodic',true);
+					else
+						XYbs=BSpline([x,y],'order',2);
 					end
+					X=[X; NaN; XYbs(:,1)]; %#ok<AGROW>
+					Y=[Y; NaN; XYbs(:,2)]; %#ok<AGROW>
 				end
-				p=plot(X,Y);
+				p=plot(X,Y,varargin{:});
 				set(p,'Color',C(i,:),'LineWidth',2);
 				hold on
 			end
@@ -660,9 +668,67 @@ classdef gmshGeo
 			ymin=min(vtx(:,2));
 			ymax=max(vtx(:,2));
 			s.ROI=[xmax-xmin ymax-ymin];
-		end
+		end	
 		
 	end
+	
+	methods (Hidden=true)
+			function sref=subsref(obj,s)
+		   % obj(i) only selects the data related to the i-th grain
+				switch s(1).type
+					case '.'
+						sref=builtin('subsref',obj,s);
+					case '()'
+						sref=obj;
+						grain_tab=sref.Grains;
+						k = s.subs;
+						if length(k)>1
+							error('Only single index can be used here. Consider using an array of indices instead.')
+						end						
+
+						%% Select the grains in the table
+						if all(cellfun(@(x) isnumeric(x),k))
+							rows=k{:};
+							if any(rows<1)
+								error('Indices should be stricly positive.')
+							end
+							if any(rows>height(grain_tab))
+								error('The index is larger than the number of grains (%i here).',height(grain_tab))
+							end
+						else
+							rows=strcmp(grain_tab.Phase,k);
+						end
+						grain_tab=grain_tab(rows,:);
+						sref.Grains=grain_tab;
+						
+						%% Keep only the related segments
+						if isempty(grain_tab)
+							sref.Interfaces=[];
+						else
+							Out=grain_tab{:,3};
+							Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise
+							In=grain_tab{:,4};
+							In=vertcat(In{:});				% Concatenate grain-wise
+							In_segIDs=abs(vertcat(In{:}));	% Concatenate loop-wise 
+							segIDs=unique([Out_segIDs; In_segIDs]);
+
+							%% Update the interfaces
+							intnames=fieldnames(sref.Interfaces);
+							for i=1:length(intnames)
+								interface=cast(sref.Interfaces.(intnames{i}),'like',segIDs);
+								sref.Interfaces.(intnames{i})=interface(ismember(interface,segIDs));
+								if isempty(sref.Interfaces.(intnames{i}))
+									sref.Interfaces=rmfield(sref.Interfaces,intnames{i});
+								end
+							end
+						end
+					case '{}'
+						error('gmshGeo:subsref',...
+							'Not a supported subscripted reference')
+				end
+			end
+	end
+		
 end
 		
 function writeSequence(ffid,title,idx,Seq)
@@ -758,18 +824,6 @@ function remains=DouglasPeucker(V,epsilon)
 	else
 		remains=true(npt,1);
 	end
-end
-
-function  segIDs  = segmentList(G,GrainIDs)
-	t=ismember(G.Grains.GrainID,GrainIDs);
-	%% Outer loops
-	Out=G.Grains{t,3};
-	Out_segIDs=abs(vertcat(Out{:})); % Concatenate loop-wise
-	%% Inner loops
-	In=G.Grains{t,4};
-	In=vertcat(In{:});				% Concatenate grain-wise
-	In_segIDs=abs(vertcat(In{:}));	% Concatenate loop-wise 
-	segIDs=unique([Out_segIDs; In_segIDs]);
 end
 
 function segList = borderLoop(G)
