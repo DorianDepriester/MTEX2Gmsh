@@ -103,7 +103,7 @@ classdef gmshGeo
 			end
 			intnames=fieldnames(obj.Interfaces);
 			nInt=length(intnames);
-			C=lines(nInt);
+			D=cell(2*nInt,1);
 			for i=1:nInt
 				intname=intnames{i};
 				lineSet=obj.Interfaces.(intname);
@@ -121,15 +121,13 @@ classdef gmshGeo
 					X=[X; NaN; XYbs(:,1)]; %#ok<AGROW>
 					Y=[Y; NaN; XYbs(:,2)]; %#ok<AGROW>
 				end
-				p=plot(X,Y,varargin{:});
-				set(p,'Color',C(i,:),'LineWidth',2);
-				hold on
+				D{2*i-1}=X;
+				D{2*i}=Y;
 			end
-		    hold off
-		    axis equal
+		    p=plot(D{:},varargin{:});
+			set(p,'LineWidth',2);
 			h=legend(intnames,'Interpreter', 'none');
- 			fontSize=14;
- 			set(h,'FontSize',fontSize);
+ 			set(h,'FontSize',14);
 			xlabel('x');
 			ylabel('y');
 			setPlotOrientation
@@ -933,5 +931,6 @@ function setPlotOrientation
 		if strcmpi(getMTEXpref('zAxisDirection'),'intoPlane')
 			set(gca,'Ydir','reverse')
 		end
-	end	
+	end
+	axis equal
 end
