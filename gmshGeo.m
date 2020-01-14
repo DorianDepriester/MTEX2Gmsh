@@ -6,7 +6,7 @@ classdef gmshGeo
 		Grains=table;       %	Table summurizing the properties of each grain
 		SingularPoints=[];  %	List of singular points (Triple junctions, corners etc.)
 		Interfaces=struct;  %	Phase-to-phase interfaces
-    end
+	end
     
     methods
 		function G=gmshGeo(grains)
@@ -622,7 +622,7 @@ classdef gmshGeo
 			s=d'*wt/sum(wt);
 		end
 		
-		function segmts=simplify(obj,varargin)
+		function G=simplify(obj,varargin)
 			%SIMPLIFY Applies the Douglas-Peucker algorithm to reduce the number of
 			%points in each segment.
 			%
@@ -633,6 +633,7 @@ classdef gmshGeo
 			%	length.
 			%
 			%	See also plot.
+			G=obj;
 			if nargin==1
 				epsilon=obj.evalElementSize/10;
 			else
@@ -642,7 +643,7 @@ classdef gmshGeo
 			for i=1:length(obj.Segments)
 				segmt=obj.Segments{i};
 				remains=DouglasPeucker(obj.V(segmt,:),epsilon);
-				segmts{i}=segmt(remains);
+				G.Segments{i}=segmt(remains);
 			end
 		end
 
@@ -656,6 +657,25 @@ classdef gmshGeo
 			ymax=max(vtx(:,2));
 			s.ROI=[xmax-xmin ymax-ymin];
 		end	
+		
+		function G2=smooth(obj,grains,varargin)
+			%SMOOTH constrained laplacian smoothing of grain boundaries.
+			%
+			% SMOOTH(OBJ,GRAINS) smoothes the grain boundaries, but keep
+			% the singular points (triple junctions, corners etc.) 
+			% unchanged. Since it uses the smooth function from the MTEX
+			% toolbox, the original grains from which OBJ has been
+			% constructed should be passed as an input argument.
+			%
+			% SMOOTH(obj,GRAINS,opt) accepts the same optional
+			% input arguments as the eponymous function from grain2d class.
+			%
+			% See also grain2d/smooth gmshGeo
+			G2=obj;
+			grains_smooth=smooth(grains,varargin{:});			% Use the smooth function from MTEX
+			G2.V=grains_smooth.boundary.V;						% Copy the vertices coordinates
+			G2.V(obj.SingularPoints,:)=obj.V(obj.SingularPoints,:);	% Restore the positions of singular points
+		end
 		
 	end
 	
