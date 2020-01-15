@@ -637,7 +637,6 @@ classdef gmshGeo
 			else
 				epsilon=varargin{1};
 			end
-			segmts=obj.Segments;
 			for i=1:length(obj.Segments)
 				segmt=obj.Segments{i};
 				remains=DouglasPeucker(obj.V(segmt,:),epsilon);
