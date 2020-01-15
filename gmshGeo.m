@@ -645,7 +645,7 @@ classdef gmshGeo
 		end
 
 		function s=size(obj)
-		    %SIZE Dimensions of the ROI.
+		    %SIZE Number of grains and size of the ROI.
 			s.numberOfGrains=height(obj.Grains);
 			vtx=obj.V;
 			xmin=min(vtx(:,1));
