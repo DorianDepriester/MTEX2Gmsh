@@ -259,7 +259,7 @@ classdef gmshGeo
 			
 		    %%	Waitbar
 		    n_vtx=size(vtx,1);
-		    vtxUsed=ismember(1:n_vtx,cell2mat(segments));
+		    vtxUsed=vtx_used(obj);
 			
 		    n_segments=length(segments);			
 		    n_loops=length(LineLoops);			
@@ -637,11 +637,29 @@ classdef gmshGeo
 			else
 				epsilon=varargin{1};
 			end
-			for i=1:length(obj.Segments)
+			
+			%% Apply the Douglas-Peucker algorithm on each segment
+			segments=obj.Segments;
+			for i=1:length(segments)
 				segmt=obj.Segments{i};
 				remains=DouglasPeucker(obj.V(segmt,:),epsilon);
-				G.Segments{i}=segmt(remains);
+				segments{i}=segmt(remains);
 			end
+			G.Segments=segments;	% Update all the segments
+			
+			%% Remove unused vertices and update the segments
+			t=vtx_used(G);
+			unused_idx=find(~t);
+			unused_idx=flip(unused_idx);	% Start from upmost indices
+			for i=1:length(unused_idx)
+				for j=1:length(segments)
+					seg_j=segments{j};
+					seg_j(seg_j>=unused_idx(i))=seg_j(seg_j>=unused_idx(i))-1;	% Decrease all the indices larger than that of the unused index
+					segments{j}=seg_j;
+				end
+			end
+			G.Segments=segments;	% Update the segments
+			G.V=obj.V(t,:);			% Remove unused vertices
 		end
 
 		function s=size(obj)
@@ -739,6 +757,10 @@ classdef gmshGeo
 			else
 				k=height(obj.Grains);
 			end
+		end
+		
+		function t=vtx_used(obj)
+			t=ismember(1:size(obj.V,1),cell2mat(obj.Segments));
 		end
 	end
 		
