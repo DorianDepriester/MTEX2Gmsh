@@ -126,8 +126,9 @@ classdef gmshGeo
 			end
 		    p=plot(D{:},varargin{:});
 			set(p,'LineWidth',2);
-			h=legend(intnames,'Interpreter', 'none');
- 			set(h,'FontSize',14);
+			for i=1:nInt
+				set(p(i),'DisplayName',intnames{i})
+			end
 			xlabel('x');
 			ylabel('y');
 			setPlotOrientation
