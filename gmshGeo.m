@@ -659,25 +659,6 @@ classdef gmshGeo
 			s.ROI=[xmax-xmin ymax-ymin];
 		end	
 		
-		function G2=smooth(obj,grains,varargin)
-			%SMOOTH constrained laplacian smoothing of grain boundaries.
-			%
-			% SMOOTH(OBJ,GRAINS) smoothes the grain boundaries, but keep
-			% the singular points (triple junctions, corners etc.) 
-			% unchanged. Since it uses the smooth function from the MTEX
-			% toolbox, the original grains from which OBJ has been
-			% constructed should be passed as an input argument.
-			%
-			% SMOOTH(obj,GRAINS,opt) accepts the same optional
-			% input arguments as the eponymous function from grain2d class.
-			%
-			% See also grain2d/smooth gmshGeo
-			G2=obj;
-			grains_smooth=smooth(grains,varargin{:});			% Use the smooth function from MTEX
-			G2.V=grains_smooth.boundary.V;						% Copy the vertices coordinates
-			G2.V(obj.SingularPoints,:)=obj.V(obj.SingularPoints,:);	% Restore the positions of singular points
-		end
-		
 	end
 	
 	methods (Hidden=true)
