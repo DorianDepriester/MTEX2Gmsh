@@ -5,7 +5,7 @@ classdef gmshGeo
 		Segments=cell(0,1); %	Lists of knots, defining the BSplines
 		Grains=table;       %	Table summurizing the properties of each grain
 		SingularPoints=[];  %	List of singular points (Triple junctions, corners etc.)
-		Interfaces=struct;  %	Phase-to-phase interfaces
+		Interfaces=table;  %	Phase-to-phase interfaces
 	end
     
     methods
@@ -45,44 +45,27 @@ classdef gmshGeo
 			G.Grains=table(GrainID,Phase,OuterLoop,InnerLoops,phi1,Phi,phi2);
 			close(h);
 			
-			
-			
-			%	Initialize the list of phase-to-phase interfaces
-			np=length(grains.mineralList);			
-			for i=1:np
-				for j=i:np
-					p1=grains.mineralList{i};
-					p2=grains.mineralList{j};
-					if ~strcmpi(p1,'notIndexed') || ~strcmpi(p2,'notIndexed')
-						strname=genvarname([p1 '_' p2]);
-						GB.(strname)=uint16([]);
-					end
-				end
-			end
-			border='Border';	%	Name for the domain boundary
-			GB.(border)=uint16([]);
-			
-			%	Fetch the interfaces
+			T=table([],'VariableNames',{'SegmentIDs'});
 			for ids=1:size(Segmts,1)
 				ph2ph=Segmts{ids,2};
 				i=min(ph2ph);
 				j=max(ph2ph);
 				if i==0
-					strname=border;
+					name='ROI Border';
 				else
 					p1=grains.mineralList{i};
 					p2=grains.mineralList{j};					
-					strname=genvarname([p1 '_' p2]);
+					name=[p1 ' - ' p2];
 				end
-				GB.(strname)=[GB.(strname) ids];
+				row=find(strcmp(T.Properties.RowNames,name));
+				if isempty(row)
+					newRow=table({ids},'VariableNames',{'SegmentIDs'},'RowNames',{name});
+					T=[T; newRow]; %#ok<AGROW>
+				else
+					T.SegmentIDs{row}=cat(1,T.SegmentIDs{row},ids);
+				end
 			end
-			
-			%	Remove empty sets
-			fn = fieldnames(GB);
-			tf = cellfun(@(c) isempty(GB.(c)), fn);
-			
-			%	Update properties
-			G.Interfaces = rmfield(GB, fn(tf));
+			G.Interfaces=T;
 			G.Segments=Segmts(:,1);
 		end
 		
@@ -101,12 +84,13 @@ classdef gmshGeo
 				warning('Empty set. Nothing to plot.')
 				return
 			end
-			intnames=fieldnames(obj.Interfaces);
+			T=obj.Interfaces;
+			intnames=T.Properties.RowNames;
 			nInt=length(intnames);
 			D=cell(2*nInt,1);
 			for i=1:nInt
-				intname=intnames{i};
-				lineSet=obj.Interfaces.(intname);
+				lineSet=T{i,1};
+				lineSet=vertcat(lineSet{:});
 				X=[];Y=[];
 				for j=1:length(lineSet)
 					lineID=lineSet(j);
@@ -736,14 +720,13 @@ classdef gmshGeo
 						segIDs=unique([Out_segIDs; In_segIDs]);
 
 						%%	Update the interfaces
-						intnames=fieldnames(sref.Interfaces);
-						for i=1:length(intnames)
-							interface=cast(sref.Interfaces.(intnames{i}),'like',segIDs);
-							sref.Interfaces.(intnames{i})=interface(ismember(interface,segIDs));
-							if isempty(sref.Interfaces.(intnames{i}))
-								sref.Interfaces=rmfield(sref.Interfaces,intnames{i});
-							end
+						interfaces=sref.Interfaces;
+						for i=1:height(interfaces)
+							interface=cast(interfaces.SegmentIDs{i},'like',segIDs);
+							interfaces.SegmentIDs{i}=interface(ismember(interface,segIDs));
 						end
+						t=cellfun('isempty',interfaces.SegmentIDs);	% Keep only non empty sets of segments
+						sref.Interfaces=interfaces(~t,:);
 					end
 				case '{}'
 					error('gmshGeo:subsref',...
