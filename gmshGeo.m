@@ -29,7 +29,8 @@ classdef gmshGeo
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
-		    [Segmts,OuterLoop,InnerLoops,G.V,G.SingularPoints]=computeSegments(grains);
+		    [Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
+			G.V=grains.boundary.V;
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(grains.phaseId)';

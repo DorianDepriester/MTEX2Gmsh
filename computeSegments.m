@@ -1,4 +1,4 @@
-function [segment_sequences,outLoop,inLoops,V,sp] = computeSegments(grains)
+function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
 %COMPUTESEGMENTS Compute the triple point-to-triple point segments defining
 % each grain.
 %
@@ -11,12 +11,7 @@ function [segment_sequences,outLoop,inLoops,V,sp] = computeSegments(grains)
 %
 %	See also gmshGeo
 
-tp=grains.triplePoints.id;              % Triple points
-qp=calcQuadruplePoints(grains);         % Quadruple points
-bp=doublePtOnBound(grains);             % Double points on the boundaries of the ROI
-[V,corners]=sharp_corners(grains);		% Ensure sharp corners
-
-sp=[tp; qp; bp; corners];				% Special points
+sp=singularPoints(grains);
 
 ng=length(grains);
 partitions=cell(ng,1);	% List of sections (ie. grains)
@@ -161,66 +156,9 @@ function [ segments,idx ] = addSequence(segments,Seq,phaseID)
 		segments{idx,2}=phaseID;
 	end
 	
-function qp = calcQuadruplePoints(grains)
-    gB=grains.boundary;
-    I_VF = gB.I_VF;
-    I_VG = (I_VF * gB.I_FG)==2;
-    itP = full(sum(I_VG,2)>2 & sum(I_VF,2)>3);	% Due to Voronoi decomposition, the vertex order can actually be higher than 4
-    qp=find(itP);
-
-function bp = doublePtOnBound(grains)
-    gB=grains.boundary;
-    V=grains.boundary.V;
-    I_VF = gB.I_VF;
-    I_VG = (I_VF * gB.I_FG)==2;
-
-    Vtx_onBounds_Ids=Vtx_onBounds(grains);      % Corresponding vertices
-    on_bound=false(length(V),1);                % Vertex on bound or not?
-    on_bound(Vtx_onBounds_Ids(:))=1;
-    dp=full(sum(I_VG,2)>1 & sum(I_VF,2)>1);     % Double points
-    dp_onBound = dp & on_bound;
-    
-    bp=find(dp_onBound);
 	
 function [ vtx_IDs ] = Vtx_onBounds(grains)
     gB=grains.boundary;
     outerBoundary_id=any(gB.grainId==0,2);      % IDs of the faces neighbouring no other grains
     list_IDs=gB.F(outerBoundary_id(:),:);       % Corresponding vertices
     vtx_IDs=unique(list_IDs);
-
-function [V,corners]=sharp_corners(grains)
-    gB=grains.boundary;
-    outerBoundary_id=any(gB.grainId==0,2);      % IDs of the faces neighbouring no other grains
-    list_IDs=gB.F(outerBoundary_id(:),:);       % Corresponding vertices
-    vtx_IDs=unique(list_IDs);
-	V=gB.V;
-    Vl=V(vtx_IDs,:);                          % Coordinates of the vertices on outer boundary
-
-    x_lim= [min(gB.V(:,1)) max(gB.V(:,1))];
-    y_lim= [min(gB.V(:,2)) max(gB.V(:,2))]; 
-    lim= [x_lim y_lim];
-
-    %% Move outer vertices toward the closest limits
-    for i=1:length(vtx_IDs)
-        dist=[(Vl(i,1)-lim(1)).^2 (Vl(i,1)-lim(2)).^2 (Vl(i,2)-lim(3)).^2 (Vl(i,2)-lim(4)).^2];
-        [~,I]=min(dist);
-        if I==1 || I==2
-            Vl(i,1)=lim(I);
-        else
-            Vl(i,2)=lim(I);
-        end
-    end
-
-    %% Ensure that an end-point is located in each corner
-    corners=zeros(2,2); % IDs of the vertices forming the 4 corners
-    for i=1:2
-        for j=1:2
-            dist=(Vl(:,1)-x_lim(i)).^2+(Vl(:,2)-y_lim(j)).^2;
-            [~,I]=min(dist);
-            Vl(I,:)=[x_lim(i),y_lim(j)];
-            corners(i,j)=vtx_IDs(I);
-        end
-    end
-    corners=corners(:);
-    
-    V(vtx_IDs,:)=Vl; % Update the coordinates of the vertices
