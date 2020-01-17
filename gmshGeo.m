@@ -245,7 +245,7 @@ classdef gmshGeo
 			
 		    %%	Waitbar
 		    n_vtx=size(vtx,1);
-		    vtxUsed=vtx_used(obj);
+		    vtxUsed=ismember(1:n_vtx,vertcat(segments{:}));
 			
 		    n_segments=length(segments);			
 		    n_loops=length(LineLoops);			
@@ -639,17 +639,17 @@ classdef gmshGeo
 				remains=DouglasPeucker(obj.V(segmt,:),epsilon);
 				segments{i}=segmt(remains);
 			end
-			G.Segments=segments;	% Update all the segments
 			
 			%% Remove unused vertices and update the segments
-			used=vtx_used(G);
-			new_idx=cumsum(used);
+			V=G.V;
+			used=ismember(1:size(V,1),cell2mat(segments));	% Track wether the vertices are used or not in the segments
+			new_idx=cast(cumsum(used),'like',segments{1});
 			sp=G.SingularPoints;
 			for j=1:length(segments)
-				segments{j}=new_idx(segments{j});
+				segments{j}=new_idx(segments{j})';
 			end
 			G.Segments=segments;			% Update the segments
-			G.V=obj.V(used,:);				% Remove unused vertices
+			G.V=V(used,:);				% Remove unused vertices
 			G.SingularPoints=new_idx(sp);	% Update singular points
 			delete(h)
 		end
@@ -731,9 +731,6 @@ classdef gmshGeo
 			end
 		end
 		
-		function t=vtx_used(obj)
-			t=ismember(1:size(obj.V,1),cell2mat(obj.Segments));
-		end
 	end
 		
 end
