@@ -642,27 +642,15 @@ classdef gmshGeo
 			G.Segments=segments;	% Update all the segments
 			
 			%% Remove unused vertices and update the segments
-			t=vtx_used(G);
-			unused_idx=find(~t);
-			unused_idx=flip(unused_idx);	% Start from upmost indices
-			n_unused=length(unused_idx);
+			used=vtx_used(G);
+			new_idx=cumsum(used);
 			sp=G.SingularPoints;
-			for i=1:n_unused
-				waitbar(i/n_unused,h,'Removing obsolete vertices');
-				if getappdata(h,'canceling')
-					delete(h)
-					return
-				end
-				sp(sp>=unused_idx(i))=sp(sp>=unused_idx(i))-1;
-				for j=1:length(segments)
-					seg_j=segments{j};
-					seg_j(seg_j>=unused_idx(i))=seg_j(seg_j>=unused_idx(i))-1;	% Decrease all the indices larger than that of the unused index
-					segments{j}=seg_j;
-				end
+			for j=1:length(segments)
+				segments{j}=new_idx(segments{j});
 			end
-			G.Segments=segments;	% Update the segments
-			G.V=obj.V(t,:);			% Remove unused vertices
-			G.SingularPoints=sp;	% Update singular points
+			G.Segments=segments;			% Update the segments
+			G.V=obj.V(used,:);				% Remove unused vertices
+			G.SingularPoints=new_idx(sp);	% Update singular points
 			delete(h)
 		end
 
