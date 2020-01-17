@@ -1,6 +1,6 @@
 %% MTEX stuff 
 plotx2east
-mtexdata small
+mtexdata titanium
 ebsd = ebsd('indexed');									% Remove unindexed points
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);	% Compute grains
 
