@@ -626,7 +626,15 @@ classdef gmshGeo
 			
 			%% Apply the Douglas-Peucker algorithm on each segment
 			segments=obj.Segments;
-			for i=1:length(segments)
+			h=waitbar(0,'Applying the Douglas-Peucker algorithm','Name','Simplification of the boundaries','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+		    setappdata(h,'canceling',0)
+			n_seg=length(segments);
+			for i=1:n_seg
+				if getappdata(h,'canceling')
+					delete(h)
+					return
+				end
+				waitbar(i/n_seg,h);
 				segmt=obj.Segments{i};
 				remains=DouglasPeucker(obj.V(segmt,:),epsilon);
 				segments{i}=segmt(remains);
@@ -637,7 +645,15 @@ classdef gmshGeo
 			t=vtx_used(G);
 			unused_idx=find(~t);
 			unused_idx=flip(unused_idx);	% Start from upmost indices
-			for i=1:length(unused_idx)
+			n_unused=length(unused_idx);
+			sp=G.SingularPoints;
+			for i=1:n_unused
+				waitbar(i/n_unused,h,'Removing obsolete vertices');
+				if getappdata(h,'canceling')
+					delete(h)
+					return
+				end
+				sp(sp>=unused_idx(i))=sp(sp>=unused_idx(i))-1;
 				for j=1:length(segments)
 					seg_j=segments{j};
 					seg_j(seg_j>=unused_idx(i))=seg_j(seg_j>=unused_idx(i))-1;	% Decrease all the indices larger than that of the unused index
@@ -646,6 +662,8 @@ classdef gmshGeo
 			end
 			G.Segments=segments;	% Update the segments
 			G.V=obj.V(t,:);			% Remove unused vertices
+			G.SingularPoints=sp;	% Update singular points
+			delete(h)
 		end
 
 		function s=size(obj)
