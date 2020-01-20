@@ -513,8 +513,12 @@ classdef gmshGeo
 			%	value.
 			%
 			%	See also savegeo.
-			path_to_gmsh='gmsh';	% Default path
-			[val,~]=system([path_to_gmsh ' -version']);	% Check if Gmsh is reachable
+			if ispref('MTEX2Gmsh','gmsh_path')
+				path_to_gmsh=getpref('MTEX2Gmsh','gmsh_path');
+			else
+				path_to_gmsh='gmsh';	% Default path
+			end
+			[val,~]=system(sprintf('"%s" -version',path_to_gmsh));	% Check if Gmsh is reachable
 			if val
 				answer=questdlg('Gmsh has not be found in the PATH of your system. You need to locate its executable file first.', 'Gmsh not found', 'Ok','Cancel','Cancel');
 				if strcmp(answer,'Cancel')
