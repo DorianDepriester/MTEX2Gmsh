@@ -514,7 +514,7 @@ classdef gmshGeo
 			%
 			%	See also savegeo.
 			tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
-			str=sprintf('gmsh "%s" -o "%s" -3',tmp_file,outputFilePath);
+			str=sprintf('gmsh "%s" -o "%s" -v 4 -3',tmp_file,outputFilePath);
 			system(str);
 			delete(tmp_file)	%	delete temp file
 		end
