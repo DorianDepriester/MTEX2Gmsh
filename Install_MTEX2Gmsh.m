@@ -1,3 +1,5 @@
+function Install_MTEX2Gmsh
+
 %% Check if MTEX is installed
 if ~isappdata(0,'MTEXInstalled')
 	error('MTEX is not installed. It can be downloaded <a href="https://mtex-toolbox.github.io/download">here</a>.')
