@@ -513,8 +513,22 @@ classdef gmshGeo
 			%	value.
 			%
 			%	See also savegeo.
+			path_to_gmsh='gmsh';	% Default path
+			[val,~]=system([path_to_gmsh ' -version']);	% Check if Gmsh is reachable
+			if val
+				answer=questdlg('Gmsh has not be found in the PATH of your system. You need to locate its executable file first.', 'Gmsh not found', 'Ok','Cancel','Cancel');
+				if strcmp(answer,'Cancel')
+					return
+				end
+				if isunix
+					[file,path_to_gmsh]=uigetfile('','Locate the executable file for Gmsh');
+				else
+					[file,path_to_gmsh]=uigetfile('*.exe','Locate the executable file for Gmsh');
+				end
+				path_to_gmsh=[path_to_gmsh file];
+			end			
 			tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
-			str=sprintf('gmsh "%s" -o "%s" -v 4 -3',tmp_file,outputFilePath);
+			str=sprintf('"%s" "%s" -o "%s" -v 4 -3',path_to_gmsh,tmp_file,outputFilePath);
 			system(str);
 			delete(tmp_file)	%	delete temp file
 		end
