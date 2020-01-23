@@ -530,6 +530,10 @@ classdef gmshGeo
 					[file,path_to_gmsh]=uigetfile('*.exe','Locate the executable file for Gmsh');
 				end
 				path_to_gmsh=[path_to_gmsh file];
+				answer=questdlg('Would you like to save this option permanently?', 'Save preference', 'Yes','No','Yes');
+				if strcmp(answer,'Yes')
+					setpref('MTEX2Gmsh','gmsh_path',path_to_gmsh)
+				end
 			end			
 			tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
 			str=sprintf('"%s" "%s" -o "%s" -v 4 -3',path_to_gmsh,tmp_file,outputFilePath);
