@@ -158,7 +158,7 @@ classdef gmshGeo
 		%
 		%	See also mesh.
 		
-			version='1.0';	%	MTEX2Gmsh version
+			version='2.0';	%	MTEX2Gmsh version
 		
 			%%	Parse optional parameters
 		    p = inputParser;
