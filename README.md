@@ -17,13 +17,13 @@ The corresponding paper is still under review. In the meantime, please cite this
 or use the following entry in BibTeX :
 ```
 @misc{mtex2Gmsh,
-    author       = {Dorian Depriester},
-    title        = {{MTEX2Gmsh}},
-    month        = dec,
-    year         = 2019,
-    doi          = {10.5281/zenodo.3588421},
-    version      = {1.0},
-    publisher    = {Zenodo},
-    url          = {https://github.com/DorianDepriester/mtex2Gmsh}
+  author       = {Dorian Depriester},
+  title        = {{MTEX2Gmsh}},
+  month        = jan,
+  year         = 2020,
+  publisher    = {Zenodo},
+  version      = {2.0.0},
+  doi          = {10.5281/zenodo.3628143},
+  url          = {https://doi.org/10.5281/zenodo.3628143}
 }
 ```
