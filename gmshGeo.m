@@ -598,7 +598,7 @@ classdef gmshGeo
 		%
 		%	See also savegeo.
 			data=obj.Grains(:,{'GrainID','Phase','phi1','Phi','phi2'});
-			writetable(data,filename,'delimiter','\t','QuoteStrings',true)
+			writetable(data,filename,'delimiter','\t')
 		end
 		
 		function s=evalElementSize(obj)
