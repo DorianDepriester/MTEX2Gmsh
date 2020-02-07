@@ -1,22 +1,16 @@
-%% MTEX stuff 
+%% MTEX stuff
+% Load EBSD data and reconstruct the grains
 plotx2east
-mtexdata small
+mtexdata titanium
 ebsd = ebsd('indexed');									% Remove unindexed points
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);	% Compute grains
-
-selected_grains = grains(grains.grainSize > 1);			% Outlier removal
-ebsd = ebsd(selected_grains);
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);	% Update grains
+grains = calcGrains(ebsd);	% Compute grains
 plot(grains)
 
-%% gmshGeo stuff 
-G=gmshGeo(grains);	% Format data structure
-figure
-plot(G);			% Plot the geometry
+%% gmshGeo stuff
+% This converts grain2d data into Gmsh-like data
+G=gmshGeo(grains);		% Format data structure
+hold on
+plot(G);				% Plot the geometry ontop of the grains
+mesh(G,'small.inp');	% Export into Abaqus INP file
 
-%% Generate the mesh and save it 
-mesh(G,'small.inp','thickness',50,'elementType','Brick');
-
-%% Export grain properties 
-exportGrainProps(G,'small.csv');
-
+exportGrainProps(G,'small.csv');	% Export grain-related data into a CSV file

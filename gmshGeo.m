@@ -853,7 +853,8 @@ function remains=DouglasPeucker(V,epsilon)
 end
 
 function segList = borderLoop(G)
-	Border=G.Interfaces.Border;
+	Border=G.Interfaces{'ROI Border',1};
+	Border=Border{1};
 	F=vertcat(G.Segments{Border});
 	F=[F(1:2:end) F(2:2:end)];
 	dataType='single';
