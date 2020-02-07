@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding="utf-8"?>
+<toc version="2.0">
+
+    <tocitem target="index.html">MTEX2Gmsh
+		<tocitem target="install.html">Install/uninstall this toolbox</tocitem>
+        <tocitem target="example.html">Minimal Working Example
+			<tocitem target="example.html#1">Load and process EBSD data</tocitem>
+			<tocitem target="example.html#2">Convert grain-related data</tocitem>
+			<tocitem target="example.html#5">Mesh the geometry</tocitem>
+			<tocitem target="example.html#7">Export grain properties</tocitem>
+		</tocitem>
+		<tocitem target="meshing.html">Meshing
+			<tocitem target="meshing.html#3">Element size</tocitem>
+			<tocitem target="meshing.html#10">Element type</tocitem>
+		</tocitem>
+		<tocitem target="plotting.html">Plot</tocitem>
+        <tocitem target="custom.html">Customize the geometry
+            <tocitem target="custom.html#1">Extrusion thickness</tocitem>
+            <tocitem target="custom.html#2">Add surrounding medium</tocitem>			
+        </tocitem>
+		<tocitem target="improvegeometry.html">Improve the grain boundaries
+			<tocitem target="improvegeometry.html#3">Smoothing</tocitem>
+			<tocitem target="improvegeometry.html#5">Simplification</tocitem>
+		</tocitem>
+    </tocitem>
+
+</toc>

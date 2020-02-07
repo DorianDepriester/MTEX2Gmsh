@@ -1,0 +1,121 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>custom</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="custom.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1></h1><!--introduction--><pre class="language-matlab">mtexdata <span class="string">titanium</span>
+ebsd = ebsd(<span class="string">'indexed'</span>);
+grains = calcGrains(ebsd);
+G=gmshGeo(grains);
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Change thickness</a></li><li><a href="#2">Add surrounding medium</a></li></ul></div><h2>Change thickness<a name="1"></a></h2><p>The default thickness is equal to the element size at grain boundaries (denoted <img src="custom_eq02990789776284070316.png" alt="$s_0$"> if a <a href="meshing.html#6">size-gradient</a> is applied). This value can be changed as follows:</p><pre class="codeinput">mesh(G,<span class="string">'titanium.msh'</span>,<span class="string">'Thickness'</span>,20)
+</pre><h2>Add surrounding medium<a name="2"></a></h2><p>One may want to embed the ROI into a prismatic surrounding medium, for instance to evaluate the local behavior of the ROI when surrounded by an homogenized material.</p><p>The following command creates a surrounding box of size <img src="custom_eq10291803499816556732.png" alt="$dX\times dY\times dZ$"> (the ROI is centered along the <img src="custom_eq12362013959998143435.png" alt="$X$"> and <img src="custom_eq07649107795707013777.png" alt="$Y$"> directions):</p><pre class="language-matlab">mesh(G,<span class="keyword">...</span><span class="comment">,'Medium',[dX dY dZ]);</span>
+</pre><p>E.g.:</p><pre class="codeinput">mesh(G,<span class="string">'titanium_medium.msh'</span>,<span class="string">'elementSize'</span>,20,<span class="string">'medium'</span>,[2000 2000 200]);
+</pre><p><img vspace="5" hspace="5" src="medium.png" alt=""> </p><p>The element size is increasing with increasing distance from the ROI. To set the element size at the borders of the medium, append the <tt>mediumElementSize</tt> name-value pair argument. E.g:</p><pre class="codeinput">mesh(G,<span class="string">'titanium_medium2.msh'</span>,<span class="string">'elementSize'</span>,20,<span class="string">'medium'</span>,[2000 2000 200],<span class="string">'mediumElementSize'</span>,180);
+</pre><p><img vspace="5" hspace="5" src="medium_gradient.png" alt=""> </p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%
+%   mtexdata titanium
+%   ebsd = ebsd('indexed');
+%   grains = calcGrains(ebsd);
+%   G=gmshGeo(grains);
+
+%% Change thickness
+% The default thickness is equal to the element size at grain boundaries
+% (denoted $s_0$ if a <meshing.html#6 size-gradient> is applied). This
+% value can be changed as follows:
+mesh(G,'titanium.msh','Thickness',20)
+
+%% Add surrounding medium
+% One may want to embed the ROI into a prismatic surrounding medium, for 
+% instance to evaluate the local behavior of the ROI when surrounded by an 
+% homogenized material.
+%
+% The following command creates a surrounding box of size $dX\times dY\times dZ$ (the
+% ROI is centered along the $X$ and $Y$ directions):
+%
+%   mesh(G,...,'Medium',[dX dY dZ]);
+%
+% E.g.:
+%
+mesh(G,'titanium_medium.msh','elementSize',20,'medium',[2000 2000 200]);
+%%
+% 
+% <<medium.png>>
+% 
+% The element size is increasing with increasing distance from the ROI. To 
+% set the element size at the borders of the medium, append the 
+% |mediumElementSize| name-value pair argument. E.g:
+%
+mesh(G,'titanium_medium2.msh','elementSize',20,'medium',[2000 2000 200],'mediumElementSize',180);
+%%
+% 
+% <<medium_gradient.png>>
+% 
+
+
+
+##### SOURCE END #####
+--></body></html>
