@@ -1,1 +1,4 @@
 theme: jekyll-theme-minimal
+title: MTEX2Gmsh
+description: Matlab toolbox for generating 2D meshes from EBSD data
+logo: Logo-titanium.png
