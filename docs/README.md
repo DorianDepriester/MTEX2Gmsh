@@ -11,6 +11,9 @@ The microstructure of cytalline materials is usually made from Electron Backscat
 ![Example: titanium_medium.m](./Examples/titanium_medium.png)
 [``titanium_medium.m``](Examples/titanium_medium.m)
 
+![Example: twins.m](./Examples/twins.png)
+[``twins.m``](Examples/twins.m)
+
 # Documentation
 ## Online
 You can navigate the documentation through the following sections:
