@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>plotting</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="plotting.m"><style type="text/css">
+      --><title>plotting</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-11"><meta name="DC.source" content="plotting.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -70,10 +70,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 ebsd = ebsd(<span class="string">'indexed'</span>);
 grains = calcGrains(ebsd);
 G=gmshGeo(grains);
-</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Plot the whole geometry</a></li><li><a href="#2">Plot specific grains</a></li></ul></div><h2>Plot the whole geometry<a name="1"></a></h2><p>The whole geometry can be plotted with the usual plot command:</p><pre class="codeinput">plot(G)
-</pre><img vspace="5" hspace="5" src="plotting_01.png" alt=""> <h2>Plot specific grains<a name="2"></a></h2><p>Linear indexing helps plotting specific grains. For example, the following plots grains 65 and 67:</p><pre class="codeinput">plot(G([65 67]))
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Plot the whole geometry</a></li><li><a href="#3">Plot specific grains</a></li></ul></div><h2>Plot the whole geometry<a name="1"></a></h2><p>The whole geometry can be plotted with the usual plot command:</p><pre class="codeinput">plot(G)
+</pre><img vspace="5" hspace="5" src="plotting_01.png" alt=""> <p>The orientation used for plotting is inherited from the MTEX preferences. It ensures consistency between the two kinds of plot. For instance, if you want to superimpose the grains boundaries defined in G and the original grains:</p><pre class="codeinput">plot(grains,<span class="string">'noBoundary'</span>)
+hold <span class="string">on</span>
+plot(G)
+legend(<span class="string">'Location'</span>, <span class="string">'NorthWest'</span>)
+</pre><img vspace="5" hspace="5" src="plotting_02.png" alt=""> <h2>Plot specific grains<a name="3"></a></h2><p>Linear indexing helps plotting specific grains. For example, the following plots grains 65 and 67:</p><pre class="codeinput">figure
+plot(G([65 67]))
 legend(<span class="string">'Location'</span>, <span class="string">'Best'</span>)
-</pre><img vspace="5" hspace="5" src="plotting_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="plotting_03.png" alt=""> <p>Alternatively, one can specify the phase to be plotted. E.g:</p><pre class="codeinput">plot(G(<span class="string">'Diopside'</span>))
+legend(<span class="string">'Location'</span>, <span class="string">'Best'</span>)
+</pre><img vspace="5" hspace="5" src="plotting_04.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %%
 %   mtexdata small
@@ -84,11 +91,25 @@ legend(<span class="string">'Location'</span>, <span class="string">'Best'</span
 %% Plot the whole geometry
 % The whole geometry can be plotted with the usual plot command:
 plot(G)
+%%
+% The orientation used for plotting is inherited from the MTEX preferences.
+% It ensures consistency between the two kinds of plot. For instance, if
+% you want to superimpose the grains boundaries defined in G and the
+% original grains:
+plot(grains,'noBoundary')
+hold on
+plot(G)
+legend('Location', 'NorthWest')
 
 %% Plot specific grains
 % Linear indexing helps plotting specific grains. For example, the
 % following plots grains 65 and 67:
+figure
 plot(G([65 67]))
+legend('Location', 'Best')
+%%
+% Alternatively, one can specify the phase to be plotted. E.g:
+plot(G('Diopside'))
 legend('Location', 'Best')
 ##### SOURCE END #####
 --></body></html>
