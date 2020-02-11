@@ -137,9 +137,11 @@ classdef gmshGeo
 		%
 		%	SAVEGEO(...,'ElementType',type) sets the element type used
 		%	for meshing. It can be:
-		%		-'Wedge' (default) for Wedge elements,
-		%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
-		%		-'Tet' for tetrahedrons.
+		%		-'Wedge' (default) for 6-node 3D elements,
+		%		-'Brick' for 8-node 3D elements,
+		%		-'Tet' or 'Tetrahedron' for 4-node 3D elements,
+		%		-'Tri' or 'Triangular' for 3-node 2D elements,
+		%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
 		%
 		%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
@@ -185,7 +187,19 @@ classdef gmshGeo
 			if thickness==0
 				thickness=defaultElementSize;
 			end
+			
 			elem_type= p.Results.ElementType;
+			valid_elem_type={'Wedge','Brick','Tet','Tri','Quad'};
+			if strcmpi(elem_type,'Tetrahedron')
+				elem_type='Tet';
+			elseif strcmpi(elem_type,'Triangular')
+				elem_type='Tri';
+			elseif strcmpi(elem_type,'Quadrangular')
+				elem_type='Quad';
+			elseif ~any(strcmpi(elem_type,valid_elem_type)) 
+				error('Unrecognized element type. It can be: ''%s''.',strjoin(valid_elem_type,''', '''))
+			end
+			
 			Curv=p.Results.Curvature;
 			if Curv~=0
 				if slope~=0
@@ -342,20 +356,22 @@ classdef gmshGeo
 				end
 				
 				%%	Use quandrangular elements for 2D meshing
-				if strcmpi(elem_type, 'Brick')
+				if strcmpi(elem_type, 'Brick') || strcmpi(elem_type, 'Quad')
 				    fprintf(ffid,'\n// Quadrangular elements\n');
 					fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
 				end
 
 				%%	Extrusions
-				fprintf(ffid,'\n// 3D geometry\n');
-				fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
-				fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
-				fprintf(ffid,'\tLayers{1};');
-				if ~strcmpi(elem_type, 'Tet') && ~strcmpi(elem_type, 'Tetrahedron')
-					fprintf(ffid,'Recombine;');
+				if strcmpi(elem_type, 'Brick') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet')
+					fprintf(ffid,'\n// 3D geometry\n');
+					fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
+					fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
+					fprintf(ffid,'\tLayers{1};');
+					if ~strcmpi(elem_type, 'Tet')
+						fprintf(ffid,'Recombine;');
+					end
+					fprintf(ffid,'\n}\n');
 				end
-				fprintf(ffid,'\n}\n');
 				
 				%%	Add surrounding medium (if requested)
 				if medium
@@ -495,9 +511,11 @@ classdef gmshGeo
 			%
 			%	MESH(...,'ElementType',type) sets the element type used
 			%	for meshing. It can be:
-			%		-'Wedge' (default) for Wedge elements,
-			%		-'Brick' for quadrangular (2D)/Brick (3D) elements.
-			%		-'Tet' for tetrahedrons.
+			%		-'Wedge' (default) for 6-node 3D elements,
+			%		-'Brick' for 8-node 3D elements,
+			%		-'Tet' or 'Tetrahedron' for 4-node 3D elements,
+			%		-'Tri' or 'Triangular' for 3-node 2D elements,
+			%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
 			%
 			%	MESH(...,'Curvature',np) sets the element sizes to be
 			%	computed depending on the local curvature (np nodes per 2 
