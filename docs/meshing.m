@@ -11,12 +11,12 @@ mesh(G,'default.msh')
 
 %%
 % The above command results in a 1 element thick mesh, consisting in
-% linear hexahedrons. The element size is (roughly) equal to the EBSD
-% resolution.
+% linear wedge elements (6-node 3D elements. The element size is (roughly) 
+% equal to the EBSD resolution.
 
 %% Constant element size
 % The default element size can be set as follows:
-mesh(G,'constant_elmSize.msh','ElementSize',50)
+mesh(G,'constant_elmtSize.msh','ElementSize',50)
 %%
 % 
 % <<msh_cst.png>>
@@ -60,9 +60,9 @@ mesh(G,'curvature.msh','Curvature',5);
 
 
 %% Element type
-% The default element type for meshing is linear hexahedrons. It can be
+% The default element type for meshing is linear wedge. It can be
 % changed to brick element
-mesh(G,'brick.inp','ElementType','Brick');
+mesh(G,'brick.msh','ElementType','Brick');
 %%
 % 
 % <<msh_brick.png>>
@@ -71,7 +71,13 @@ mesh(G,'brick.inp','ElementType','Brick');
 
 %%
 % or tetrahedrons
-mesh(G,'brick.inp','ElementType','Tet');
+mesh(G,'tet.msh','ElementType','Tet');
+
+%%
+% If you wants to work in 2D only, use triangular (|Tri|) or quandrangular
+% (|Quad|) elements instead.
+mesh(G,'Tri.msh','ElementType','Tri');
+mesh(G,'Quad.msh','ElementType','Quad');
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow human-
