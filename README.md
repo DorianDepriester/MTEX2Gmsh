@@ -24,3 +24,6 @@ or use the following entry in BibTeX :
   url          = {https://doi.org/10.5281/zenodo.3628143}
 }
 ```
+
+## Bug report
+Please, use the [Issue](https://github.com/DorianDepriester/MTEX2Gmsh/issues) tab to report any bug or whish for new feature.
