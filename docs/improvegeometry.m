@@ -48,3 +48,8 @@ hist([n_o n_s n_ss])
 legend({'Raw','Smoothed', 'Smoothed and simplified'})
 xlabel('Number of vertices per segment')
 ylabel('Frequency')
+
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>

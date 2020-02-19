@@ -1,8 +1,8 @@
 %%
-%   mtexdata small
-%   ebsd = ebsd('indexed');
-%   grains = calcGrains(ebsd);
-%   G=gmshGeo(grains);
+mtexdata small
+ebsd = ebsd('indexed');
+grains = calcGrains(ebsd);
+G=gmshGeo(grains);
 
 %% Basic use
 % The geometry described by the object |G| can be meshed using the Gmsh
@@ -18,6 +18,8 @@ mesh(G,'default.msh')
 % The default element size can be set as follows:
 mesh(G,'constant_elmtSize.msh','ElementSize',50)
 %%
+% The resulting mesh cannot be (easily) displayed in MATLAB. Thus, the
+% following illustrates the geometry when opening the mesh file with Gmsh:
 % 
 % <<msh_cst.png>>
 % 
@@ -75,11 +77,16 @@ mesh(G,'tet.msh','ElementType','Tet');
 
 %%
 % If you wants to work in 2D only, use triangular (|Tri|) or quandrangular
-% (|Quad|) elements instead.
+% (|Quad|) elements instead:
 mesh(G,'Tri.msh','ElementType','Tri');
 mesh(G,'Quad.msh','ElementType','Quad');
 
 %% Dump the geometry in an ASCII file
-% The geometry can be exported into a Gmsh-readable (and somehow human-
-% readable) format using the following command:
+% The geometry can be exported into a Gmsh-readable (and somehow 
+% human-readable) format using the following command:
 savegeo(G,'geometry.geo')
+
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>

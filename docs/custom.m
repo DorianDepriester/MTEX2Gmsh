@@ -1,8 +1,8 @@
 %%
-%   mtexdata titanium
-%   ebsd = ebsd('indexed');
-%   grains = calcGrains(ebsd);
-%   G=gmshGeo(grains);
+mtexdata titanium
+ebsd = ebsd('indexed');
+grains = calcGrains(ebsd);
+G=gmshGeo(grains);
 
 %% Change thickness
 % The default thickness is equal to the element size at grain boundaries
@@ -37,4 +37,7 @@ mesh(G,'titanium_medium2.msh','elementSize',20,'medium',[2000 2000 200],'mediumE
 % <<medium_gradient.png>>
 % 
 
-
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>

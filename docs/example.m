@@ -32,3 +32,8 @@ mesh(G,'small.inp');
 % the FEM code (for assigning materials and orientations), one can export
 % the properties of each grain as Comma-separated values (CSV).
 exportGrainProps(G,'small.csv');
+
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>

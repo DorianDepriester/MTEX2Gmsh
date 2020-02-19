@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>custom</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="custom.m"><style type="text/css">
+      --><title>custom</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-19"><meta name="DC.source" content="custom.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,21 +66,33 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1></h1><!--introduction--><pre class="language-matlab">mtexdata <span class="string">titanium</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Change thickness</a></li><li><a href="#3">Add surrounding medium</a></li></ul></div><pre class="codeinput">mtexdata <span class="string">titanium</span>
 ebsd = ebsd(<span class="string">'indexed'</span>);
 grains = calcGrains(ebsd);
 G=gmshGeo(grains);
-</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Change thickness</a></li><li><a href="#2">Add surrounding medium</a></li></ul></div><h2>Change thickness<a name="1"></a></h2><p>The default thickness is equal to the element size at grain boundaries (denoted <img src="custom_eq02990789776284070316.png" alt="$s_0$"> if a <a href="meshing.html#6">size-gradient</a> is applied). This value can be changed as follows:</p><pre class="codeinput">mesh(G,<span class="string">'titanium.msh'</span>,<span class="string">'Thickness'</span>,20)
-</pre><h2>Add surrounding medium<a name="2"></a></h2><p>One may want to embed the ROI into a prismatic surrounding medium, for instance to evaluate the local behavior of the ROI when surrounded by an homogenized material.</p><p>The following command creates a surrounding box of size <img src="custom_eq10291803499816556732.png" alt="$dX\times dY\times dZ$"> (the ROI is centered along the <img src="custom_eq12362013959998143435.png" alt="$X$"> and <img src="custom_eq07649107795707013777.png" alt="$Y$"> directions):</p><pre class="language-matlab">mesh(G,<span class="keyword">...</span><span class="comment">,'Medium',[dX dY dZ]);</span>
+</pre><pre class="codeoutput">TITANIUM data loaded in variables
+    'ebsd'
+
+ 
+ebsd = EBSD (&lt;a href="matlab:docmethods(ebsd)"&gt;show methods&lt;/a&gt;, &lt;a href="matlab:plot(ebsd)"&gt;plot&lt;/a&gt;)
+ 
+ Phase  Orientations           Mineral       Color  Symmetry  Crystal reference frame
+     0   8100 (100%)  Titanium (Alpha)  light blue       622        X||a, Y||b*, Z||c
+ 
+ Properties: ci, grainid, iq, sem_signal, x, y
+ Scan unit : um
+ 
+</pre><h2>Change thickness<a name="2"></a></h2><p>The default thickness is equal to the element size at grain boundaries (denoted <img src="custom_eq02990789776284070316.png" alt="$s_0$"> if a <a href="meshing.html#6">size-gradient</a> is applied). This value can be changed as follows:</p><pre class="codeinput">mesh(G,<span class="string">'titanium.msh'</span>,<span class="string">'Thickness'</span>,20)
+</pre><h2>Add surrounding medium<a name="3"></a></h2><p>One may want to embed the ROI into a prismatic surrounding medium, for instance to evaluate the local behavior of the ROI when surrounded by an homogenized material.</p><p>The following command creates a surrounding box of size <img src="custom_eq10291803499816556732.png" alt="$dX\times dY\times dZ$"> (the ROI is centered along the <img src="custom_eq12362013959998143435.png" alt="$X$"> and <img src="custom_eq07649107795707013777.png" alt="$Y$"> directions):</p><pre class="language-matlab">mesh(G,<span class="keyword">...</span><span class="comment">,'Medium',[dX dY dZ]);</span>
 </pre><p>E.g.:</p><pre class="codeinput">mesh(G,<span class="string">'titanium_medium.msh'</span>,<span class="string">'elementSize'</span>,20,<span class="string">'medium'</span>,[2000 2000 200]);
 </pre><p><img vspace="5" hspace="5" src="medium.png" alt=""> </p><p>The element size is increasing with increasing distance from the ROI. To set the element size at the borders of the medium, append the <tt>mediumElementSize</tt> name-value pair argument. E.g:</p><pre class="codeinput">mesh(G,<span class="string">'titanium_medium2.msh'</span>,<span class="string">'elementSize'</span>,20,<span class="string">'medium'</span>,[2000 2000 200],<span class="string">'mediumElementSize'</span>,180);
-</pre><p><img vspace="5" hspace="5" src="medium_gradient.png" alt=""> </p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="medium_gradient.png" alt=""> </p><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013ba</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %%
-%   mtexdata titanium
-%   ebsd = ebsd('indexed');
-%   grains = calcGrains(ebsd);
-%   G=gmshGeo(grains);
+mtexdata titanium
+ebsd = ebsd('indexed');
+grains = calcGrains(ebsd);
+G=gmshGeo(grains);
 
 %% Change thickness
 % The default thickness is equal to the element size at grain boundaries
@@ -115,7 +127,10 @@ mesh(G,'titanium_medium2.msh','elementSize',20,'medium',[2000 2000 200],'mediumE
 % <<medium_gradient.png>>
 % 
 
-
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>
 
 ##### SOURCE END #####
 --></body></html>

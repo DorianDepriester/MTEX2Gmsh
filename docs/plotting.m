@@ -1,8 +1,8 @@
 %%
-%   mtexdata small
-%   ebsd = ebsd('indexed');
-%   grains = calcGrains(ebsd);
-%   G=gmshGeo(grains);
+mtexdata small
+ebsd = ebsd('indexed');
+grains = calcGrains(ebsd);
+G=gmshGeo(grains);
 
 %% Plot the whole geometry
 % The whole geometry can be plotted with the usual plot command:
@@ -27,3 +27,8 @@ legend('Location', 'Best')
 % Alternatively, one can specify the phase to be plotted. E.g:
 plot(G('Diopside'))
 legend('Location', 'Best')
+
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>

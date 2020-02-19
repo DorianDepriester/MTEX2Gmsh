@@ -1,9 +1,9 @@
 %% Prerequities
 % In order to install MTEX2Gmsh in MATLAB, first check that: 
 %
-% * the <https://mtex-toolbox.github.io/ MTEX toolbox> for MATLAB is
-% already installed,
-% * <http://gmsh.info/ Gmsh> is installed on your computer.
+% * the <https://mtex-toolbox.github.io/ MTEX toolbox> 5.1.1 (or newer) is
+% already installed in your MATLAB sesssion,
+% * <http://gmsh.info/ Gmsh> 5.2.2 (or newer) is installed on your computer.
 % 
 
 %% Install MTEX2Gmsh
@@ -21,3 +21,9 @@ Install_MTEX2Gmsh
 %% Uninstall MTEX2Gmsh
 % If you have finished with this toolbox, you can uninstall it with:
 Uninstall_MTEX2Gmsh
+
+
+%% 
+% <html><hr></html>
+%
+% <index.html Go back to documentation index>
