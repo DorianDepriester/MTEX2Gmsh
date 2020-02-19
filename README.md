@@ -10,7 +10,7 @@ This toolbox has been designed for MATLAB R2013b, but it may work or newer versi
 - The [Gmsh software](http://gmsh.info/) (v 4.5.2 or newer) should be installed on your computer (at least its binary should accessible).
 
 ## Documentation and examples
-Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see examples and full documentation. Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
+Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see examples and [full documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html). Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
 
 ## Reference
 The corresponding paper is still under review. In the meantime, please cite this code using the related DOI:
