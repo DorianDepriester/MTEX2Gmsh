@@ -538,6 +538,10 @@ classdef gmshGeo
 			end
 			[val,~]=system(sprintf('"%s" -version',path_to_gmsh));	% Check if Gmsh is reachable
 			if val
+				screenSize = get(0,'ScreenSize');	% Used for checking the -nodisplay option if off https://stackoverflow.com/a/6771356/12056867
+				if isequal(screenSize(3:4),[1 1])	% -nodisplay option -> just cancel operation 
+					error('Gmsh has not be found in the PATH of your system.')
+				end
 				answer=questdlg('Gmsh has not be found in the PATH of your system. You need to locate its executable file first.', 'Gmsh not found', 'Ok','Cancel','Cancel');
 				if strcmp(answer,'Cancel')
 					return
