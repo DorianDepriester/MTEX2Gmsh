@@ -16,15 +16,10 @@ The microstructure of cytalline materials is usually made from Electron Backscat
 
 # Documentation
 ## Online
-You can navigate the documentation through the following sections:
- - [Install/Uninstall](html/install.html)
- - [Mesh](html/meshing.html)
- - [Plot](html/plotting)
- - [Customize the geometry](html/custom)
- - [Improve the grain boundaries](html/improvegeometry)
+You can navigate the documentation [here](html/index.html).
 
 ## From MATLAB
-Once installed on your Matlab session, open the documentation of the present toolbox by typing:
+Once the toolbox is installed on your Matlab session, open the documentation of the present toolbox by typing:
 
     doc
     
