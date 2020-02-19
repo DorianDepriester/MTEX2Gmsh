@@ -9,6 +9,21 @@ This toolbox has been designed for MATLAB R2013b, but it may work or newer versi
 - The [MTEX toolbox](https://mtex-toolbox.github.io/) (v 5.1.1 or newer) should be installed in your MATLAB session;
 - The [Gmsh software](http://gmsh.info/) (v 4.5.2 or newer) should be installed on your computer (at least its binary should accessible).
 
+It works on both Windows and Unix-like plateform (Linux and Mac OS).
+
+### :warning: Linux user
+When running the ``mesh`` command, you may stumble on the error below:
+
+    /MATLAB/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by gmsh)
+    
+If so, instead of running 
+
+    matlab
+    
+run
+
+    LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
+
 ## Documentation and examples
 Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see examples and [full documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html). Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
 
