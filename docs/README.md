@@ -19,8 +19,22 @@ The microstructure of cytalline materials is usually made from Electron Backscat
 You can navigate the documentation [here](html/index.html).
 
 ## From MATLAB
+### Full documentation
 Once the toolbox is installed on your Matlab session, open the documentation of the present toolbox by typing:
 
     doc
     
 Then, click on "MTEX2Gmsh toolbox", under the _Supplemental Software_ section (bottom right).
+
+### Help functions
+The ``gmshGeo`` class is the core of this toolbox. For comprehensive details about it, just type
+
+    help gmshGeo
+    
+The following command will print all the ``GmshGeo`` methods:
+
+    methods gmshGeo
+    
+For details about a given method (let say ``plot``):
+
+    help gmshGeo/plot
