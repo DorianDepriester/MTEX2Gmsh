@@ -28,7 +28,7 @@ run
 Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see examples and [full documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html). Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
 
 ## Unit test
-The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v1).
+The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v2).
 
 ## Reference
 The corresponding paper is still under review. In the meantime, please cite this code using the related DOI:
