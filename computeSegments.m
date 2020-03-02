@@ -49,7 +49,7 @@ for ig=1:ng
         n_tp=length(sp_loc);
         segments=cell(n_tp+1,1);        
         if poly(end)~=poly(1)
-            poly(end+1)=poly(1);                % (re)close the loop
+            poly(end+1)=poly(1);                %#ok<AGROW> % (re)close the loop
         end
         Seq=zeros(length(poly),1,datatype);
         id_seq=0;

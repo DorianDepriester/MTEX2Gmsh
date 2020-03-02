@@ -685,15 +685,15 @@ classdef gmshGeo
 			end
 			
 			%% Remove unused vertices and update the segments
-			V=G.V;
-			used=ismember(1:size(V,1),cell2mat(segments));	% Track wether the vertices are used or not in the segments
+			Vtx=G.V;
+			used=ismember(1:size(Vtx,1),cell2mat(segments));	% Track wether the vertices are used or not in the segments
 			new_idx=cast(cumsum(used),'like',segments{1});
 			sp=G.SingularPoints;
 			for j=1:length(segments)
 				segments{j}=new_idx(segments{j})';
 			end
 			G.Segments=segments;			% Update the segments
-			G.V=V(used,:);				% Remove unused vertices
+			G.V=Vtx(used,:);				% Remove unused vertices
 			G.SingularPoints=new_idx(sp);	% Update singular points
 			delete(h)
 		end
@@ -909,7 +909,7 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 		InnerLoops=Grains.InnerLoops{i};
 		Seq=zeros(1+length(InnerLoops),1,'int32');
 		new=true;
-		for j=1:size(LineLoops,1);
+		for j=1:size(LineLoops,1)
 			if isempty(LineLoops{j})
 				break
 			end
@@ -926,7 +926,7 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 
 		for k=1:length(InnerLoops)
 			new=true;			
-			for j=1:size(LineLoops,1);
+			for j=1:size(LineLoops,1)
 				if isempty(LineLoops{j})
 					break
 				end
