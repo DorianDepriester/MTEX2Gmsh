@@ -12,6 +12,9 @@ vtx_list=unique(F);
 mult=hist(single(F(:)),single(vtx_list))';
 nbif=nnz(mult>2);	% Number of triple nodes (ambiguous path)
 npaths=3^nbif;
+if npaths>1000
+	warning('Large number of ambiguous paths (%i), computation may take a while. As a workaround, try to simplify the geometry or remove small grains',npaths)
+end
 innerLoops=cell(npaths,1);
 outerLoops=cell(1);
 configs=combvec3(nbif);
