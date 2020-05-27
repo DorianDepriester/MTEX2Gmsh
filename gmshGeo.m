@@ -33,7 +33,7 @@ classdef gmshGeo
 			G.V=grains.boundary.V;
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
-			Phase=phaseList(grains.phaseId)';
+			Phase=phaseList(full(grains.phaseId))';
 			ng=length(grains);
 			phi1=zeros(ng,1);Phi=phi1;phi2=phi1;
 			convention='Bunge';
