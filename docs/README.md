@@ -1,9 +1,9 @@
-# Purpose of this toolbox
+## Purpose of this toolbox
 In order to evaluate the thermo-mechanical behaviour of crystalline materials (such as metals or ceramics) at microscopic scale, one usually perform numerical simulation at grain scale using the Finite Element Method. In order to proceed, one must first create a mesh which is representative of the real material.
 
 The microstructure of cytalline materials is usually made from Electron Backscattered Diffraction (EBSD) technique. Thus, this toolbox is designed to generate meshes from EBSD in a robust and accurate way.
 
-# Examples
+## Examples
 [![Example: aachen.m](./Examples/aachen.png)](./Examples/aachen.png)
 [``aachen.m``](Examples/aachen.m)
 
@@ -14,19 +14,19 @@ The microstructure of cytalline materials is usually made from Electron Backscat
 [![Example: twins.m](./Examples/twins.png)](./Examples/twins.png)
 [``twins.m``](Examples/twins.m)
 
-# Documentation
-## Online
+## Documentation
+### Online
 You can navigate the documentation [here](html/index.html).
 
-## From MATLAB
-### Full documentation
+### From MATLAB
+#### Full documentation
 Once the toolbox is installed on your Matlab session, open the documentation of the present toolbox by typing:
 
     doc
     
 Then, click on "MTEX2Gmsh toolbox", under the _Supplemental Software_ section (bottom right).
 
-### Help functions
+#### Help functions
 The ``gmshGeo`` class is the core of this toolbox. For comprehensive details about it, just type
 
     help gmshGeo
