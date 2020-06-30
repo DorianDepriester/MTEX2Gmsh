@@ -11,17 +11,23 @@ plot(grains)
 %% Compute the meshable geometry and plot it
 % The command below converts the grain geometries into a Gmsh-like
 % description of the domains:
+
 G=gmshGeo(grains);
+
 %%
 % The variable G is an object of class |gmshGeo| . It fully describes the
 % geometries of all grains and their intrisic properties.
 
 %% Plot the geometry
-% One can easily plot the geometry using the usual plot fonction. 
+% One can easily plot the geometry using the usual plot function. 
 plot(G);
 
-%% Mesh the gemetry
+legend show
+
+%% Mesh the geometry
+
 mesh(G,'small.inp');
+
 %% 
 % This command runs Gmsh within Matlab and exports the mesh into the
 % specified format (Abaqus INP here). Extensive tweaks are available for
