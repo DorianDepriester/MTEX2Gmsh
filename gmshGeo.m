@@ -26,23 +26,20 @@ classdef gmshGeo
 		%	related to the phase named Forsterite.
 		%
 		%	See also calcGrains, mesh, exportGrainProps.
-			if ~isa(grains,'grain2d')
-				error('Input argument must be of class grain2d');
-			end
-		    [Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
+      if ~isa(grains,'grain2d')
+        error('Input argument must be of class grain2d');
+      end
+    
+      [Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
 			G.V=grains.boundary.V;
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(full(grains.phaseId))';
-			ng=length(grains);
-			phi1=zeros(ng,1);Phi=phi1;phi2=phi1;
+						
 			convention='Bunge';
-			h=waitbar(0,sprintf('Computing Euler angles (with %s convention)',convention),'Name','Individual grain properties');
-			for i=1:ng
-				waitbar(i/ng,h);
-				[phi1(i),Phi(i),phi2(i)]=Euler(grains(i).meanOrientation,convention);
-			end
-			waitbar(1,h,'Tabular formating');
+      [phi1,Phi,phi2] = Euler(grains.meanRotation,convention);
+			
+			h = waitbar(1,'Tabular formating');
 			G.Grains=table(GrainID,Phase,OuterLoop,InnerLoops,phi1,Phi,phi2);
 			close(h);
 			
