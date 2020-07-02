@@ -1,3 +1,4 @@
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
 mtexdata titanium
 ebsd = ebsd('indexed');

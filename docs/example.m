@@ -1,3 +1,4 @@
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% MTEX stuff
 % In this example, EBSD are loaded from the dataset named 'small', provided
 % along with the MTEX toolbox. Once loaded, they can used for

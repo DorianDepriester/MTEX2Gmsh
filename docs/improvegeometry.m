@@ -1,3 +1,4 @@
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% Load example data
 % Load EBSD data consisting in an hegagonal grid, then compute the grains.
 mtexdata titanium

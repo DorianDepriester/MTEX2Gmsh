@@ -1,3 +1,4 @@
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% Prerequities
 % In order to install MTEX2Gmsh in MATLAB, first check that: 
 %
