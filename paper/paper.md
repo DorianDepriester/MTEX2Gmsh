@@ -33,7 +33,7 @@ In order to perform Finite Element Analysis (FEA) on a polycrystal, one needs to
 @Latypov:2016 proposed a program to generate regular pseudo-3D mesh, consisting in brick elements with only one element in thickness. Nevertheless, this program results in serrated descriptions of the GBs because of the regular structure of EBSD data. In addition, the element size must be constant, possibly resulting in a huge number of elements, depending on the size and the spatial resolution of the orientation map. @Dancette:2016 proposed the following method to generate a conforming mesh with smooth GBs:
 
 * computation of the GBs based on a proper criterion;
-* grain reconstruction using a graph theory -based method;
+* grain reconstruction using a graph theory-based method;
 * spline interpolation of the GBs;
 * meshing.
 
