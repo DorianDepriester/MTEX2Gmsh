@@ -1,4 +1,5 @@
-# MTEX2Gmsh
+# MTEX2Gmsh [![DOI](https://joss.theoj.org/papers/10.21105/joss.02094/status.svg)](https://doi.org/10.21105/joss.02094)
+
 This toolbox for Matlab allows to generate meshes from EBSD data. It is intended to perform Finite Element Analysis (FEA) at grain scale on polycrystal imaged by EBSD. It is based on [MTEX](http://mtex-toolbox.github.io/) and [Gmsh](http://gmsh.info/).
 
 ## How it works
@@ -31,22 +32,7 @@ Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to
 The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v2).
 
 ## Reference
-The corresponding paper is still under review. In the meantime, please cite this code using the related DOI:
-[![DOI](https://zenodo.org/badge/137471547.svg)](https://zenodo.org/badge/latestdoi/137471547)
-
-or use the following entry in BibTeX :
-```
-@misc{mtex2Gmsh,
-  author       = {Dorian Depriester},
-  title        = {{MTEX2Gmsh}},
-  month        = jan,
-  year         = 2020,
-  publisher    = {Zenodo},
-  version      = {2.0.0},
-  doi          = {10.5281/zenodo.3628143},
-  url          = {https://doi.org/10.5281/zenodo.3628143}
-}
-```
+If you use this work, please cite the following paper: Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
 
 ## Bug report
 Please, use the [Issue](https://github.com/DorianDepriester/MTEX2Gmsh/issues) tab to report any bug or whish for new feature.
