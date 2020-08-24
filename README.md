@@ -6,7 +6,7 @@ This toolbox for Matlab allows to generate meshes from EBSD data. It is intended
 This toolbox defines the class named `gmshGeo`. Once the grains are computed using MTEX, an instance of `gmshGeo` can be constructed. This object can be used to generate a Gmsh-readable file, in order to mesh it and perform FEA.
 
 ## :construction_worker: Requirements
-This toolbox has been designed for MATLAB R2013b, but it may work or newer versions. In addition, the following are required:
+This toolbox has been designed for MATLAB R2013b, but it may work on newer versions. In addition, the following are required:
 - The [MTEX toolbox](https://mtex-toolbox.github.io/) (v 5.1.1 or newer) should be installed in your MATLAB session;
 - The [Gmsh software](http://gmsh.info/) (v 4.5.2 or newer) should be installed on your computer (at least its binary should accessible).
 
