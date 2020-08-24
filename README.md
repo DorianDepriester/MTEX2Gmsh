@@ -36,7 +36,7 @@ The aforementioned examples can be easily reproduced. In addition, the reader ca
 ## Reference
 If you use this work, please cite the following paper:
 
-> > Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
+> Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
 
 In BibTeX, use the following entry:
 ````
