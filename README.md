@@ -34,7 +34,25 @@ Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to
 The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v2).
 
 ## Reference
-If you use this work, please cite the following paper: Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
+If you use this work, please cite the following paper:
+
+> > Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
+
+In BibTeX, use the following entry:
+````
+@article{MTEX2Gmsh,
+  doi = {10.21105/joss.02094},
+  url = {https://doi.org/10.21105/joss.02094},
+  year = {2020},
+  publisher = {The Open Journal},
+  volume = {5},
+  number = {52},
+  pages = {2094},
+  author = {Dorian Depriester and R\'egis Kubler},
+  title = {MTEX2Gmsh: a tool for generating 2D meshes from EBSD data},
+  journal = {Journal of Open Source Software}
+}
+````
 
 ## Bug report
 Please, use the [Issue](https://github.com/DorianDepriester/MTEX2Gmsh/issues) tab to report any bug or whish for new feature.
