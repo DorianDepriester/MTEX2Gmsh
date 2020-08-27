@@ -38,3 +38,23 @@ The following command will print all the ``GmshGeo`` methods:
 For details about a given method (let say ``plot``):
 
     help gmshGeo/plot
+
+## Reference
+For further details, check out the corresponding paper [[1]](#1). If you use this project, please cite it as follows:
+
+````
+@article{MTEX2Gmsh,
+  doi = {10.21105/joss.02094},
+  url = {https://doi.org/10.21105/joss.02094},
+  year = {2020},
+  publisher = {The Open Journal},
+  volume = {5},
+  number = {52},
+  pages = {2094},
+  author = {Dorian Depriester and R\'egis Kubler},
+  title = {MTEX2Gmsh: a tool for generating 2D meshes from EBSD data},
+  journal = {Journal of Open Source Software}
+}
+````
+
+<a id="1">[1]</a> Depriester et al., (2020). MTEX2Gmsh: a tool for generating 2D meshes from EBSD data. *Journal of Open Source Software*, 5(52), 2094, https://doi.org/10.21105/joss.02094
