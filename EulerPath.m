@@ -1,4 +1,4 @@
-function polys=EulerPath(F,datatype)
+function new_paths=EulerPath(F,datatype)
 %EULERPATH Compute the Euler path of a graph.
 %
 %	EULERPATH(F,DTYPE) where F is an N-2 array defining the connectivity
@@ -8,98 +8,48 @@ function polys=EulerPath(F,datatype)
 %
 %	See also computeSegments
 
-vtx_list=unique(F);
-mult=hist(single(F(:)),single(vtx_list))';
-nbif=nnz(mult>2);	% Number of triple nodes (ambiguous path)
-npaths=3^nbif;
-if npaths>1000
-	warning('Large number of ambiguous paths (%i), computation may take a while. As a workaround, try to simplify the geometry or remove small grains',npaths)
-end
-innerLoops=cell(npaths,1);
-outerLoops=cell(1);
-configs=combvec3(nbif);
-nf=size(F,1);
-visited=false(size(vtx_list));
 
-Loop=zeros(nf,1,datatype);
-Inner=false(1,npaths);
+%% Take advantage of MTEX's EulerCycles function
+paths=EulerCycles(F)';
 
-connect_id=1;	% id of the connected region (if holes)
-while any(~visited)
-	start=vtx_list(find(~visited & mult==2,1,'first'));
-	Loop(1)=start;
-	ids=find(F==start,1,'first');
-	[is,js]=ind2sub(size(F),ids);
-	if js==1
-		Loop(2)=F(is,2);
-	else
-		Loop(2)=F(is,1);
-	end
-	for k=1:npaths
-		bifurcId=1;		% If the Euler tour is not unique (multiple point)
-		vt1=Loop(1);
-		vt2=Loop(2);
-		visited(vtx_list==vt1)=1;
-		visited(vtx_list==vt2)=1;
-		config=configs(k,:);
-		for i=3:(nf+1)
-			j=find(F(:,1)==vt2 & F(:,2)~=vt1 | F(:,2)==vt2 & F(:,1)~=vt1);	% avoid backward walk
-			nj=length(j);
-			if isempty(j)
-				break
-			elseif nj>1
-				Fj=F(j(config(bifurcId)),:);
-				bifurcId=bifurcId+1;
-			else 
-				Fj=F(j,:);
-			end
-			Loop(i)=Fj(Fj~=vt2);
-			vt1=vt2;
-			vt2=Loop(i);
-			visited(vtx_list==vt2)=1;
-			ip=find(vt2==Loop(1:i-1),1,'first');
-			if ~isempty(ip) 
-				if ip==1
-					outerLoops{connect_id}=Loop(1:i);
-				else
-					innerLoops{k,connect_id}=Loop(ip:i);
-					Inner(k)=1;
-				end
-				break
-			end
+%% Get rid of ambiguous paths (self-touching boundaries)
+% Here, we want to find the shortest path, whereas EulerCycles gives the
+% longest one.
+new_paths=paths;
+for k=1:length(paths)
+	long_path=paths{k};
+	short_path=long_path(1:end-1);
+	u_path = unique(short_path);
+	dupl_id = find(hist(short_path, u_path) > 1);	% Looking for duplicates
+	n_dupl=length(dupl_id);
+	if n_dupl
+		new_loops = cell(n_dupl,1);
+		
+		% We need to fix small loops first, so we may track them first
+		dupl_dist = zeros(n_dupl,1);	% Distance between duplicates
+		for i=1:n_dupl
+			dupl_dist(i)=diff(find(short_path==u_path(dupl_id(i))));
 		end
+		[~, order] = sort(dupl_dist);	% Deal with small loops first
+		for i=1:n_dupl
+			dupl_val = u_path(dupl_id(order(i)));	% Duplicate node number
+			n_vtx= length(short_path);
+			shortcut = [find(short_path==dupl_val,1) find(short_path==dupl_val,1, 'last')];
+			
+			% Move the loop from initial path to new ones
+			new_loops{i} = cast(short_path(shortcut(1): shortcut(2))',datatype);
+			short_path=short_path([1:shortcut(1) (shortcut(2)+1):n_vtx]);
+		end
+		
+		% Update the current path and append the new ones
+		new_paths{k} = cast([short_path long_path(end)]',datatype);
+		new_paths=vertcat(new_paths, new_loops);
+	else
+		new_paths{k}=cast(new_paths{k}',datatype);
 	end
-	connect_id=connect_id+1;
 end
 
 %% Sort loops such that the (real) outer loop appears first
-innerLoops=innerLoops(:);
-outerLoops=outerLoops(:);
-loop_len=cellfun('length',outerLoops);
+loop_len=cellfun('length',new_paths);
 [~,order]=sort(loop_len,'descend');	% The largest one is considered as the outer loop
-outerLoops=outerLoops(order);		% Rearrange with decreasing length
-innerLoops=[outerLoops(2:end) ; innerLoops];
-
-%% Remove empty sets and duplicates
-for i=1:length(innerLoops)
-	Loopi=innerLoops{i};
-	for j=1:(i-1)
-		if length(Loopi)==length(innerLoops{j}) && ( all(flipud(Loopi)==innerLoops{j}) || all(Loopi==innerLoops{j}) )
-			innerLoops{i}=[];
-			break
-		end
-	end
-end
-% Remove empty loops
-innerLoops(cellfun('isempty',innerLoops))=[];
-outerLoops(cellfun('isempty',outerLoops))=[];
-
-polys=[outerLoops(1); innerLoops];
-
-
-
-function M = combvec3(n)
-	M=zeros(3^n,n,'uint32');
-	for i=1:n
-		M(:,i)=repmat([ones(3^(i-1),1) ; 2*ones(3^(i-1),1) ; 3*ones(3^(i-1),1)],3^(n-i),1);
-	end
+new_paths=new_paths(order);	

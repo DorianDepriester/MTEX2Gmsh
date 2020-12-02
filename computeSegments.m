@@ -44,7 +44,7 @@ for ig=1:ng
                 poly(end)=[];                   % 'Open' the loop before shifting
             end
             id_start=find(poly==sp_loc(1),1,'first');
-            poly=circshift(poly,-id_start+1);	% Starts from a special point
+            poly=circshift(poly,[-id_start+1,0]);	% Starts from a special point
         end
         n_tp=length(sp_loc);
         segments=cell(n_tp+1,1);        
