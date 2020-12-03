@@ -28,7 +28,11 @@ run
 </details>
 
 ## :mag: Documentation and examples
-Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see examples and [full documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html). Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
+Here is an example of mesh obtained from the EBSD map called ``aachen`` in MTEX:
+![aachen example](https://doriandepriester.github.io/MTEX2Gmsh/Examples/aachen.png)
+
+
+Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to see other examples and [full documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html). Alternatively, you can check out the [``docs/Examples``](https://github.com/DorianDepriester/MTEX2Gmsh/tree/master/docs/Examples) folder.
 
 ## :gear: Unit test
 The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v2).
