@@ -64,8 +64,8 @@ mesh(G,'curvature.msh','Curvature',5);
 
 %% Element type
 % The default element type for meshing is linear wedge. It can be
-% changed to brick element
-mesh(G,'brick.msh','ElementType','Brick');
+% changed to hexahedron (or brick element).
+mesh(G,'brick.msh','ElementType','Hex');
 %%
 % 
 % <<msh_brick.png>>

@@ -135,7 +135,7 @@ classdef gmshGeo
 		%	SAVEGEO(...,'ElementType',type) sets the element type used
 		%	for meshing. It can be:
 		%		-'Wedge' (default) for 6-node 3D elements,
-		%		-'Brick' for 8-node 3D elements,
+		%		-'Hex' for 8-node 3D elements,
 		%		-'Tet' or 'Tetrahedron' for 4-node 3D elements,
 		%		-'Tri' or 'Triangular' for 3-node 2D elements,
 		%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
@@ -186,9 +186,11 @@ classdef gmshGeo
 			end
 			
 			elem_type= p.Results.ElementType;
-			valid_elem_type={'Wedge','Brick','Tet','Tri','Quad'};
+			valid_elem_type={'Wedge','Hex','Tet','Tri','Quad'};
 			if strcmpi(elem_type,'Tetrahedron')
 				elem_type='Tet';
+			elseif strcmpi(elem_type,'Hexahedron') || strcmpi(elem_type,'Brick')	% 'Brick' is valid for backward compatibility
+				elem_type='Hex';
 			elseif strcmpi(elem_type,'Triangular')
 				elem_type='Tri';
 			elseif strcmpi(elem_type,'Quadrangular')
@@ -353,13 +355,13 @@ classdef gmshGeo
 				end
 				
 				%%	Use quandrangular elements for 2D meshing
-				if strcmpi(elem_type, 'Brick') || strcmpi(elem_type, 'Quad')
+				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Quad')
 				    fprintf(ffid,'\n// Quadrangular elements\n');
 					fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
 				end
 
 				%%	Extrusions
-				if strcmpi(elem_type, 'Brick') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet')
+				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet')
 					fprintf(ffid,'\n// 3D geometry\n');
 					fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
 					fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
@@ -509,7 +511,7 @@ classdef gmshGeo
 			%	MESH(...,'ElementType',type) sets the element type used
 			%	for meshing. It can be:
 			%		-'Wedge' (default) for 6-node 3D elements,
-			%		-'Brick' for 8-node 3D elements,
+			%		-'Hex' for 8-node 3D elements,
 			%		-'Tet' or 'Tetrahedron' for 4-node 3D elements,
 			%		-'Tri' or 'Triangular' for 3-node 2D elements,
 			%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
@@ -555,7 +557,7 @@ classdef gmshGeo
 				end
 			end			
 			tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
-			str=sprintf('"%s" "%s" -o "%s" -v 4 -3',path_to_gmsh,tmp_file,outputFilePath);
+			str=sprintf('"%s" "%s" -o "%s" -v 0 -3',path_to_gmsh,tmp_file,outputFilePath);
 			system(str);
 			delete(tmp_file)	%	delete temp file
 		end
