@@ -138,7 +138,9 @@ classdef gmshGeo
 		%		-'Hex' for 8-node 3D elements,
 		%		-'Tet' or 'Tetrahedron' for 4-node 3D elements,
 		%		-'Tri' or 'Triangular' for 3-node 2D elements,
-		%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
+		%		-'Quad' or 'Quadrangular' for 4-node 2D elements,
+		%		-'HexOnly' for hexahedron elements only (no tet),
+		%		-'QuadOnly' for quandrangular elements only (no triangle).
 		%
 		%	SAVEGEO(...,'ElementOrder',order) sets the element order. The
 		%	default value is 1 (i.e. linear elements).
@@ -190,7 +192,7 @@ classdef gmshGeo
 			end
 			
 			elem_type= p.Results.ElementType;
-			valid_elem_type={'Wedge','Hex','Tet','Tri','Quad'};
+			valid_elem_type={'Wedge','Hex','Tet','Tri','Quad','HexOnly','QuadOnly'};
 			if strcmpi(elem_type,'Tetrahedron')
 				elem_type='Tet';
 			elseif strcmpi(elem_type,'Hexahedron') || strcmpi(elem_type,'Brick')	% 'Brick' is valid for backward compatibility
@@ -199,6 +201,10 @@ classdef gmshGeo
 				elem_type='Tri';
 			elseif strcmpi(elem_type,'Quadrangular')
 				elem_type='Quad';
+			elseif strcmpi(elem_type,'HexahedronOnly') || strcmpi(elem_type,'BrickOnly')
+				elem_type='HexOnly';
+			elseif strcmpi(elem_type,'QuadrangularOnly')
+				elem_type='QuadOnly';
 			elseif ~any(strcmpi(elem_type,valid_elem_type)) 
 				error('Unrecognized element type. It can be: ''%s''.',strjoin(valid_elem_type,''', '''))
 			end
@@ -359,13 +365,13 @@ classdef gmshGeo
 				end
 				
 				%%	Use quandrangular elements for 2D meshing
-				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Quad')
+				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Quad') || strcmpi(elem_type, 'HexOnly') || strcmpi(elem_type, 'QuadOnly')
 				    fprintf(ffid,'\n// Quadrangular elements\n');
 					fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
 				end
 
 				%%	Extrusions
-				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet')
+				if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly')
 					fprintf(ffid,'\n// 3D geometry\n');
 					fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
 					fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
@@ -467,6 +473,10 @@ classdef gmshGeo
 				fprintf(ffid,'\n// Mesh\n');
 				fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
 				fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
+				if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
+					fprintf(ffid,'Mesh.MeshSizeFactor=%d;\n', 2.5);	% A 2.5 factor before subviding keeps the number of nodes almost constant
+					fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');
+				end
 				if Curv~=0
 					fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
 					fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
