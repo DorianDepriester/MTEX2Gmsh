@@ -2,9 +2,9 @@ setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% Prerequities
 % In order to install MTEX2Gmsh in MATLAB, first check that: 
 %
-% * the <https://mtex-toolbox.github.io/ MTEX toolbox> 5.1.1 (or newer) is
+% * the <https://mtex-toolbox.github.io/ MTEX toolbox> 5.3.1 (or newer) is
 % already installed in your MATLAB sesssion,
-% * <http://gmsh.info/ Gmsh> 5.2.2 (or newer) is installed on your computer.
+% * <http://gmsh.info/ Gmsh> 4.7.1 (or newer) is installed on your computer.
 % 
 
 %% Install MTEX2Gmsh
