@@ -10,13 +10,15 @@
 			<tocitem target="example.html#7">Export grain properties</tocitem>
 		</tocitem>
 		<tocitem target="meshing.html">Meshing
-			<tocitem target="meshing.html#3">Element size</tocitem>
-			<tocitem target="meshing.html#10">Element type</tocitem>
+			<tocitem target="meshing.html#5">Element size</tocitem>
+			<tocitem target="meshing.html#12">Element type</tocitem>
+			<tocitem target="meshing.html#14">Element order</tocitem>
+			<tocitem target="meshing.html#18">Export as an ASCII file</tocitem>
 		</tocitem>
 		<tocitem target="plotting.html">Plot</tocitem>
         <tocitem target="custom.html">Customize the geometry
-            <tocitem target="custom.html#1">Extrusion thickness</tocitem>
-            <tocitem target="custom.html#2">Add surrounding medium</tocitem>			
+            <tocitem target="custom.html#2">Extrusion thickness</tocitem>
+            <tocitem target="custom.html#3">Add surrounding medium</tocitem>			
         </tocitem>
 		<tocitem target="improvegeometry.html">Improve the grain boundaries
 			<tocitem target="improvegeometry.html#3">Smoothing</tocitem>
