@@ -1,8 +1,9 @@
 setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
 mtexdata small
-ebsd = ebsd('indexed');
-grains = calcGrains(ebsd);
+[grains, ebsd('indexed').grainId]=calcGrains(ebsd('indexed'));
+ebsd(grains(grains.grainSize<3))=[];	% Remove small grains
+grains=calcGrains(ebsd('indexed'));
 G=gmshGeo(grains);
 
 %% Basic use
@@ -70,17 +71,29 @@ mesh(G,'brick.msh','ElementType','Hex');
 % 
 % <<msh_brick.png>>
 % 
+% *Note:* In this case, the mesh will be hex-dominated. Indeed, the
+% resulting mesh may still contain some wedge elements. To avoid it, use 
+% |'HexOnly'| option instead.
+
+%% Element order
+% The default element order is 1 (linear elements). It can be changed with
+% the |ElementOrder| option. E.g.:
+mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
 
 
 %%
-% or tetrahedrons
+% Tetrahedron can also be used:
 mesh(G,'tet.msh','ElementType','Tet');
 
 %%
-% If you wants to work in 2D only, use triangular (|Tri|) or quandrangular
-% (|Quad|) elements instead:
+% If you wants to work in 2D only, use triangular (|'Tri'|) or quandrangular
+% (|'Quad'|) elements instead:
 mesh(G,'Tri.msh','ElementType','Tri');
 mesh(G,'Quad.msh','ElementType','Quad');
+
+%%
+% Again, |'Quad'| results in quad-dominated mesh. For pure Quad mesh (no
+% triangle), use |'QuadOnly'|.
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 

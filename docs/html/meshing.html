@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>meshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-18"><meta name="DC.source" content="meshing.m"><style type="text/css">
+      --><title>meshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-20"><meta name="DC.source" content="meshing.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,10 +66,11 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Basic use</a></li><li><a href="#5">Constant element size</a></li><li><a href="#8">Size gradient</a></li><li><a href="#10">Element size Depending on the curvature of grain boundaries</a></li><li><a href="#12">Element type</a></li><li><a href="#16">Dump the geometry in an ASCII file</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Basic use</a></li><li><a href="#5">Constant element size</a></li><li><a href="#8">Size gradient</a></li><li><a href="#10">Element size Depending on the curvature of grain boundaries</a></li><li><a href="#12">Element type</a></li><li><a href="#14">Element order</a></li><li><a href="#18">Dump the geometry in an ASCII file</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
 </pre><pre class="codeinput">mtexdata <span class="string">small</span>
-ebsd = ebsd(<span class="string">'indexed'</span>);
-grains = calcGrains(ebsd);
+[grains, ebsd(<span class="string">'indexed'</span>).grainId]=calcGrains(ebsd(<span class="string">'indexed'</span>));
+ebsd(grains(grains.grainSize&lt;3))=[];	<span class="comment">% Remove small grains</span>
+grains=calcGrains(ebsd(<span class="string">'indexed'</span>));
 G=gmshGeo(grains);
 </pre><pre class="codeoutput"> 
 ebsd = EBSD  
@@ -88,17 +89,19 @@ ebsd = EBSD
 </pre><p>The resulting mesh cannot be (easily) displayed in MATLAB. Thus, the following illustrates the geometry when opening the mesh file with Gmsh:</p><p><img vspace="5" hspace="5" src="msh_cst.png" alt=""> </p><p>The unit here is the same as the EBSD map (ususally &micro;m).</p><h2>Size gradient<a name="8"></a></h2><p>Let <img src="meshing_eq11753244427067589801.png" alt="$s(\mathbf{x})$"> be the local element size at coordinates <img src="meshing_eq08291690262771002032.png" alt="$\mathbf{x}$">. The element size can be set as an increasing distance from the grains boundary such that:</p><p><img src="meshing_eq04540479506458118980.png" alt="$$s(\mathbf{x})=s_0+kd_{GB}(\mathbf{x})$$"></p><p>with:</p><div><ul><li><img src="meshing_eq02990789776284070316.png" alt="$s_0$"> the element size at grain boundaries</li><li><img src="meshing_eq01433496169881271877.png" alt="$d_{GB}(\mathbf{x})$"> the euclidean distance from the closest grain boundary.</li></ul></div><p>This can be done with the following command:</p><pre class="language-matlab">mesh(G,meshFile,<span class="string">'ElementSize'</span>,s0,<span class="string">'gradient'</span>,k);
 </pre><p><img vspace="5" hspace="5" src="msh_gradient.png" alt=""> </p><h2>Element size Depending on the curvature of grain boundaries<a name="10"></a></h2><p>The local curvature of grain boundaries can be used to set the element size. For instance, the following command use 5 nodes to describe a full circle:</p><pre class="codeinput">mesh(G,<span class="string">'curvature.msh'</span>,<span class="string">'Curvature'</span>,5);
 </pre><p><img vspace="5" hspace="5" src="msh_curvature.png" alt=""> </p><h2>Element type<a name="12"></a></h2><p>The default element type for meshing is linear wedge. It can be changed to hexahedron (or brick element).</p><pre class="codeinput">mesh(G,<span class="string">'brick.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>);
-</pre><p><img vspace="5" hspace="5" src="msh_brick.png" alt=""> </p><p>or tetrahedrons</p><pre class="codeinput">mesh(G,<span class="string">'tet.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tet'</span>);
-</pre><p>If you wants to work in 2D only, use triangular (<tt>Tri</tt>) or quandrangular (<tt>Quad</tt>) elements instead:</p><pre class="codeinput">mesh(G,<span class="string">'Tri.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tri'</span>);
+</pre><p><img vspace="5" hspace="5" src="msh_brick.png" alt=""> </p><p><b>Note:</b> In this case, the mesh will be hex-dominated. Indeed, the resulting mesh may still contain some wedge elements. To avoid it, use <tt>'HexOnly'</tt> option instead.</p><h2>Element order<a name="14"></a></h2><p>The default element order is 1 (linear elements). It can be changed with the <tt>ElementOrder</tt> option. E.g.:</p><pre class="codeinput">mesh(G,<span class="string">'brick-quadratic.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>,<span class="string">'ElementOrder'</span>,2);
+</pre><p>Tetrahedron can also be used:</p><pre class="codeinput">mesh(G,<span class="string">'tet.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tet'</span>);
+</pre><p>If you wants to work in 2D only, use triangular (<tt>'Tri'</tt>) or quandrangular (<tt>'Quad'</tt>) elements instead:</p><pre class="codeinput">mesh(G,<span class="string">'Tri.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tri'</span>);
 mesh(G,<span class="string">'Quad.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Quad'</span>);
-</pre><h2>Dump the geometry in an ASCII file<a name="16"></a></h2><p>The geometry can be exported into a Gmsh-readable (and somehow human-readable) format using the following command:</p><pre class="codeinput">savegeo(G,<span class="string">'geometry.geo'</span>)
+</pre><p>Again, <tt>'Quad'</tt> results in quad-dominated mesh. For pure Quad mesh (no triangle), use <tt>'QuadOnly'</tt>.</p><h2>Dump the geometry in an ASCII file<a name="18"></a></h2><p>The geometry can be exported into a Gmsh-readable (and somehow human-readable) format using the following command:</p><pre class="codeinput">savegeo(G,<span class="string">'geometry.geo'</span>)
 </pre><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
 mtexdata small
-ebsd = ebsd('indexed');
-grains = calcGrains(ebsd);
+[grains, ebsd('indexed').grainId]=calcGrains(ebsd('indexed'));
+ebsd(grains(grains.grainSize<3))=[];	% Remove small grains
+grains=calcGrains(ebsd('indexed'));
 G=gmshGeo(grains);
 
 %% Basic use
@@ -166,17 +169,29 @@ mesh(G,'brick.msh','ElementType','Hex');
 % 
 % <<msh_brick.png>>
 % 
+% *Note:* In this case, the mesh will be hex-dominated. Indeed, the
+% resulting mesh may still contain some wedge elements. To avoid it, use 
+% |'HexOnly'| option instead.
+
+%% Element order
+% The default element order is 1 (linear elements). It can be changed with
+% the |ElementOrder| option. E.g.:
+mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
 
 
 %%
-% or tetrahedrons
+% Tetrahedron can also be used:
 mesh(G,'tet.msh','ElementType','Tet');
 
 %%
-% If you wants to work in 2D only, use triangular (|Tri|) or quandrangular
-% (|Quad|) elements instead:
+% If you wants to work in 2D only, use triangular (|'Tri'|) or quandrangular
+% (|'Quad'|) elements instead:
 mesh(G,'Tri.msh','ElementType','Tri');
 mesh(G,'Quad.msh','ElementType','Quad');
+
+%%
+% Again, |'Quad'| results in quad-dominated mesh. For pure Quad mesh (no
+% triangle), use |'QuadOnly'|.
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 
