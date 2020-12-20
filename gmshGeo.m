@@ -140,6 +140,9 @@ classdef gmshGeo
 		%		-'Tri' or 'Triangular' for 3-node 2D elements,
 		%		-'Quad' or 'Quadrangular' for 4-node 2D elements.
 		%
+		%	SAVEGEO(...,'ElementOrder',order) sets the element order. The
+		%	default value is 1 (i.e. linear elements).
+		%
 		%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
 		%	np==0 disables this option (default).
@@ -157,7 +160,7 @@ classdef gmshGeo
 		%
 		%	See also mesh.
 		
-			version='2.0';	%	MTEX2Gmsh version
+			version='2.2';	%	MTEX2Gmsh version
 		
 			%%	Parse optional parameters
 		    p = inputParser;
@@ -165,6 +168,7 @@ classdef gmshGeo
 		    addOptional(p,'thickness',0);
 		    addOptional(p,'gradient',0);
 		    addOptional(p,'ElementType','Wedge');
+			addOptional(p,'ElementOrder',1);
 		    addOptional(p,'Curvature',0);
 		    addOptional(p,'Medium',[0 0 0]);
 		    addOptional(p,'MediumElementSize',0);
@@ -462,6 +466,7 @@ classdef gmshGeo
 				%%	Mesh
 				fprintf(ffid,'\n// Mesh\n');
 				fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
+				fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
 				if Curv~=0
 					fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
 					fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
