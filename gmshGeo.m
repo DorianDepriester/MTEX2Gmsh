@@ -155,6 +155,13 @@ classdef gmshGeo
 		%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
 		%	computed depending on the local curvature (np nodes per 2 pi).
 		%	np==0 disables this option (default).
+		%	
+		%	SAVEGEO(...,'grainPrefix',str) defines the name for the element
+		%	sets corresponding to grains (Physical Volumes in Gmsh). E.g 
+		%	SAVEGEO(...,'grainPrefix','grain_') will create volumes named
+		%	'grain_1', 'grain_2' etc.
+		%	If the argument is empty, no prefix is given and the physical
+		%	volumes are just numbered as the grains.
 		%
 		%	SAVEGEO(...,'medium',S) embeds the ROI inside a cuboid of size 
 		%	S=[dx dy dz]. The element size in the medium is	increasing with
@@ -181,6 +188,7 @@ classdef gmshGeo
 		    addOptional(p,'Curvature',0);
 		    addOptional(p,'Medium',[0 0 0]);
 		    addOptional(p,'MediumElementSize',0);
+			addOptional(p,'grainPrefix','Grain_');
 		    parse(p,varargin{:}); 
 			
 		    defaultElementSize=p.Results.ElementSize;
@@ -225,7 +233,9 @@ classdef gmshGeo
 			if numel(thickness)>1
 				warning('The thickness must be a scalar value. I''m using the first value.');
 				thickness=thickness(1);
-			end			
+			end
+			
+			grainPrefix=p.Results.grainPrefix;
 			
 			%%	Format file path
 		    [~,~,fext] = fileparts(filepath);
@@ -454,13 +464,18 @@ classdef gmshGeo
 				end
 				
 				%%	Physical volumes
-				grainPrefix='Grain';
 				Ids=obj.Grains.GrainID(:);
 				fprintf(ffid,'\n// Sets\n');
 				if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
 					waitbar(step/n_steps,h,'Physical volumes');
 					fprintf(ffid,'For k In {1:%i}\n',n_surfaces);
-					fprintf(ffid,'\tPhysical Volume(Sprintf("%s_%%g",k))={k};\n',grainPrefix);
+					if isempty(grainPrefix)
+						fprintf(ffid,'\tPhysical Volume(k)={k};\n');
+					elseif isa(grainPrefix,'char')
+						fprintf(ffid,'\tPhysical Volume(Sprintf("%s%%g",k))={k};\n',grainPrefix);
+					else
+						error('grainPrefix must be a string or empty')
+					end
 					fprintf(ffid,'EndFor\n');
 				else							%	Instead, use the ID given by MTEX
 					for i=1:n_surfaces
@@ -468,8 +483,14 @@ classdef gmshGeo
 						waitbar(step/n_steps,h,'Physical volumes')
 						if getappdata(h,'canceling')
 							return
-						end				    
-						fprintf(ffid,'Physical Volume("%s_%i")={%i};\n',grainPrefix,Ids(i),i);
+						end
+						if isempty(grainPrefix)
+							fprintf(ffid,'Physical Volume(%i)={%i};\n',grainPrefix,Ids(i),i);
+						elseif isa(grainPrefix,'char')
+							fprintf(ffid,'Physical Volume("%s_%i")={%i};\n',grainPrefix,Ids(i),i);
+						else
+							error('grainPrefix must be a string or empty')
+						end
 					end
 				end
 				if medium
@@ -551,6 +572,13 @@ classdef gmshGeo
 		%	MESH(...,'Curvature',np) sets the element sizes to be computed
 		%	depending on the local curvature (np nodes per 2 pi). np==0 
 		%	disables this option (default).
+		%
+		%	MESH(...,'grainPrefix',str) defines the name for the element
+		%	sets corresponding to grains (Physical Volumes in Gmsh). E.g 
+		%	MESH(...,'grainPrefix','grain_') will create volumes named
+		%	'grain_1', 'grain_2' etc.
+		%	If the argument is empty, no prefix is given and the physical
+		%	volumes are just numbered as the grains.
 		%
 		%	MESH(...,'medium',S) embeds the ROI inside a cuboid of size 
 		%	S=[dx dy dz]. The element size in the medium is	increasing with
