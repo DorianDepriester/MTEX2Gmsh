@@ -20,7 +20,7 @@ for k=1:length(paths)
 	long_path=paths{k};
 	short_path=long_path(1:end-1);
 	u_path = unique(short_path);
-	dupl_id = find(hist(short_path, u_path) > 1);	% Looking for duplicates
+	dupl_id = find(hist(single(short_path), single(u_path)) > 1);	% Looking for duplicates
 	n_dupl=length(dupl_id);
 	if n_dupl
 		new_loops = cell(n_dupl,1);
