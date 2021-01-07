@@ -580,6 +580,13 @@ classdef gmshGeo
 		%	If the argument is empty, no prefix is given and the physical
 		%	volumes are just numbered as the grains.
 		%
+		%	MESH(...,'grainPrefix',str) defines the name for the element
+		%	sets corresponding to grains (Physical Volumes in Gmsh). E.g 
+		%	SAVEGEO(...,'grainPrefix','grain_') will create volumes named
+		%	'grain_1', 'grain_2' etc.
+		%	If the argument is empty, no prefix is given and the physical
+		%	volumes are just numbered as the grains.		
+		%
 		%	MESH(...,'medium',S) embeds the ROI inside a cuboid of size 
 		%	S=[dx dy dz]. The element size in the medium is	increasing with
 		%	increasing distance from the ROI. The mesh in the 	medium is 
