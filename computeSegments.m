@@ -127,6 +127,13 @@ function [ segments,idx ] = addSequence(segments,Seq,phaseID)
         idx=[];
         return
 	end
+	if Seq(1) == Seq(end)	% Ensure that self loops are uniques
+		[~,idmin]=min(Seq);
+		if idmin~=1
+			Seq_ordered=circshift(Seq(1:end-1),[-idmin+1 0]);	% Reorder self loop starting from low vertex index
+			Seq=[Seq_ordered; Seq_ordered(1)];
+		end
+	end	
 	lengths=cellfun('length',segments(:,1));
 	if all(lengths==0)
 		idx=1;
