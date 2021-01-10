@@ -30,8 +30,7 @@ classdef gmshGeo
         error('Input argument must be of class grain2d');
       end
     
-      [Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
-			G.V=grains.boundary.V;
+      [Segmts,OuterLoop,InnerLoops,G.SingularPoints,G.V]=computeSegments(grains);
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(full(grains.phaseId))';
@@ -502,7 +501,7 @@ classdef gmshGeo
 				fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
 				fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
 				if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
-					fprintf(ffid,'Mesh.MeshSizeFactor=%d;\n', 2.5);	% A 2.5 factor before subviding keeps the number of nodes almost constant
+					fprintf(ffid,'Mesh.MeshSizeFactor=%d;\n', 0.5);	% A 2.5 factor before subviding keeps the number of nodes almost constant
 					fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');
 				end
 				if Curv~=0

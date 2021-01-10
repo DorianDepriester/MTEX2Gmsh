@@ -1,4 +1,4 @@
-function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
+function [segment_sequences,outLoop,inLoops,sp,V] = computeSegments(grains)
 %COMPUTESEGMENTS Compute the triple point-to-triple point segments defining
 % each grain.
 %
@@ -11,7 +11,7 @@ function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
 %
 %	See also gmshGeo
 
-sp=singularPoints(grains);
+[sp,V]=singularPoints(grains);
 
 ng=length(grains);
 partitions=cell(ng,1);	% List of sections (ie. grains)
