@@ -1,60 +1,10 @@
 function fh=savegeo(obj,filepath,varargin)
-%SAVEGEO Save the geometry as an input file for Gmsh (*.geo).
-%	SAVEGEO(Object,filepath) saves the geometry in the
-%	corresponding file path. The element size for meshing is equal
-%	to the EBSD resolution.
+%SAVEGEO dumps the geometry into an ASCII file, using the Gmsh syntax.
+% SAVEGEO('file.geo') dumps the geometry in file named file.geo.
 %
-%	SAVEGEO(...,'ElementSize',s) results in element sizes equal to 
-%	s.
-%
-%	SAVEGEO(...,'Thickness',t) sets an extrusion thickness
-%	equal to t (equal to element size by default).
-%
-%	SAVEGEO(...,'gradient',k) results in elements with size equal
-%	to s+k*d (d being the distance from the nearest boundary and s 
-%	the default element size).
-%
-%	SAVEGEO(...,'ElementType',type) sets the element type used
-%	for meshing. It can be:
-%		-for 3D geometry:
-%			-'Wedge' (default) for wedge elements,
-%			-'Hex' for hexahedon elements,
-%			-'Tet' or 'Tetrahedron' for tetrahedron elements,
-%			-'HexOnly' for hexahedron elements only (no tet),		
-%		-for 2D geometry:
-%			-'Tri' or 'Triangular' for triangular elements,
-%			-'Quad' or 'Quadrangular' for quadrangular elements,
-%			-'QuadOnly' for quandrangular elements only (no
-%			triangle).
-%	Note that 'Quad' and 'Hex' lead to quad-dominated and
-%	hex-dominated meshes, respectively, leaving some
-%	wedge/triangles in the mesh; hence the 'HexOnly' and 'QuadOnly
-%	options. 
-%
-%	SAVEGEO(...,'ElementOrder',order) sets the element order. The
-%	default value is 1 (i.e. linear elements).
-%
-%	SAVEGEO(...,'Curvature',np) sets the element sizes to be
-%	computed depending on the local curvature (np nodes per 2 pi).
-%	np==0 disables this option (default).
-%	
-%	SAVEGEO(...,'grainPrefix',str) defines the name for the element
-%	sets corresponding to grains (Physical Volumes in Gmsh). E.g 
-%	SAVEGEO(...,'grainPrefix','grain_') will create volumes named
-%	'grain_1', 'grain_2' etc.
-%	If the argument is empty, no prefix is given and the physical
-%	volumes are just numbered as the grains.
-%
-%	SAVEGEO(...,'medium',S) embeds the ROI inside a cuboid of size 
-%	S=[dx dy dz]. The element size in the medium is	increasing with
-%	increasing distance from the ROI. The mesh in the medium is 
-%	composed of tetrahedron elements.
-%
-%	SAVEGEO(...,'medium',S,'mediumElementSize',value) sets the
-%	element size at the corners of the medium to the given value.
-%
-%	h=SAVEGEO(...) returns the full filepath where the geometry has
-%	been saved.
+% SAVEGEO('file.geo','option1',val1,'option2',val2,...) set name-value
+% arguments for meshing option. The available options are the same as for
+% the MESH function.
 %
 %	See also mesh.
 
