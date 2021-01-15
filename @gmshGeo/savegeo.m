@@ -331,11 +331,22 @@ function fh=savegeo(obj,filepath,varargin)
 
 		%%	Mesh
 		fprintf(ffid,'\n// Mesh\n');
+		if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
+			fprintf(ffid,'Mesh.Algorithm=8;\n');		% Use 'Frontal-Delaunay for quads'
+		else
+			fprintf(ffid,'Mesh.Algorithm=6;\n');		% Use 'Frontal-Delaunay'
+		end		
 		fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
 		fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
 		if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
-			fprintf(ffid,'Mesh.MeshSizeFactor=%d;\n', 0.5);	% A 2.5 factor before subviding keeps the number of nodes almost constant
-			fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');
+			fprintf(ffid,'Mesh.RecombineAll = 0;\n');
+			fprintf(ffid,'Mesh.SaveParametric = 0;\n');
+			fprintf(ffid,'Mesh.RecombinationAlgorithm = 0;\n');	% Simple algorithm
+			fprintf(ffid,'Mesh.SecondOrderLinear = 1;\n');		% 'we don't have the parametrization of the surface' dixit Geuzaine
+			fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');		% Full quad
+			fprintf(ffid,'Mesh.MeshSizeFactor=%g;\n', 1);
+			fprintf(ffid,'RefineMesh;\n');
+			fprintf(ffid,'Mesh 2;\n');
 		end
 		if Curv~=0
 			fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');

@@ -90,7 +90,7 @@ function mesh(obj,outputFilePath,varargin)
 		end
 	end			
 	tmp_file=obj.savegeo(tempname,varargin{:});	%	Save the geometry into a temp file
-	str=sprintf('"%s" "%s" -o "%s" -v 4 -3',path_to_gmsh,tmp_file,outputFilePath);
+	str=sprintf('"%s" "%s" -o "%s" -v 1 -3',path_to_gmsh,tmp_file,outputFilePath);
 	system(str);
 	delete(tmp_file)	%	delete temp file
 end
