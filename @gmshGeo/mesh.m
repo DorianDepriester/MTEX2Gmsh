@@ -62,6 +62,9 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'medium',S,'mediumElementSize',value) sets the element
 %	size at the corners of the medium to the given value.
 %
+%	MESH(...,'verbosity',value) sets verbosity for Gmsh (0 for silent, 10
+%	for max verbosity. Default: 4.
+%
 %	See also savegeo.
 
 	version='2.4';	%	MTEX2Gmsh version	
@@ -77,6 +80,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'Medium',[0 0 0]);
 	addOptional(p,'MediumElementSize',0);
 	addOptional(p,'grainPrefix','Grain_');
+	addOptional(p,'verbosity',4);
 	parse(p,varargin{:});
 	
 	%% Check whether the file is intended to be mesh or not
@@ -468,8 +472,9 @@ function fh=mesh(obj,filepath,varargin)
 
 	
 	%% Open the file with Gmsh and save mesh
+	v=p.Results.verbosity;
 	if ~export_geo
-		str=sprintf('"%s" "%s" -o "%s" -v 1 -3',path_to_gmsh,path_to_geo,filepath);
+		str=sprintf('"%s" "%s" -o "%s" -v %i -3',path_to_gmsh,path_to_geo,filepath,v);
 		system(str);
 		delete(path_to_geo)	%	delete temp file
 	end
