@@ -85,9 +85,11 @@ function fh=mesh(obj,filepath,varargin)
 	
 	%% Locate Gmsh (if meshing is requested)
 	if export_geo
-		path_to_geo = filepath;		% Dump the geometry at the requested filepath
+		path_to_geo = filepath;						% Dump the geometry at the requested filepath
+		wb_title=sprintf('Writing %s',filepath);	% Waitbar title	
 	else
-		path_to_geo = tempname;		% Dump the geometry to a temporary file
+		path_to_geo = tempname;						% Dump the geometry to a temporary file
+		wb_title='Writing the temporary file...';
 		if ispref('MTEX2Gmsh','gmsh_path')
 			path_to_gmsh=getpref('MTEX2Gmsh','gmsh_path');
 		else
@@ -216,11 +218,6 @@ function fh=mesh(obj,filepath,varargin)
 	n_steps=n_vtx+n_segments+n_surfaces+n_loops;
 	step=0;
 	set(0,'DefaultTextInterpreter','none');
-	if export_geo
-		wb_title=sprintf('Writing %s',filepath);
-	else
-		wb_title='Writing the temporary file...';
-	end
 	h = waitbar(0,path_to_geo,'Name',wb_title,'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 	setappdata(h,'canceling',0)
 
