@@ -1,0 +1,178 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage[english]{babel}
+\usepackage{ae,lmodern}
+\usepackage{listings}
+\usepackage{xcolor} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+%opening
+\title{CPFEM simulations from EBSD data: using MTEX2Gmsh for PRISMS-Plasticity}
+\author{Dorian \textsc{Depriester}}
+
+\newcommand{\matlab}{MATLAB\textsuperscript{\textregistered}}
+
+\begin{document}
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    frame=single,
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=none,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+\maketitle
+
+\begin{abstract}
+	This paper describes the steps for using the CPFEM software PRISMS-Plasticity from EBSD data, thanks to the MTEX, MTEX2Gmsh and Gmsh softwares.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+	PRISMS-Plasticity is an open-source software for performing 3D Crystal Plasticity Finite Element (CPFE) simulations \cite{prisms}. It is based on the deal.II library \cite{dealII} for Finite Element Method (FEM) and takes advantage of parallel computing through Message Passing Interface (MPI), allowing to investigate large-scale problems, such as polycrystalline aggregates. 
+	
+	MTEX2Gmsh is a software dedicated to FEM mesh generation from Electron BackScatter Diffraction (EBSD) data \cite{MTEX2Gmsh}. It is based on the MTEX toolbox for \matlab{}, used for grain reconstruction \cite{mtex}, and converts the geometry in a Gmsh-readable file \cite{gmsh} so that it can be meshed. The resulting mesh is characterized by smooth grain boundaries and very realistic grains shapes. In addition, it allows to significantly reduce the number of elements thanks to the conforming part of the mesh within each grain.
+	
+	This paper briefly describes the procedure for generating input data (e.g. mesh and grain properties file) for PRISMS-Plasticity from EBSD data, using MTEX, MTEX2Gmsh and Gmsh.
+
+\section{Requirements}
+	The following softwares/toolboxes must be installed on your computer:
+	\begin{itemize}
+		\item MATLAB\textsuperscript{\textregistered} 2013 (or newer),
+		\item MTEX (available at \url{https://mtex-toolbox.github.io/}),
+		\item Gmsh (available at \url{https://gmsh.info/}),
+		\item MTEX2Gmsh (available at \url{https://github.com/DorianDepriester/MTEX2Gmsh}),
+		\item PRISMS-Plasticity (available at \url{https://github.com/prisms-center/plasticity}).
+	\end{itemize}
+	Note that PRISMS-Plasticity can be installed on a remote machine (e.g. computing cluster).
+
+\section{Step-by-step procedure}
+	\subsection{Process EBSD data}
+	\label{sec:process}
+	In \matlab{}, process the EBSD data as you wish (remove small grains, fill holes etc.) and reconstruct the grains, e.g.:
+	\begin{lstlisting}[language=Matlab]
+grains=calcGrains(ebsd);
+	\end{lstlisting}
+	and make sure the bottom-left corner of the map is at $(0,0)$ coordinates:
+	\begin{lstlisting}[language=Matlab]
+V=grains.V;
+ori=min(V);
+grains.V=V-repmat(ori,size(grains.V,1),1);
+	\end{lstlisting}
+	Then, construct the gmshGeo object:
+	\begin{lstlisting}[language=Matlab]
+G=gmshGeo(grains);
+	\end{lstlisting}
+	For the record, check the size of the Region of Interest (RoI):
+	\begin{lstlisting}[language=Matlab]
+max(grains.V)
+ans =
+	70.0729   70.0611	
+	\end{lstlisting}
+	
+	
+	\subsection{Generate mesh}
+	Since 3D orientations are necessary to define the grains, CPFE will be performed in 3D. In 3D, deal.II only handles hexahedron elements. Thus, the mesh has to be generated with the ``\texttt{HexOnly}'' option for element type. In addition, the volumes corresponding to each grain must have no prefix in their name:
+	\begin{lstlisting}[language=Matlab]
+mesh(G,'mesh.msh', 'ElementType', 'HexOnly', 'GrainPrefix', '', 'thickness', 1)
+	\end{lstlisting}
+	Setting the thickness to a particular value (1 here) will help defining the boundary conditions (see section \ref{sec:param}).
+	
+	\subsection{Export grain properties}
+	In PRISMS-plasticity, the grain properties are read from a tabular file where the $i$-th lines gives (in that order):
+	\begin{enumerate}
+	\item the grain ID,
+	\item the first component of the Rodrigues vector,
+	\item the second component of the Rodrigues vector,
+	\item the third component of the Rodrigues vector,
+	\item and the phase ID of the $i$-th grain.
+	\end{enumerate}
+	Such data format can be obtained with:
+	\begin{lstlisting}[language=Matlab]
+exportGrainProps(G,'orientations.txt','PRISMS')
+	\end{lstlisting}
+\matlab{} will print the indexing conventions it has used for the phases (useful for multiphased materials). 
+
+
+	
+	\subsection{Edit input parameters}
+	\label{sec:param}	Move the mesh file (\texttt{mesh.msh}) and the orientation file (\texttt{orientations.txt}) in the same folder as the input parameter for PRISMS-Plasticity (say \texttt{prm.prm}). Now, edit this file and check for:
+	\begin{lstlisting}[language=ruby]
+set Domain size X = 70.0729
+set Domain size Y = 70.0611
+set Domain size Z = 1.0
+	\end{lstlisting}
+The $X$ and $Y$ sizes must be consistent with the size of the RoI (see section~\ref{sec:process}) whereas the $Z$ size must be equal to the mesh thickness.
+
+Turn on external mesh and specify the location for the mesh:
+\begin{lstlisting}[language=ruby]
+set Use external mesh                     = true
+set Name of file containing external mesh = mesh.msh
+\end{lstlisting}
+
+When using an external mesh, the boundary conditions are applied to the nodes depending on their coordinates. Due to round-off error, a margin is used to check whether a node belongs to a boundary or not. The width of this margin is defined with the following option:
+\begin{lstlisting}[language=ruby]
+set External mesh parameter = 0.001
+\end{lstlisting}
+If this value is too small, some nodes may miss boundary conditions; conversely, if this value is too large, the margin may hang over the RoI.
+
+Finally, check that the orientation file is used:
+\begin{lstlisting}[language=ruby]
+set Orientations file name  = orientations.txt
+\end{lstlisting}
+
+	
+	\section{Troubleshooting}
+	This section describes the typical errors thrown by deal.II or PRISMS-Plasticity when using an external mesh, generated from MTEX2Gmsh. Some hints for fixing those errors are provided.
+	
+		\subsection{Wrong/missing volume names}
+\begin{lstlisting}[language=c++]
+An error occurred in line <1714> of file </opt/dealii-9.2.0/source/grid/grid_in.cc> in function
+    void dealii::GridIn<dim, spacedim>::read_msh(std::istream&) [with int dim = 3; int spacedim = 3; std::istream = std::basic_istream<char>]
+The violated condition was:
+    line == begin_elements_marker[gmsh_file_format == 10 ? 0 : 1]
+Additional information:
+    The string <$EndNodes> is not recognized at the present position of a Gmsh Mesh file.
+\end{lstlisting}
+This error is thrown when the mesh volumes associated to the grains are not properly named. Check that no prefix is used when meshing:
+	\begin{lstlisting}[language=Matlab]
+mesh(...,'GrainPrefix','')
+	\end{lstlisting}
+	
+	
+	\subsection{Wrong element type}
+\begin{lstlisting}
+An error occurred in line <2009> of file </opt/dealii-9.2.0/source/grid/grid_in.cc> in function
+    void dealii::GridIn<dim, spacedim>::read_msh(std::istream&) [with int dim = 3; int spacedim = 3; std::istream = std::basic_istream<char>]
+The violated condition was:
+    false
+Additional information:
+    The Element Identifier <6> is not supported in the deal.II library when reading meshes in 3 dimensions.
+\end{lstlisting}
+This error means that their are some wedges (6-node elements) in the mesh. Check that you have used ``\texttt{HexOnly}'' as element type when meshing, not ``\texttt{Hex}''.
+	
+	
+\bibliography{biblio}
+\bibliographystyle{apalike}
+
+\end{document}
