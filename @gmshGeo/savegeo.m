@@ -7,10 +7,11 @@ function savegeo(obj,outputFilePath,varargin)
 % the MESH function.
 %
 %	See also mesh.
-
 	[~,~,fext] = fileparts(outputFilePath);
-	if(~strcmpi(fext,'.geo'))
-		filepath = [outputFilePath '.geo'];	%	Append the extension if missing
+	if strcmpi(fext,'.geo')
+		filepath = outputFilePath;
+	else
+		filepath = [outputFilePath '.geo'];	%	Append the extension if missing or wrong
 	end	
-	mesh(obj, filepath,varargin{:});	% Run the mesh command, except it doesn't mesh...
+	mesh(obj, filepath,varargin{:});		% Run the mesh command, except it doesn't mesh...
 end
