@@ -65,6 +65,9 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'verbosity',value) sets verbosity for Gmsh (0 for silent, 10
 %	for max verbosity. Default: 4.
 %
+%	MESH(...,'partition',p) will create p partitions in the mesh for
+%	parallel compouting.
+%
 %	See also savegeo.
 
 	version='2.4';	%	MTEX2Gmsh version	
@@ -81,6 +84,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'MediumElementSize',0);
 	addOptional(p,'grainPrefix','Grain_');
 	addOptional(p,'verbosity',4);
+	addOptional(p,'partition',0);
 	parse(p,varargin{:});
 	
 	%% Check whether the file is intended to be mesh or not
@@ -427,7 +431,7 @@ function fh=mesh(obj,filepath,varargin)
 			writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces_tot);
 		end
 
-		%	Mesh
+		%	Mesh 2D
 		fprintf(ffid,'\n// Mesh\n');
 		fprintf(ffid,'Mesh.SubdivisionAlgorithm=0;\n');		% Turn off subdivision
 		if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
@@ -466,6 +470,17 @@ function fh=mesh(obj,filepath,varargin)
 		if medium
 			fprintf(ffid,'Mesh.Algorithm3D=4;\n'); %	Use 'Frontal' algorithm for hybrid structured/unstructured grids
 		end
+		
+		% Mesh 3D
+		if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly')
+			fprintf(ffid,'Mesh 3;\n');
+		end
+			
+		% Partition mesh
+		if p.Results.partition
+			fprintf(ffid,'\n// Partition mesh\n');
+			fprintf(ffid,'PartitionMesh %i;\n',p.Results.partition);
+		end
 
 	fclose(ffid);
 	delete(h);
@@ -474,7 +489,7 @@ function fh=mesh(obj,filepath,varargin)
 	%% Open the file with Gmsh and save mesh
 	v=p.Results.verbosity;
 	if ~export_geo
-		str=sprintf('"%s" "%s" -o "%s" -v %i -3',path_to_gmsh,path_to_geo,filepath,v);
+		str=sprintf('"%s" "%s" -o "%s" -v %i -save',path_to_gmsh,path_to_geo,filepath,v);
 		system(str);
 		delete(path_to_geo)	%	delete temp file
 	end
