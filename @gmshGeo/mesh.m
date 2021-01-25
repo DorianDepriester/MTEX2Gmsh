@@ -70,8 +70,6 @@ function fh=mesh(obj,filepath,varargin)
 %
 %	See also savegeo.
 
-	version='2.4';	%	MTEX2Gmsh version	
-
 	%%	Parse optional parameters
 	p = inputParser;
 	addOptional(p,'ElementSize',0);
