@@ -1,12 +1,8 @@
 function varargout=subsref(obj,s)
    %	obj(i) only selects the data related to the i-th grain
 	switch s(1).type
-		case '.'
-			if nargout
-				varargout{:}=builtin('subsref',obj,s);
-			else
-				builtin('subsref',obj,s);
-			end
+ 		case '.'
+ 			[varargout{1:nargout}]=builtin('subsref',obj,s);
 		case '()'
 			sref=obj;
 			grain_tab=sref.Grains;
