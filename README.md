@@ -53,7 +53,7 @@ In BibTeX, use the following entry:
   number = {52},
   pages = {2094},
   author = {Dorian Depriester and R\'egis Kubler},
-  title = {MTEX2Gmsh: a tool for generating 2D meshes from EBSD data},
+  title = {{MTEX2Gmsh}: a tool for generating {2D} meshes from {EBSD} data},
   journal = {Journal of Open Source Software}
 }
 ````
