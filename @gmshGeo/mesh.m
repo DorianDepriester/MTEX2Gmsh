@@ -232,7 +232,7 @@ function fh=mesh(obj,filepath,varargin)
 	%% Dumping the geometry
 	ffid = fopen(path_to_geo, 'w');
 		%	Heading
-		fprintf(ffid,'// File generated with MTEX2Gmsh (v %s) on %s\n\n',version,datestr(now));
+		fprintf(ffid,'// File generated with MTEX2Gmsh on %s\n\n',datestr(now));
 
 		%	Mesh parameters
 		thicknessName='th';
