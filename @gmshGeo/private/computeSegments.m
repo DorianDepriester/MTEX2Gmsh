@@ -1,13 +1,13 @@
 function [segment_sequences,outLoop,inLoops,sp,V] = computeSegments(grains)
-%COMPUTESEGMENTS Compute the triple point-to-triple point segments defining
+%COMPUTESEGMENTS Compute the singular point-to-triple point segments defining
 % each grain.
 %
-% [s,out,in,V,TJ]=COMPUTESEGMENTS(grains) returns:
+% [s,out,int,sp,V]=COMPUTESEGMENTS(grains) returns:
 %	- s: a list a segments, defined by the nodes' indices
 %	- out: the list of outer loops, defined by the segments' indices
 %	- int: the list of inner loops, defined by the segments' indices
-%	- V: the coordinates of the nodes
 %	- sp: indices of special points (triple junctions, corners etc.)
+%	- V: the coordinates of the nodes
 %
 %	See also gmshGeo
 
