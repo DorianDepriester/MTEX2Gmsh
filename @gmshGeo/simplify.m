@@ -34,15 +34,23 @@ function G=simplify(obj,varargin)
 
 	%% Remove unused vertices and update the segments
 	Vtx=G.V;
-	used=ismember(1:size(Vtx,1),cell2mat(segments));	% Track wether the vertices are used or not in the segments
+	used=ismember(1:size(Vtx,1),cell2mat(segments));	% Track whether the vertices are used or not in the segments
 	new_idx=cast(cumsum(used),'like',segments{1});
-	sp=G.SingularPoints;
 	for j=1:length(segments)
 		segments{j}=new_idx(segments{j})';
 	end
 	G.Segments=segments;			% Update the segments
 	G.V=Vtx(used,:);				% Remove unused vertices
-	G.SingularPoints=new_idx(sp);	% Update singular points
+	
+	%% Update singular points
+	sp=G.SingularPoints;
+	field_names=fieldnames(sp);
+	for i=1:length(field_names)
+		sp_i_old=sp.(field_names{i});
+		G.SingularPoints.(field_names{i})=new_idx(sp_i_old);	% Update singular points
+	end
+
+	
 	delete(h)
 end
 		

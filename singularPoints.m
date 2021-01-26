@@ -41,7 +41,7 @@ function [sp,V] = singularPoints(grains)
 	itP=full(sum(I_VG,2)< sum(I_VF,2)) & full(sum(I_VG,2)>1);
 	dpb=find(itP);
 	
-	sp=[tp; qp; corners(:); dpb];				% Special points
+	sp={tp; qp; corners(:); dpb};				% Special points
 
 end
 

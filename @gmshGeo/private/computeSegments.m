@@ -12,6 +12,7 @@ function [segment_sequences,outLoop,inLoops,sp,V] = computeSegments(grains)
 %	See also gmshGeo
 
 [sp,V]=singularPoints(grains);
+sp_all=vertcat(sp{:});	% Store all singular points in a single array
 
 ng=length(grains);
 partitions=cell(ng,1);	% List of sections (ie. grains)
@@ -38,7 +39,7 @@ for ig=1:ng
     surface=cell(nb_loops,1);
     for id_bound=1:nb_loops
         poly=polys{id_bound};
-        sp_loc=sp(ismember(sp,poly));
+        sp_loc=sp_all(ismember(sp_all,poly));
         if ~isempty(sp_loc)
             if poly(end)==poly(1)
                 poly(end)=[];                   % 'Open' the loop before shifting
@@ -117,6 +118,10 @@ end
 lengths=cellfun('length',segment_sequences(:,1));
 ide=find(lengths~=0,1,'last');
 segment_sequences=segment_sequences(1:ide,:);
+
+%% Store singular points as structure
+sp=cell2struct(sp,{'triplePoints','quadruplePoints','corners','doublePointsOnBorder'});
+
 close(h)
 
     
@@ -127,7 +132,7 @@ function [ segments,idx ] = addSequence(segments,Seq,phaseID)
         idx=[];
         return
 	end
-	if Seq(1) == Seq(end)	% Ensure that self loops are uniques
+	if Seq(1) == Seq(end)	% Ensure that self loops are unique
 		[~,idmin]=min(Seq);
 		if idmin~=1
 			Seq_ordered=circshift(Seq(1:end-1),[-idmin+1 0]);	% Reorder self loop starting from low vertex index
