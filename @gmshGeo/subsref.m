@@ -46,6 +46,7 @@ function varargout=subsref(obj,s)
 				t=cellfun('isempty',interfaces.SegmentIDs);	% Keep only non empty sets of segments
 				sref.Interfaces=interfaces(~t,:);
 			end
+			varargout{:}=sref;
 		case '{}'
 			error('gmshGeo:subsref',...
 				'Not a supported subscripted reference')
