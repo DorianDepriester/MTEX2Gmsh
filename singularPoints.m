@@ -37,9 +37,10 @@ function [sp,V] = singularPoints(grains)
 	end
 		
 	%% Double points on boundary
-	% Points shared with larger number of edges than number of grains AND shared between at leat two nodes
-	itP=full(sum(I_VG,2)< sum(I_VF,2)) & full(sum(I_VG,2)>1);
-	dpb=find(itP);
+	border=Vtx_onBounds(gB);
+	% Points shared with more than 2 faces
+	itP=full(sum(I_VF,2)>2);
+	dpb=intersect(find(itP),border);
 	
 	sp={tp; qp; corners(:); dpb};				% Special points
 

@@ -84,7 +84,7 @@ end
 %% Indexing all segments
 waitbar(0.5,h,'Indexing the segments and looking for duplicates');
 segment_sequences=cell(n_seg,2);
-vtx_IDs = Vtx_onBounds(grains);	% IDs of the vertices on the domain boundaries
+vtx_IDs = Vtx_onBounds(grains.boundary);	% IDs of the vertices on the domain boundaries
 
 inLoops=cell(ng,1);
 outLoop=cell(ng,1);
@@ -169,8 +169,4 @@ function [ segments,idx ] = addSequence(segments,Seq,phaseID)
 	end
 	
 	
-function [ vtx_IDs ] = Vtx_onBounds(grains)
-    gB=grains.boundary;
-    outerBoundary_id=any(gB.grainId==0,2);      % IDs of the faces neighbouring no other grains
-    list_IDs=gB.F(outerBoundary_id(:),:);       % Corresponding vertices
-    vtx_IDs=unique(list_IDs);
+
