@@ -20,6 +20,8 @@ function varargout=plotSingularPoints(obj, varargin)
 %	PLOTSINGULARPOINTS(G,...,'Size',S) sets the size for the markers
 %	(default: 6).
 %
+%	h=PLOTSINGULARPOINTS(...) return handle to the plot.
+%
 %	see also plot.
 	V=obj.V;
 	sp=obj.SingularPoints;
@@ -31,14 +33,28 @@ function varargout=plotSingularPoints(obj, varargin)
 	parse(p,varargin{:});
 	
 	sp_type=p.Results.type;
-	valide_types=vertcat(fieldnames(sp),'all');
-	if ~ischar(sp_type) || ~ismember(sp_type,valide_types)
-		error('Wrong type for singular points. It can be ''%s'' or ''all''.',strjoin(valide_types,''', '''));
-	elseif strcmp(sp_type,'all')
-		sp_d=struct2cell(sp);
-		sp_d=[sp_d{:}];
+	if ~ischar(sp_type)
+		error('Type for singular points must be a string.');
 	else
-		sp_d=sp.(sp_type);
+		if strcmpi(sp_type,'all')
+			sp_d=struct2cell(sp);
+			sp_d=vertcat(sp_d{:});
+			dname='Singular points';
+		else
+			if strcmpi(sp_type,'triplePoints')
+				dname='Triple points';
+			elseif strcmpi(sp_type,'quadruplePoints')
+				dname='Quadruple points';
+			elseif strcmpi(sp_type,'corners')
+				dname='Corners of RoI';
+			elseif strcmpi(sp_type,'doublePointsOnBorder')
+				dname='Double points on border of RoI';						
+			else
+				valid_types=vertcat(fieldnames(sp),'all');
+				error('Wrong type for singular points. It can be ''%s'' or ''all''.',strjoin(valid_types,''', '''));
+			end
+			sp_d=sp.(sp_type);			
+		end
 	end
 	c=p.Results.Color;
 	s=p.Results.Size;
@@ -47,4 +63,5 @@ function varargout=plotSingularPoints(obj, varargin)
 	if nargout
 		varargout{:}=h;
 	end
+	set(h,'DisplayName',dname);
 end
