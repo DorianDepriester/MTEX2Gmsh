@@ -16,7 +16,14 @@ plot(G)
 plot(grains,'noBoundary')
 hold on
 plot(G)
+
+%% Display singular points
+% In MTEX2Gmsh, singular points refer to triple points, quadruple point
+% (or even higher order), corners of the RoI and double point at the border
+% of the RoI. Such point can be plotted undividually:
+plotSingularPoints(G)
 legend('Location', 'NorthWest')
+
 
 %% Plot specific grains
 % Linear indexing helps plotting specific grains. For example, the
