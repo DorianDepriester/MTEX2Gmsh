@@ -1,4 +1,4 @@
-function [segment_sequences,outLoop,inLoops,sp,V] = computeSegments(grains)
+function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
 %COMPUTESEGMENTS Compute the singular point-to-triple point segments defining
 % each grain.
 %
@@ -7,11 +7,10 @@ function [segment_sequences,outLoop,inLoops,sp,V] = computeSegments(grains)
 %	- out: the list of outer loops, defined by the segments' indices
 %	- int: the list of inner loops, defined by the segments' indices
 %	- sp: indices of special points (triple junctions, corners etc.)
-%	- V: the coordinates of the nodes
 %
 %	See also gmshGeo
 
-[sp,V]=singularPoints(grains);
+sp=singularPoints(grains);
 sp_all=vertcat(sp{:});	% Store all singular points in a single array
 
 ng=length(grains);

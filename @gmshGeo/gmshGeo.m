@@ -30,7 +30,8 @@ classdef gmshGeo
 				error('Input argument must be of class grain2d');
 			end
 
-			[Segmts,OuterLoop,InnerLoops,G.SingularPoints,G.V]=computeSegments(grains);
+			[Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
+			G.V=grains.V;
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(full(grains.phaseId))';

@@ -1,4 +1,4 @@
-function [sp,V] = singularPoints(grains)
+function sp = singularPoints(grains)
 %%SINGULARPOINTS List of singular points in the grains
 %
 %	SINGULARPOINTS(grains) returns an array of indices of all singular
@@ -24,8 +24,8 @@ function [sp,V] = singularPoints(grains)
 	% Find closest points to the corners of ROI, and move them to the
 	% corners.
 	V=grains.V;
-	minmax=[min(V); max(V)];
 	corners=zeros(2,2);
+	minmax=[min(V); max(V)];
 	for i=1:2
 		for j=1:2
 			c=[minmax(i,1) minmax(j,2)];
