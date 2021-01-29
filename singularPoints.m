@@ -1,4 +1,4 @@
-function sp = singularPoints(grains,tol)
+function sp = singularPoints(grains)
 %%SINGULARPOINTS List of singular points in the grains
 %
 %	SINGULARPOINTS(grains,tol) returns an array of indices of all singular
@@ -28,6 +28,8 @@ function sp = singularPoints(grains,tol)
 	V=grains.V;
 	corners=zeros(2,2);
 	minmax=[min(V); max(V)];
+	meanV2V=mean(grains.perimeter./cellfun('length',grains.poly));	% Mean vertex-to-vertex distance
+	tol=meanV2V/10;
 	for i=1:2
 		for j=1:2
 			c=[minmax(i,1) minmax(j,2)];

@@ -31,8 +31,7 @@ classdef gmshGeo
 				error('Input argument must be of class grain2d');
 			end
 
-			meanV2V=mean(grains.perimeter./cellfun('length',grains.poly));	% Mean vertex-to-vertex distance
-			[Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains, meanV2V/10);
+			[Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
 			G.V=grains.V;
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
@@ -67,7 +66,7 @@ classdef gmshGeo
 			end
 			G.Interfaces=T;
 			G.Segments=Segmts(:,1);
-			G.Resolution=meanV2V;
+			G.Resolution=mean(grains.perimeter./cellfun('length',grains.poly));	% Mean vertex-to-vertex distance;
 		end
 	end
 	
