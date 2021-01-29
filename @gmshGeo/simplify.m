@@ -11,7 +11,7 @@ function G=simplify(obj,varargin)
 	%	See also plot.
 	G=obj;
 	if nargin==1
-		epsilon=obj.evalElementSize/10;
+		epsilon=obj.Resolution/10;
 	else
 		epsilon=varargin{1};
 	end
