@@ -133,7 +133,7 @@ function fh=mesh(obj,filepath,varargin)
 		error('Specify the size of the embedding medium first with option ''medium''.');
 	end
 	if defaultElementSize==0
-		defaultElementSize=obj.evalElementSize;	%	Compute the mean node-to-node distance
+		defaultElementSize=obj.Resolution;	%	Use estimate for spatial resolution
 	end		
 	slope=p.Results.gradient;
 	thickness=p.Results.thickness;

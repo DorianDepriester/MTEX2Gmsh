@@ -6,6 +6,7 @@ classdef gmshGeo
 		Grains=table;       %	Table summurizing the properties of each grain
 		SingularPoints=[];  %	List of singular points (Triple junctions, corners etc.)
 		Interfaces=table;	%	Phase-to-phase interfaces
+		Resolution=0.0;		%	Approximative spatial resolution
 	end
     
     methods
@@ -65,6 +66,7 @@ classdef gmshGeo
 			end
 			G.Interfaces=T;
 			G.Segments=Segmts(:,1);
+			G.Resolution=mean(grains.perimeter./cellfun('length',grains.poly));
 		end
 	end
 	
