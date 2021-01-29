@@ -1,16 +1,17 @@
-function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
+function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains,tol)
 %COMPUTESEGMENTS Compute the singular point-to-triple point segments defining
 % each grain.
 %
-% [s,out,int,sp,V]=COMPUTESEGMENTS(grains) returns:
+% [s,out,int,sp,V]=COMPUTESEGMENTS(grains, tol) returns:
 %	- s: a list a segments, defined by the nodes' indices
 %	- out: the list of outer loops, defined by the segments' indices
 %	- int: the list of inner loops, defined by the segments' indices
 %	- sp: indices of special points (triple junctions, corners etc.)
+% tol is used as tolerance for tracking corners of RoI.
 %
-%	See also gmshGeo
+%	See also gmshGeo, singularPoints
 
-sp=singularPoints(grains);
+sp=singularPoints(grains, tol);
 sp_all=vertcat(sp{:});	% Store all singular points in a single array
 
 ng=length(grains);

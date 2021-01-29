@@ -1,12 +1,14 @@
-function sp = singularPoints(grains)
+function sp = singularPoints(grains,tol)
 %%SINGULARPOINTS List of singular points in the grains
 %
-%	SINGULARPOINTS(grains) returns an array of indices of all singular
+%	SINGULARPOINTS(grains,tol) returns an array of indices of all singular
 %	points in the grains. The singular points can be either:
 %		-triple junctions,
 %		-quadruple junctions (or of even higher order),
 %		-corners of the ROI,
 %		-double points at the boundaries of the ROI.
+%	The tolerance (tol) is used to determine if a vertex can be used as a
+%	corner for ROI or not.
 %
 %	See also cond_smooth
 
@@ -26,13 +28,12 @@ function sp = singularPoints(grains)
 	V=grains.V;
 	corners=zeros(2,2);
 	minmax=[min(V); max(V)];
-	resol=mean(grains.perimeter./cellfun('length',grains.poly));
 	for i=1:2
 		for j=1:2
 			c=[minmax(i,1) minmax(j,2)];
 			d2=(V(:,1)-c(1)).^2+(V(:,2)-c(2)).^2;
 			[d2min,id_dmin]=min(d2);
-			if sqrt(d2min)<resol/10
+			if sqrt(d2min)<tol
 				corners(i,j)=id_dmin;
 				V(id_dmin,:)=c;
 			end
