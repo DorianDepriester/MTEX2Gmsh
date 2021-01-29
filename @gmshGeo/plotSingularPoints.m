@@ -38,7 +38,7 @@ function varargout=plotSingularPoints(obj, varargin)
 	else
 		if strcmpi(sp_type,'all')
 			sp_d=struct2cell(sp);
-			sp_d=vertcat(sp_d{:});
+			sp_d=horzcat(sp_d{:});
 			dname='Singular points';
 		else
 			if strcmpi(sp_type,'triplePoints')
