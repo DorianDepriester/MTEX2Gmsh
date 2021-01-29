@@ -26,13 +26,16 @@ function sp = singularPoints(grains)
 	V=grains.V;
 	corners=zeros(2,2);
 	minmax=[min(V); max(V)];
+	resol=mean(grains.perimeter./cellfun('length',grains.poly));
 	for i=1:2
 		for j=1:2
 			c=[minmax(i,1) minmax(j,2)];
 			d2=(V(:,1)-c(1)).^2+(V(:,2)-c(2)).^2;
-			[~,id_dmin]=min(d2);
-			corners(i,j)=id_dmin;
-			V(id_dmin,:)=c;
+			[d2min,id_dmin]=min(d2);
+			if sqrt(d2min)<resol/10
+				corners(i,j)=id_dmin;
+				V(id_dmin,:)=c;
+			end
 		end
 	end
 		
@@ -42,7 +45,7 @@ function sp = singularPoints(grains)
 	itP=full(sum(I_VF,2)>2);
 	dpb=intersect(find(itP),border);
 	
-	sp={tp; qp; corners(:); dpb};				% Special points
+	sp={tp; qp; corners(corners~=0); dpb};				% Special points
 
 end
 
