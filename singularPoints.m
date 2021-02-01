@@ -41,14 +41,16 @@ function sp = singularPoints(grains)
 			end
 		end
 	end
+	corners=corners(corners~=0);
 		
 	%% Double points on boundary
 	border=Vtx_onBounds(gB);
 	% Points shared with more than 2 faces
 	itP=full(sum(I_VF,2)>2);
 	dpb=intersect(find(itP),border);
+	dpb=dpb(~ismember(dpb,corners));	% Avoid double points at the corners
 	
-	sp={tp; qp; corners(corners~=0); dpb};				% Special points
+	sp={tp; qp; corners; dpb};			% Special points
 
 end
 
