@@ -24,6 +24,7 @@ function G=fixRectangularROI(obj)
 
 	%% Ensure sharp corners
 	corners=zeros(2,2);
+	V=obj.V;
 	for i=1:2
 		for j=1:2
 			c=[minmax(i,1) minmax(j,2)];
@@ -35,6 +36,10 @@ function G=fixRectangularROI(obj)
 	end
 
 	%% Update vertices and singular points
-	G.V(ids,:)=V;
+	G.V=V;
 	G.SingularPoints.corners=corners(:);
+	
+	%% Consider double points at corners as corners only
+	dpb=G.SingularPoints.doublePointsOnBorder;
+	G.SingularPoints.doublePointsOnBorder=dpb(~ismember(dpb,corners(:)));
 end
