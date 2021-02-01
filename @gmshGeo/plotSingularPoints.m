@@ -8,6 +8,7 @@ function varargout=plotSingularPoints(obj, varargin)
 %		- 'quadruplePoints'
 %		- 'corners'
 %		- 'doublePointsOnBorder'
+%		- 'symmetric'
 %	If 'all' is used, all the singular points are plotted (default
 %	behaviour).
 %
@@ -38,7 +39,7 @@ function varargout=plotSingularPoints(obj, varargin)
 	else
 		if strcmpi(sp_type,'all')
 			sp_d=struct2cell(sp);
-			sp_d=horzcat(sp_d{:});
+			sp_d=vertcat(sp_d{:});
 			dname='Singular points';
 		else
 			if strcmpi(sp_type,'triplePoints')
@@ -48,7 +49,9 @@ function varargout=plotSingularPoints(obj, varargin)
 			elseif strcmpi(sp_type,'corners')
 				dname='Corners of RoI';
 			elseif strcmpi(sp_type,'doublePointsOnBorder')
-				dname='Double points on border of RoI';						
+				dname='Double points on border of RoI';
+			elseif strcmpi(sp_type,'symmetric')
+				dname='Symmetric points';					
 			else
 				valid_types=vertcat(fieldnames(sp),'all');
 				error('Wrong type for singular points. It can be ''%s'' or ''all''.',strjoin(valid_types,''', '''));

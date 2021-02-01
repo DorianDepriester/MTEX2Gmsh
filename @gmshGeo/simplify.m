@@ -47,7 +47,7 @@ function G=simplify(obj,varargin)
 	field_names=fieldnames(sp);
 	for i=1:length(field_names)
 		sp_i_old=sp.(field_names{i});
-		G.SingularPoints.(field_names{i})=new_idx(sp_i_old);	% Update singular points
+		G.SingularPoints.(field_names{i})=new_idx(sp_i_old)';	% Update singular points
 	end
 
 	
