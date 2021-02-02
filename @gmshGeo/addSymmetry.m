@@ -70,11 +70,13 @@ function Gr=addSymmetry(obj,direction)
 	border=Gr.Interfaces{'ROI Border',1};
 	border=border{1};
 	Segments=Gr.Segments;
+	outerLoops=Gr.Grains{:,'OuterLoop'};
 	for i=1:n_newV
 		Vi=Vsym(i,:);
 		j=1;
 		while j<=length(border)
-			seg_j=Segments{border(j)};
+			id_seg=border(j);
+			seg_j=Segments{id_seg};
 			A=V(seg_j(1),:);
 			u=Vi-A;
 			v=V(seg_j(2),:)-A;
@@ -83,10 +85,15 @@ function Gr=addSymmetry(obj,direction)
 			% Check if the nex vertex is in between two existing vertices
 			if abs(det(M))<1e-10 && (proj < dot(v,v)) && (proj > 0)
 				id_V=i+n_oldV;
-				Segments{border(j)}=[seg_j(1); id_V];	% Split existing segment
+				Segments{id_seg}=[seg_j(1); id_V];	% Split existing segment
 				id_new_seg=length(Segments)+1;
 				Segments{id_new_seg}=[id_V; seg_j(2)];	% Add new segment
 				border=[border; id_new_seg];			% Add reference to new segment to the border list
+				for k=1:length(outerLoops)
+					if ismember(id_seg,outerLoops{k})
+						outerLoops{k}=[outerLoops{k}; id_new_seg];
+					end
+				end
 				break
 			end
 			j=j+1;
@@ -97,6 +104,7 @@ function Gr=addSymmetry(obj,direction)
 	Gr.Interfaces{'ROI Border',1}={border};
 	Gr.V=V;
 	Gr.V(dpb,:)=Vdpb;
+	Gr.Grains.OuterLoop=outerLoops;
 	Gr.Segments=Segments;
 	id_sym=(1:n_newV)'+n_oldV;	% Ids for all the new vertices
 	Gr.SingularPoints.Symmetric=cast(id_sym,'like',Segments{1});	% Create a new property for singular points
