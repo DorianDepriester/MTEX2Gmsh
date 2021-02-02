@@ -75,12 +75,6 @@ mesh(G,'brick.msh','ElementType','Hex');
 % resulting mesh may still contain some wedge elements. To avoid it, use 
 % |'HexOnly'| option instead.
 
-%% Element order
-% The default element order is 1 (linear elements). It can be changed with
-% the |ElementOrder| option. E.g.:
-mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
-
-
 %%
 % Tetrahedron can also be used:
 mesh(G,'tet.msh','ElementType','Tet');
@@ -94,6 +88,21 @@ mesh(G,'Quad.msh','ElementType','Quad');
 %%
 % Again, |'Quad'| results in quad-dominated mesh. For pure Quad mesh (no
 % triangle), use |'QuadOnly'|.
+
+%% Element order
+% The default element order is 1 (linear elements). It can be changed with
+% the |ElementOrder| option. E.g.:
+mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
+
+
+
+%% Periodic mesh
+% Periodic conditions can be used on X or/and Y direction for meshing. It 
+% consists in ensuring that nodes at opposite borders are at the same 
+% coordinates. This is usually requested for periodic conditions in FEM in 
+% order to take into account the medium surrounding the RoI.
+mesh(G,'Periodic-x.msh','elementSize',100,'periodic','x');
+mesh(G,'Periodic-xy.msh','elementSize',100,'periodic','both');
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 
