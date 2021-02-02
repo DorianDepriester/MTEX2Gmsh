@@ -36,9 +36,10 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 	n_oldV=size(V,1);
 	
 	%% Track if vertex has be symmetrized
-	Vsym=NaN(size(Vdpb));			% List of new vertices
+	Vsym=NaN(size(Vdpb));		% List of new vertices
 	A_V=zeros(size(Vdpb,1),2);	% Adjancency table
-	n_newV=0;
+	n_newV=0;					% Number of new vertices because of symmetry
+	n_Adj=0;					% Number of two-way correspondances between opposite vertices
 	for i=1:npt
 		new_coords=[];
 		if xsym
@@ -57,25 +58,32 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 		end
 		if ~isempty(new_coords)
 			% Avoid duplicates: check that the vertices does not exist yet
-			n_newV=n_newV+1;
-			A_V(n_newV,1)=dpb(i);
 			d2=(Vdpb(:,1)-new_coords(1)).^2+(Vdpb(:,2)-new_coords(2)).^2;
 			duplicate= d2<=tol^2;
 			if all(~duplicate)
 				% No duplicate found
+				n_newV=n_newV+1;
+				n_Adj=n_Adj+1;
 				Vsym(n_newV,:)=new_coords;
-				A_V(n_newV,2)=n_newV+n_oldV;
+				A_V(n_Adj,1)=dpb(i);
+				A_V(n_Adj,2)=n_newV+n_oldV;
 			else
-				% Slightly change the coordinate of the existing vertex so 
+				% Slightly change the coordinates of the existing vertex so 
 				% that it is exactly symmetric
 				Vdpb(duplicate,1)=new_coords(1);
 				Vdpb(duplicate,2)=new_coords(2);
-				A_V(n_newV,2)=dpb(duplicate);
+				[I,J] = ind2sub(size(A_V),find(A_V==dpb(i)));
+				if isempty(I) || A_V(I,3-J)~=n_newV+n_oldV
+					% Ensure that the correspondance does not exists yet in
+					% adjancency matrix
+					n_Adj=n_Adj+1;
+					A_V(n_Adj,2)=dpb(duplicate);
+				end
 			end
 		end
 	end
 	Vsym=Vsym(1:n_newV,:);		% New vertices due to symmetry
-	A_V=A_V(1:n_newV,:);
+	A_V=A_V(1:n_Adj,:);
 	
 
 	%% Split segments where vertices are added
