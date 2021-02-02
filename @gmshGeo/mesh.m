@@ -36,6 +36,10 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'ElementOrder',order) sets the element order. The
 %	default value is 1 (i.e. linear elements).
 %
+%	MESH(...,'periodic',axis) adds periodic condition on mesh along the
+%	given axis. The axis can be 'X', 'Y' or 'both'. 'None' disables the
+%	periodicity (default).
+%
 %	MESH(...,'Curvature',np) sets the element sizes to be computed
 %	depending on the local curvature (np nodes per 2 pi). np==0 
 %	disables this option (default).
@@ -46,13 +50,6 @@ function fh=mesh(obj,filepath,varargin)
 %	'grain_1', 'grain_2' etc.
 %	If the argument is empty, no prefix is given and the physical
 %	volumes are just numbered as the grains.
-%
-%	MESH(...,'grainPrefix',str) defines the name for the element
-%	sets corresponding to grains (Physical Volumes in Gmsh). E.g 
-%	SAVEGEO(...,'grainPrefix','grain_') will create volumes named
-%	'grain_1', 'grain_2' etc.
-%	If the argument is empty, no prefix is given and the physical
-%	volumes are just numbered as the grains.		
 %
 %	MESH(...,'medium',S) embeds the ROI inside a cuboid of size 
 %	S=[dx dy dz]. The element size in the medium is	increasing with
@@ -68,7 +65,7 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'partition',p) will create p partitions in the mesh for
 %	parallel compouting.
 %
-%	See also savegeo.
+%	See also savegeo, addSymmetry.
 
 	%%	Parse optional parameters
 	p = inputParser;
@@ -83,6 +80,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'grainPrefix','Grain_');
 	addOptional(p,'verbosity',4);
 	addOptional(p,'partition',0);
+	addOptional(p,'periodic','none');
 	parse(p,varargin{:});
 	
 	%% Check whether the file is intended to be mesh or not
@@ -122,6 +120,16 @@ function fh=mesh(obj,filepath,varargin)
 				setpref('MTEX2Gmsh','gmsh_path',path_to_gmsh)
 			end
 		end	
+	end
+	
+	%% Preprocess geometry if periodicity is requested
+	periodic=p.Results.periodic;
+	if any(strcmpi(periodic,{'X','Y','both'}))
+		[obj, A_seg]=addSymmetry(obj,periodic);
+	elseif strcmpi(periodic,'None')
+		A_seg=[];
+	else
+		error('Wrong argument for periodic option. It can be ''x'', ''y'', ''both'' or ''None''.');
 	end
 	
 	
@@ -427,6 +435,13 @@ function fh=mesh(obj,filepath,varargin)
 		end
 		if medium
 			writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces_tot);
+		end
+		
+		if ~isempty(A_seg)
+			fprintf(ffid,'\n// Periodicity conditions\n');
+			for i=1:size(A_seg,1)
+				fprintf(ffid,'Periodic Line {%i} = {%i};\n',A_seg(i,1),A_seg(i,2));
+			end
 		end
 
 		%	Mesh 2D
