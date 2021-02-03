@@ -42,15 +42,15 @@ function varargout=plotSingularPoints(obj, varargin)
 			sp_d=vertcat(sp_d{:});
 			dname='Singular points';
 		else
-			if strcmpi(sp_type,'triplePoints')
+			if strcmp(sp_type,'triplePoints')
 				dname='Triple points';
-			elseif strcmpi(sp_type,'quadruplePoints')
+			elseif strcmp(sp_type,'quadruplePoints')
 				dname='Quadruple points';
-			elseif strcmpi(sp_type,'corners')
+			elseif strcmp(sp_type,'corners')
 				dname='Corners of RoI';
-			elseif strcmpi(sp_type,'doublePointsOnBorder')
+			elseif strcmp(sp_type,'doublePointsOnBorder')
 				dname='Double points on border of RoI';
-			elseif strcmpi(sp_type,'symmetric')
+			elseif strcmp(sp_type,'symmetric')
 				dname='Symmetric points';					
 			else
 				valid_types=vertcat(fieldnames(sp),'all');
