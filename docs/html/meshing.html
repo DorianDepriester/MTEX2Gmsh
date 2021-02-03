@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>meshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-02-02"><meta name="DC.source" content="meshing.m"><style type="text/css">
+      --><title>meshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-02-03"><meta name="DC.source" content="meshing.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Basic use</a></li><li><a href="#5">Constant element size</a></li><li><a href="#8">Size gradient</a></li><li><a href="#10">Element size Depending on the curvature of grain boundaries</a></li><li><a href="#12">Element type</a></li><li><a href="#17">Element order</a></li><li><a href="#18">Periodic mesh</a></li><li><a href="#19">Dump the geometry in an ASCII file</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Basic use</a></li><li><a href="#6">Constant element size</a></li><li><a href="#9">Size gradient</a></li><li><a href="#11">Element size Depending on the curvature of grain boundaries</a></li><li><a href="#13">Element type</a></li><li><a href="#21">Element order</a></li><li><a href="#23">Periodic mesh</a></li><li><a href="#26">Dump the geometry in an ASCII file</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
 </pre><pre class="codeinput">mtexdata <span class="string">small</span>
 [grains, ebsd(<span class="string">'indexed'</span>).grainId]=calcGrains(ebsd(<span class="string">'indexed'</span>));
 ebsd(grains(grains.grainSize&lt;3))=[];	<span class="comment">% Remove small grains</span>
@@ -85,18 +85,18 @@ ebsd = EBSD
  Scan unit : um
  
 </pre><h2>Basic use<a name="3"></a></h2><p>The geometry described by the object <tt>G</tt> can be meshed using the Gmsh software as follows:</p><pre class="codeinput">mesh(G,<span class="string">'default.msh'</span>)
-</pre><p>The above command results in a 1 element thick mesh, consisting in linear wedge elements (6-node 3D elements. The element size is (roughly) equal to the EBSD resolution.</p><h2>Constant element size<a name="5"></a></h2><p>The default element size can be set as follows:</p><pre class="codeinput">mesh(G,<span class="string">'constant_elmtSize.msh'</span>,<span class="string">'ElementSize'</span>,50)
-</pre><p>The resulting mesh cannot be (easily) displayed in MATLAB. Thus, the following illustrates the geometry when opening the mesh file with Gmsh:</p><p><img vspace="5" hspace="5" src="msh_cst.png" alt=""> </p><p>The unit here is the same as the EBSD map (ususally &micro;m).</p><h2>Size gradient<a name="8"></a></h2><p>Let <img src="meshing_eq11753244427067589801.png" alt="$s(\mathbf{x})$"> be the local element size at coordinates <img src="meshing_eq08291690262771002032.png" alt="$\mathbf{x}$">. The element size can be set as an increasing distance from the grains boundary such that:</p><p><img src="meshing_eq04540479506458118980.png" alt="$$s(\mathbf{x})=s_0+kd_{GB}(\mathbf{x})$$"></p><p>with:</p><div><ul><li><img src="meshing_eq02990789776284070316.png" alt="$s_0$"> the element size at grain boundaries</li><li><img src="meshing_eq01433496169881271877.png" alt="$d_{GB}(\mathbf{x})$"> the euclidean distance from the closest grain boundary.</li></ul></div><p>This can be done with the following command:</p><pre class="language-matlab">mesh(G,meshFile,<span class="string">'ElementSize'</span>,s0,<span class="string">'gradient'</span>,k);
-</pre><p><img vspace="5" hspace="5" src="msh_gradient.png" alt=""> </p><h2>Element size Depending on the curvature of grain boundaries<a name="10"></a></h2><p>The local curvature of grain boundaries can be used to set the element size. For instance, the following command use 5 nodes to describe a full circle:</p><pre class="codeinput">mesh(G,<span class="string">'curvature.msh'</span>,<span class="string">'Curvature'</span>,5);
-</pre><p><img vspace="5" hspace="5" src="msh_curvature.png" alt=""> </p><h2>Element type<a name="12"></a></h2><p>The default element type for meshing is linear wedge. It can be changed to hexahedron (or brick element).</p><pre class="codeinput">mesh(G,<span class="string">'brick.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>);
-</pre><p><img vspace="5" hspace="5" src="msh_brick.png" alt=""> </p><p><b>Note:</b> In this case, the mesh will be hex-dominated. Indeed, the resulting mesh may still contain some wedge elements. To avoid it, use <tt>'HexOnly'</tt> option instead.</p><p>Tetrahedron can also be used:</p><pre class="codeinput">mesh(G,<span class="string">'tet.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tet'</span>);
-</pre><p>If you wants to work in 2D only, use triangular (<tt>'Tri'</tt>) or quandrangular (<tt>'Quad'</tt>) elements instead:</p><pre class="codeinput">mesh(G,<span class="string">'Tri.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tri'</span>);
-mesh(G,<span class="string">'Quad.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Quad'</span>);
-</pre><p>Again, <tt>'Quad'</tt> results in quad-dominated mesh. For pure Quad mesh (no triangle), use <tt>'QuadOnly'</tt>.</p><h2>Element order<a name="17"></a></h2><p>The default element order is 1 (linear elements). It can be changed with the <tt>ElementOrder</tt> option. E.g.:</p><pre class="codeinput">mesh(G,<span class="string">'brick-quadratic.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>,<span class="string">'ElementOrder'</span>,2);
-</pre><h2>Periodic mesh<a name="18"></a></h2><p>Periodic conditions can be used on X or/and Y direction for meshing. It consists in ensuring that nodes at opposite borders are at the same coordinates. This is usually requested for periodic conditions in FEM in order to take into account the medium surrounding the RoI.</p><pre class="codeinput">mesh(G,<span class="string">'Periodic-x.msh'</span>,<span class="string">'elementSize'</span>,100,<span class="string">'periodic'</span>,<span class="string">'x'</span>);
-mesh(G,<span class="string">'Periodic-xy.msh'</span>,<span class="string">'elementSize'</span>,100,<span class="string">'periodic'</span>,<span class="string">'both'</span>);
-</pre><h2>Dump the geometry in an ASCII file<a name="19"></a></h2><p>The geometry can be exported into a Gmsh-readable (and somehow human-readable) format using the following command:</p><pre class="codeinput">savegeo(G,<span class="string">'geometry.geo'</span>)
-</pre><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+</pre><p><a href="../default.msh">Open mesh file</a></p><p>The above command results in a 1 element thick mesh, consisting in linear wedge elements (6-node 3D elements. The element size is (roughly) equal to the EBSD resolution.</p><h2>Constant element size<a name="6"></a></h2><p>The default element size can be set as follows:</p><pre class="codeinput">mesh(G,<span class="string">'constant_elmtSize.msh'</span>,<span class="string">'ElementSize'</span>,50)
+</pre><p>The resulting mesh cannot be (easily) displayed in MATLAB. Thus, the following illustrates the geometry when opening the mesh file with Gmsh:</p><p><img vspace="5" hspace="5" src="msh_cst.png" alt=""> </p><p><a href="../constant_elmtSize.msh">Open mesh file</a></p><p>The unit here is the same as the EBSD map (ususally &micro;m).</p><h2>Size gradient<a name="9"></a></h2><p>Let <img src="meshing_eq11753244427067589801.png" alt="$s(\mathbf{x})$"> be the local element size at coordinates <img src="meshing_eq08291690262771002032.png" alt="$\mathbf{x}$">. The element size can be set as an increasing distance from the grains boundary such that:</p><p><img src="meshing_eq04540479506458118980.png" alt="$$s(\mathbf{x})=s_0+kd_{GB}(\mathbf{x})$$"></p><p>with:</p><div><ul><li><img src="meshing_eq02990789776284070316.png" alt="$s_0$"> the element size at grain boundaries</li><li><img src="meshing_eq01433496169881271877.png" alt="$d_{GB}(\mathbf{x})$"> the euclidean distance from the closest grain boundary.</li></ul></div><p>If one wants to mesh with element size equal to 50 at grain boundaries and a slope of k=0.5:</p><pre class="codeinput">mesh(G,<span class="string">'sizeGradient.msh'</span>,<span class="string">'ElementSize'</span>,50,<span class="string">'gradient'</span>,0.5);
+</pre><p><img vspace="5" hspace="5" src="msh_gradient.png" alt=""> </p><p><a href="../sizeGradient.msh">Open mesh file</a></p><h2>Element size Depending on the curvature of grain boundaries<a name="11"></a></h2><p>The local curvature of grain boundaries can be used to set the element size. For instance, the following command use 5 nodes to describe a full circle:</p><pre class="codeinput">mesh(G,<span class="string">'curvature.msh'</span>,<span class="string">'Curvature'</span>,5);
+</pre><p><img vspace="5" hspace="5" src="msh_curvature.png" alt=""> </p><p><a href="../curvature.msh">Open mesh file</a></p><h2>Element type<a name="13"></a></h2><p>The default element type for meshing is linear wedge. It can be changed to hexahedron (or brick element).</p><pre class="codeinput">mesh(G,<span class="string">'brick.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>);
+</pre><p><img vspace="5" hspace="5" src="msh_brick.png" alt=""> </p><p><a href="../brick.msh">Open mesh file</a></p><p><b>Note:</b> In this case, the mesh will be hex-dominated. Indeed, the resulting mesh may still contain some wedge elements. To avoid it, use <tt>'HexOnly'</tt> option instead.</p><p>Tetrahedron can also be used:</p><pre class="codeinput">mesh(G,<span class="string">'tet.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tet'</span>);
+</pre><p><a href="../tet.msh">Open mesh file</a></p><p>If you wants to work in 2D only, use triangular (<tt>'Tri'</tt>) or quandrangular (<tt>'Quad'</tt>) elements instead:</p><pre class="codeinput">mesh(G,<span class="string">'Tri.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Tri'</span>);
+</pre><p><a href="../Tri.msh">Open mesh file</a></p><pre class="codeinput">mesh(G,<span class="string">'Quad.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Quad'</span>);
+</pre><p><a href="../Quad.msh">Open mesh file</a></p><p>Again, <tt>'Quad'</tt> results in quad-dominated mesh. For pure Quad mesh (no triangle), use <tt>'QuadOnly'</tt>.</p><h2>Element order<a name="21"></a></h2><p>The default element order is 1 (linear elements). It can be changed with the <tt>ElementOrder</tt> option. E.g.:</p><pre class="codeinput">mesh(G,<span class="string">'brick-quadratic.msh'</span>,<span class="string">'ElementType'</span>,<span class="string">'Hex'</span>,<span class="string">'ElementOrder'</span>,2);
+</pre><p><a href="../brick-quadratic.msh">Open mesh file</a></p><h2>Periodic mesh<a name="23"></a></h2><p>Periodic conditions can be used on X or/and Y direction for meshing. It consists in ensuring that nodes at opposite borders are at the same coordinates. This is usually requested for periodic conditions in FEM in order to take into account the medium surrounding the RoI.</p><pre class="codeinput">mesh(G,<span class="string">'Periodic-x.msh'</span>,<span class="string">'elementSize'</span>,100,<span class="string">'periodic'</span>,<span class="string">'x'</span>);
+</pre><p><a href="../Periodic-x.msh">Open mesh file</a></p><pre class="codeinput">mesh(G,<span class="string">'Periodic-xy.msh'</span>,<span class="string">'elementSize'</span>,100,<span class="string">'periodic'</span>,<span class="string">'both'</span>);
+</pre><p><a href="../Periodic-xy.msh">Open mesh file</a></p><h2>Dump the geometry in an ASCII file<a name="26"></a></h2><p>The geometry can be exported into a Gmsh-readable (and somehow human-readable) format using the following command:</p><pre class="codeinput">savegeo(G,<span class="string">'geometry.geo'</span>)
+</pre><p><a href="../geometry.geo">Open geo file</a></p><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
@@ -110,6 +110,9 @@ G=gmshGeo(grains);
 % The geometry described by the object |G| can be meshed using the Gmsh
 % software as follows:
 mesh(G,'default.msh')
+%%
+% <../default.msh Open mesh file>
+% 
 
 %%
 % The above command results in a 1 element thick mesh, consisting in
@@ -124,6 +127,8 @@ mesh(G,'constant_elmtSize.msh','ElementSize',50)
 % following illustrates the geometry when opening the mesh file with Gmsh:
 % 
 % <<msh_cst.png>>
+%
+% <../constant_elmtSize.msh Open mesh file>
 % 
 
 %%
@@ -142,13 +147,16 @@ mesh(G,'constant_elmtSize.msh','ElementSize',50)
 % * $d_{GB}(\mathbf{x})$ the euclidean distance from the closest grain
 % boundary.
 %
-% This can be done with the following command:
+% If one wants to mesh with element size equal to 50 at grain boundaries
+% and a slope of k=0.5:
 % 
-%   mesh(G,meshFile,'ElementSize',s0,'gradient',k);
-% 
+mesh(G,'sizeGradient.msh','ElementSize',50,'gradient',0.5);
+ 
 %%
 % 
 % <<msh_gradient.png>>
+%
+% <../sizeGradient.msh Open mesh file>
 % 
 
 
@@ -160,7 +168,8 @@ mesh(G,'curvature.msh','Curvature',5);
 %%
 % 
 % <<msh_curvature.png>>
-% 
+%
+% <../curvature.msh Open mesh file>
 
 
 %% Element type
@@ -170,6 +179,8 @@ mesh(G,'brick.msh','ElementType','Hex');
 %%
 % 
 % <<msh_brick.png>>
+%
+% <../brick.msh Open mesh file>
 % 
 % *Note:* In this case, the mesh will be hex-dominated. Indeed, the
 % resulting mesh may still contain some wedge elements. To avoid it, use 
@@ -178,12 +189,24 @@ mesh(G,'brick.msh','ElementType','Hex');
 %%
 % Tetrahedron can also be used:
 mesh(G,'tet.msh','ElementType','Tet');
+%%
+%
+% <../tet.msh Open mesh file>
+
 
 %%
 % If you wants to work in 2D only, use triangular (|'Tri'|) or quandrangular
 % (|'Quad'|) elements instead:
 mesh(G,'Tri.msh','ElementType','Tri');
+%%
+%
+% <../Tri.msh Open mesh file>
+
 mesh(G,'Quad.msh','ElementType','Quad');
+%%
+%
+% <../Quad.msh Open mesh file>
+
 
 %%
 % Again, |'Quad'| results in quad-dominated mesh. For pure Quad mesh (no
@@ -193,6 +216,9 @@ mesh(G,'Quad.msh','ElementType','Quad');
 % The default element order is 1 (linear elements). It can be changed with
 % the |ElementOrder| option. E.g.:
 mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
+%%
+%
+% <../brick-quadratic.msh Open mesh file>
 
 
 
@@ -202,12 +228,23 @@ mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
 % coordinates. This is usually requested for periodic conditions in FEM in 
 % order to take into account the medium surrounding the RoI.
 mesh(G,'Periodic-x.msh','elementSize',100,'periodic','x');
+%%
+%
+% <../Periodic-x.msh Open mesh file>
+
 mesh(G,'Periodic-xy.msh','elementSize',100,'periodic','both');
+%%
+%
+% <../Periodic-xy.msh Open mesh file>
+
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 
 % human-readable) format using the following command:
 savegeo(G,'geometry.geo')
+%%
+%
+% <../geometry.geo Open geo file>
 
 %% 
 % <html><hr></html>

@@ -10,6 +10,9 @@ G=gmshGeo(grains);
 % The geometry described by the object |G| can be meshed using the Gmsh
 % software as follows:
 mesh(G,'default.msh')
+%%
+% <../default.msh Open mesh file>
+% 
 
 %%
 % The above command results in a 1 element thick mesh, consisting in
@@ -24,6 +27,8 @@ mesh(G,'constant_elmtSize.msh','ElementSize',50)
 % following illustrates the geometry when opening the mesh file with Gmsh:
 % 
 % <<msh_cst.png>>
+%
+% <../constant_elmtSize.msh Open mesh file>
 % 
 
 %%
@@ -42,13 +47,16 @@ mesh(G,'constant_elmtSize.msh','ElementSize',50)
 % * $d_{GB}(\mathbf{x})$ the euclidean distance from the closest grain
 % boundary.
 %
-% This can be done with the following command:
+% If one wants to mesh with element size equal to 50 at grain boundaries
+% and a slope of k=0.5:
 % 
-%   mesh(G,meshFile,'ElementSize',s0,'gradient',k);
-% 
+mesh(G,'sizeGradient.msh','ElementSize',50,'gradient',0.5);
+ 
 %%
 % 
 % <<msh_gradient.png>>
+%
+% <../sizeGradient.msh Open mesh file>
 % 
 
 
@@ -60,7 +68,8 @@ mesh(G,'curvature.msh','Curvature',5);
 %%
 % 
 % <<msh_curvature.png>>
-% 
+%
+% <../curvature.msh Open mesh file>
 
 
 %% Element type
@@ -70,6 +79,8 @@ mesh(G,'brick.msh','ElementType','Hex');
 %%
 % 
 % <<msh_brick.png>>
+%
+% <../brick.msh Open mesh file>
 % 
 % *Note:* In this case, the mesh will be hex-dominated. Indeed, the
 % resulting mesh may still contain some wedge elements. To avoid it, use 
@@ -78,12 +89,24 @@ mesh(G,'brick.msh','ElementType','Hex');
 %%
 % Tetrahedron can also be used:
 mesh(G,'tet.msh','ElementType','Tet');
+%%
+%
+% <../tet.msh Open mesh file>
+
 
 %%
 % If you wants to work in 2D only, use triangular (|'Tri'|) or quandrangular
 % (|'Quad'|) elements instead:
 mesh(G,'Tri.msh','ElementType','Tri');
+%%
+%
+% <../Tri.msh Open mesh file>
+
 mesh(G,'Quad.msh','ElementType','Quad');
+%%
+%
+% <../Quad.msh Open mesh file>
+
 
 %%
 % Again, |'Quad'| results in quad-dominated mesh. For pure Quad mesh (no
@@ -93,6 +116,9 @@ mesh(G,'Quad.msh','ElementType','Quad');
 % The default element order is 1 (linear elements). It can be changed with
 % the |ElementOrder| option. E.g.:
 mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
+%%
+%
+% <../brick-quadratic.msh Open mesh file>
 
 
 
@@ -102,12 +128,23 @@ mesh(G,'brick-quadratic.msh','ElementType','Hex','ElementOrder',2);
 % coordinates. This is usually requested for periodic conditions in FEM in 
 % order to take into account the medium surrounding the RoI.
 mesh(G,'Periodic-x.msh','elementSize',100,'periodic','x');
+%%
+%
+% <../Periodic-x.msh Open mesh file>
+
 mesh(G,'Periodic-xy.msh','elementSize',100,'periodic','both');
+%%
+%
+% <../Periodic-xy.msh Open mesh file>
+
 
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 
 % human-readable) format using the following command:
 savegeo(G,'geometry.geo')
+%%
+%
+% <../geometry.geo Open geo file>
 
 %% 
 % <html><hr></html>
