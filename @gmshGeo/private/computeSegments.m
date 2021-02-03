@@ -120,7 +120,7 @@ ide=find(lengths~=0,1,'last');
 segment_sequences=segment_sequences(1:ide,:);
 
 %% Store singular points as structure
-sp=cell2struct(sp,{'triplePoints','quadruplePoints','corners','doublePointsOnBorder'});
+sp=cell2struct(vertcat(sp,{[]}),{'triplePoints','quadruplePoints','corners','doublePointsOnBorder','symmetric'});
 
 close(h)
 
