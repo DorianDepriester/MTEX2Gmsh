@@ -11,10 +11,10 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 %
 %	ADDSYMMETRY(G,'both') applies symmetry along both X and Y axes.
 %	
-%	[G,A_seg]=ADDSYMMETRY(G) also returns the adjancency matrix for
+%	[G,A_seg]=ADDSYMMETRY(...) also returns the adjancency matrix for
 %	segments (giving indices segments symmetrical to each other).
 %
-%	[G,A_seg,A_V]=ADDSYMMETRY(G) does the same, plus it gives
+%	[G,A_seg,A_V]=ADDSYMMETRY(...) does the same, plus it gives
 %	correspondance between vertices the same way.
 %
 %	NOTE: this function only works on perfectly rectangular RoI. Thus, the
@@ -26,7 +26,7 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 	ysym=strcmpi(direction,'y') || strcmpi(direction,'both');
 		
 	Gr=fixRectangularROI(obj);
-	dpb=Gr.SingularPoints.doublePointsOnBorder;
+	dpb=[Gr.SingularPoints.doublePointsOnBorder; Gr.SingularPoints.symmetric];
 	V=Gr.V;
 	Vdpb=V(dpb,:);			% Singular point to be symmetrized
 
@@ -73,10 +73,11 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 				Vdpb(duplicate,1)=new_coords(1);
 				Vdpb(duplicate,2)=new_coords(2);
 				[I,J] = ind2sub(size(A_V),find(A_V==dpb(i)));
-				if isempty(I) || A_V(I,3-J)~=n_newV+n_oldV
+				if isempty(I) || A_V(I,3-J)~=dpb(duplicate)
 					% Ensure that the correspondance does not exists yet in
 					% adjancency matrix
 					n_Adj=n_Adj+1;
+					A_V(n_Adj,1)=dpb(i);
 					A_V(n_Adj,2)=dpb(duplicate);
 				end
 			end
@@ -84,7 +85,7 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 	end
 	Vsym=Vsym(1:n_newV,:);		% New vertices due to symmetry
 	A_V=A_V(1:n_Adj,:);
-	
+
 
 	%% Split segments where vertices are added
 	V=[V; Vsym];
@@ -157,7 +158,8 @@ function [Gr,varargout]=addSymmetry(obj,direction)
 	Gr.Grains.OuterLoop=outerLoops;
 	Gr.Segments=Segments;
 	id_sym=(1:n_newV)'+n_oldV;	% Ids for all the new vertices
-	Gr.SingularPoints.Symmetric=cast(id_sym,'like',Segments{1});	% Create a new property for singular points
+	sp=[Gr.SingularPoints.symmetric; cast(id_sym,'like',Gr.SingularPoints.symmetric)];
+	Gr.SingularPoints.symmetric=sp;	% Create a new property for singular points
 	
 	if nargout==3
 		varargout{2}=A_V;
