@@ -1,5 +1,14 @@
 classdef gmshGeo
-    
+%	gmshGeo Class for storing descriptions of grains. This class is
+%	intended to convert the description given by MTEX into a Gmsh-readable
+%	format.
+%
+%	Single indexing helps to navigate within the aforementioned 
+%	description. For instance: obj(5) will select the data of the 5th grain 
+%	only. One can also select a series of grains from a given phase. E.g.: 
+%	obj('Forsterite') will keep only the data related to the phase named 
+%	Forsterite.
+
     properties
 		V=[];				%	Vertices (BSpline knots)
 		Segments=cell(0,1); %	Lists of knots, defining the BSplines
@@ -25,12 +34,6 @@ classdef gmshGeo
 		%	rectangle. Use
 		%		GMSHGEO(GRAINS,'rectangularROI',false)
 		%	to drop this feature. 
-		%
-		%	Note that single indexing helps to navigate within those
-		%	descriptions. For instance: obj(5) will select the data of the
-		%	5th grain only. One can also select a series of grains from a
-		%	given phase. E.g.: obj('Forsterite') will keep only the data
-		%	related to the phase named Forsterite.
 		%
 		%	See also calcGrains, mesh, exportGrainProps.
 			if ~isa(grains,'grain2d')
