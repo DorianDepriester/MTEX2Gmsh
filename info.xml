@@ -1,0 +1,12 @@
+<productinfo
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="optional">
+<?xml-stylesheet type="text/xsl" href="optional"?>
+
+<matlabrelease>R2013b</matlabrelease>
+<name>MTEX2Gmsh</name>
+<type>toolbox</type>
+<icon>Logo-titanium</icon>
+<help_location>docs/html</help_location>
+
+</productinfo>
