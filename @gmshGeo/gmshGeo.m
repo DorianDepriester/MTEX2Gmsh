@@ -10,7 +10,7 @@ classdef gmshGeo
 	end
     
     methods
-		function G=gmshGeo(grains)
+		function G=gmshGeo(grains, varargin)
 		%GMSHGEO Object constructor.
 		%
 		%	GMSHGEO(GRAINS) constructs an instance of class GMSHGEO, from
@@ -19,6 +19,12 @@ classdef gmshGeo
 		%	The returned object contains the full descriptions of both the
 		%	geometries and crystallographic properties of each grain (phase
 		%	and orientations).
+		%
+		%	By default, the Region of Interest (RoI) is supposed to be a
+		%	rectangle. Thus, the resulting geometry perfectly fits in a
+		%	rectangle. Use
+		%		GMSHGEO(GRAINS,'rectangularROI',false)
+		%	to drop this feature. 
 		%
 		%	Note that single indexing helps to navigate within those
 		%	descriptions. For instance: obj(5) will select the data of the
@@ -30,6 +36,9 @@ classdef gmshGeo
 			if ~isa(grains,'grain2d')
 				error('Input argument must be of class grain2d');
 			end
+			p = inputParser;
+			addOptional(p,'rectangularROI',true);
+			parse(p,varargin{:});
 
 			[Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
 			G.V=grains.V;
@@ -67,6 +76,10 @@ classdef gmshGeo
 			G.Interfaces=T;
 			G.Segments=Segmts(:,1);
 			G.Resolution=mean(grains.perimeter./cellfun('length',grains.poly));	% Mean vertex-to-vertex distance;
+			
+			if p.Results.rectangularROI
+				G=fixRectangularROI(G);
+			end
 		end
 	end
 	
