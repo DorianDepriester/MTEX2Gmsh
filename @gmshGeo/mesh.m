@@ -78,7 +78,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'Medium',[0 0 0]);
 	addOptional(p,'MediumElementSize',0);
 	addOptional(p,'grainPrefix','Grain_');
-	addOptional(p,'verbosity',1);
+	addOptional(p,'verbosity',4);
 	addOptional(p,'partition',0);
 	addOptional(p,'periodic','none');
 	parse(p,varargin{:});
