@@ -1,4 +1,4 @@
-function sp = singularPoints(grains)
+function sp = findSingularPoints(grains)
 %%SINGULARPOINTS List of singular points in the grains
 %
 %	SINGULARPOINTS(grains,tol) returns an array of indices of all singular

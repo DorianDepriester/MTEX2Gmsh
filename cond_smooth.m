@@ -6,7 +6,7 @@ function [ grains ] = cond_smooth(grains,varargin)
 %	therefore it accepts the same input arguments.
 %
 %	See also grain2d/smooth singularPoints.
-	sp = singularPoints(grains);
+	sp = findSingularPoints(grains);
 	sp = vertcat(sp{:});
 	V_old=grains.boundary.V;
     grains=smooth(grains,varargin{:});

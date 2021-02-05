@@ -11,7 +11,7 @@ function [segment_sequences,outLoop,inLoops,sp] = computeSegments(grains)
 %
 %	See also gmshGeo, singularPoints
 
-sp=singularPoints(grains);
+sp=findSingularPoints(grains);
 sp_all=vertcat(sp{:});	% Store all singular points in a single array
 
 ng=length(grains);
