@@ -26,9 +26,9 @@
 					x=obj.V(Vids,1);
 					y=obj.V(Vids,2);
 					if Vids(1)==Vids(end)
-						XYbs=BSpline([x(1:end-1),y(1:end-1)],'order',2,'periodic',true);
+						XYbs=BSpline([x(1:end-1),y(1:end-1)],'order',4,'periodic',true);
 					else
-						XYbs=BSpline([x,y],'order',2);
+						XYbs=BSpline([x,y],'order',4);
 					end
 					X=[X; NaN; XYbs(:,1)]; %#ok<AGROW>
 					Y=[Y; NaN; XYbs(:,2)]; %#ok<AGROW>
