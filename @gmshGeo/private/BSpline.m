@@ -5,7 +5,8 @@ function BS = BSpline(knots,varargin)
 % The coordinates of the knots are given vertically, i.e. KNOTS(i,j) gives 
 % the j-th coordinate of the i-th knot. The knots can be of any dimension.
 %
-% BSPLINE(KNOTS,'order',n) Uses n -th order approximation (default: n=2)
+% BSPLINE(KNOTS,'order',n) uses n -th order approximation, that is 
+% polynomial function of degree n-1 (default: n=3, for quadratic B-spline).
 %
 % BSPLINE(KNOTS,'nint',m) gives m points per interval (default: m=10)
 %
@@ -16,13 +17,13 @@ function BS = BSpline(knots,varargin)
 %
 
 	ip = inputParser;
-	addOptional(ip,'order',2)
+	addOptional(ip,'order',3)
 	addOptional(ip,'nint',10)
 	addOptional(ip,'periodic',false)
 	parse(ip,varargin{:});
 	
 	if ip.Results.periodic
-		np_rep=ip.Results.order+1;
+		np_rep=ip.Results.order;
 		knots=[knots(end-np_rep+1:end,:); knots; knots(1:np_rep,:)];
 	end	
 	
@@ -38,7 +39,7 @@ function BS = BSpline(knots,varargin)
 	n=(n-1)*(p-1)+1;	% Overall number of queried points
 	y = linspace(0,1,n);
 
-	order=min(ip.Results.order+1,p);
+	order=min(ip.Results.order,p);
 	Xl = zeros(order,order,q);
 	t = [zeros(1,order-1),linspace(0,1,p-order+2),ones(1,order-1)];
 
