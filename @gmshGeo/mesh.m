@@ -180,7 +180,9 @@ function fh=mesh(obj,filepath,varargin)
 
 	grainPrefix=p.Results.grainPrefix;
 
-
+	% Check if the mesh is 2D or 3D
+	mesh3D = strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly');
+	
 	segments=obj.Segments;
 	vtx=obj.V;				
 
@@ -328,7 +330,7 @@ function fh=mesh(obj,filepath,varargin)
 		end
 
 		%	Extrusions
-		if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly')
+		if mesh3D
 			fprintf(ffid,'\n// 3D geometry\n');
 			fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
 			fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
@@ -403,16 +405,21 @@ function fh=mesh(obj,filepath,varargin)
 			fprintf(ffid,'Characteristic Length {1:%i} = %s;\n',n_vtx-4,defaultElementSizeName);
 		end
 
-		%	Physical volumes
+		%	Physical groups
+		if mesh3D
+			groupname='Volume';
+		else
+			groupname='Surface';
+		end		
 		Ids=obj.Grains.GrainID(:);
 		fprintf(ffid,'\n// Sets\n');
 		if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
 			waitbar(step/n_steps,h,'Physical volumes');
 			fprintf(ffid,'For k In {1:%i}\n',n_surfaces);
 			if isempty(grainPrefix)
-				fprintf(ffid,'\tPhysical Volume(k)={k};\n');
+				fprintf(ffid,'\tPhysical %s(k)={k};\n',groupname);
 			elseif isa(grainPrefix,'char')
-				fprintf(ffid,'\tPhysical Volume(Sprintf("%s%%g",k))={k};\n',grainPrefix);
+				fprintf(ffid,'\tPhysical %s(Sprintf("%s%%g",k))={k};\n',groupname,grainPrefix);
 			else
 				error('grainPrefix must be a string or empty')
 			end
@@ -485,8 +492,10 @@ function fh=mesh(obj,filepath,varargin)
 		end
 		
 		% Mesh 3D
-		if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly')
+		if mesh3D
 			fprintf(ffid,'Mesh 3;\n');
+		else
+			fprintf(ffid,'Mesh 2;\n');
 		end
 			
 		% Partition mesh
