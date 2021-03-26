@@ -188,18 +188,26 @@ function fh=mesh(obj,filepath,varargin)
 
 	%%	The microstructure is embedded in a medium
 	if medium
+		ROI=obj.size.ROI;
 		dx=p.Results.Medium(1);
 		dy=p.Results.Medium(2);
-		dz=p.Results.Medium(3);
+		if mesh3D
+			dz=p.Results.Medium(3);
+			dmin=min([([dx dy]-ROI)/2 dz-thickness]);	%	Track the minimum distance between ROI and boundaries of the medium
+			if dmin<0
+				error('The dimensions of the medium must be larger than that of the ROI ([%g %g %g]).',ROI,thickness);
+			end			
+		else
+			dz=0;
+			dmin=min(([dx dy]-ROI)/2);	%	Track the minimum distance between ROI and boundaries of the medium
+			if dmin<0
+				error('The dimensions of the medium must be larger than that of the ROI ([%g %g]).',ROI);
+			end				
+		end
 		xmin=min(vtx(:,1));
 		xmax=max(vtx(:,1));
 		ymin=min(vtx(:,2));
 		ymax=max(vtx(:,2));
-		ROI=obj.size.ROI;
-		dmin=min([([dx dy]-ROI)/2 dz-thickness]);	%	Track the minimum distance between ROI and boundaries of the medium
-		if dmin<0
-			error('The dimensions of the medium must be larger than that of the ROI ([%g %g %g]).',ROI,thickness);
-		end
 		Center=[xmax+xmin ymax+ymin]/2;
 		C1=Center+[-dx -dy]/2;
 		C2=Center+[-dx +dy]/2;
@@ -392,14 +400,20 @@ function fh=mesh(obj,filepath,varargin)
 			writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		%	Outer boundaries of the medium					
 			n_loops=n_loops+1;
 			writeSequence(ffid,'Line Loop',n_loops,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
-			writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
+			if mesh3D
+				writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
+			else
+				writeSequence(ffid,'Plane Surface',n_surfaces+1,[n_loops-1 n_loops]);%	Only one extra surface in 2D
+			end
 			if dz>thickness	
 				fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
 				fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
 			end
-			fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
-			fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
-			fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
+			if mesh3D
+				fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
+				fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
+				fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
+			end
 
 			%	Set the correct element size in the ROI
 			fprintf(ffid,'Characteristic Length {1:%i} = %s;\n',n_vtx-4,defaultElementSizeName);
@@ -441,7 +455,11 @@ function fh=mesh(obj,filepath,varargin)
 			end
 		end
 		if medium
-			writeSequence(ffid,'Physical Volume','"Medium"',n_surfaces+1:n_surfaces_tot);
+			if mesh3D
+				writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1:n_surfaces_tot);
+			else
+				writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1);
+			end
 		end
 		
 		if ~isempty(A_seg)
