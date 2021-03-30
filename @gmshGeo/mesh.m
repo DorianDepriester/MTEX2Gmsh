@@ -262,7 +262,7 @@ function fh=mesh(obj,filepath,varargin)
 
 		%	Mesh parameters
 		thicknessName='th';
-		defaultElementSizeName='e_min';
+		defaultElementSizeName='e_def';
 		mediumThicknessName='th_med';
 		mediumElementSizeName='e_med';
 		fprintf(ffid,'// Mesh parameters\n');
@@ -317,11 +317,7 @@ function fh=mesh(obj,filepath,varargin)
 						fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),defaultElementSizeName);
 					else
 						grain_ids=find(A(i,:));
-						if length(grain_ids)==1
-							fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),local_size_name{grain_ids});
-						else
-							fprintf(ffid,'Point(%i)={%g,%g,0,Min(%s)};\n',i,vtx(i,1),vtx(i,2),strjoin(local_size_name(grain_ids),','));
-						end
+						fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),printMin(local_size_name(grain_ids)));
 					end
 				end
 			end
@@ -701,4 +697,16 @@ function [LineLoops,PlaneSurface]=uniqueLoops(Grains)
 	end
 	LineLoops=LineLoops(1:jmax);
 	close(h);
+end
+
+function s=printMin(a)
+	if ischar(a)
+		s=a;
+	elseif iscell(a)
+		if length(a)==1
+			s=a{1};
+		else
+			s=strcat(sprintf('Min(%s,',a{1}), printMin(a(2:end)), ')');
+		end
+	end
 end
