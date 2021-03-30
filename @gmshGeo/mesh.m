@@ -56,6 +56,13 @@ function fh=mesh(obj,filepath,varargin)
 %	increasing distance from the ROI. The mesh in the 	medium is 
 %	composed of tetrahedron elements.
 %
+%	MESH(...,'LocalSize',S) sets local element size for specified grains. S
+%	is a [N 2] matrix (with N the number of grains where local size is 
+%	prescribed). The structure of S must be as follows:
+%		S=[	grainID_1  size_in_grain1;
+%			grainID_2  size_in_grain2;
+%			...			...			]
+%
 %	MESH(...,'medium',S,'mediumElementSize',value) sets the element
 %	size at the corners of the medium to the given value.
 %
@@ -81,6 +88,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'verbosity',4);
 	addOptional(p,'partition',0);
 	addOptional(p,'periodic','none');
+	addOptional(p,'LocalSize',[]);	
 	parse(p,varargin{:});
 	
 	%% Check whether the file is intended to be mesh or not
@@ -265,6 +273,25 @@ function fh=mesh(obj,filepath,varargin)
 			fprintf(ffid,'%s=%g;\n',mediumElementSizeName,mediumElementSize);
 			n_steps=n_steps+1;					
 		end
+		local_size=p.Results.LocalSize;
+		n_local_size=size(local_size,1);
+		A=false(n_vtx,n_local_size);		
+		if n_local_size
+			local_size_name=cell(0,1);
+			for i=1:n_local_size
+				id_grain=local_size(i,1);
+				local_size_name_i=sprintf('e_Grain_%i',id_grain);
+				local_size_name{i}=local_size_name_i;
+				fprintf(ffid,'%s=%g;\n',local_size_name_i,local_size(i,2));
+				Out=obj.Grains{id_grain,3};
+				Out_segIDs=abs(vertcat(Out{:})); %	Concatenate loop-wise
+				In=obj.Grains{id_grain,4};
+				In=vertcat(In{:});				%	Concatenate grain-wise
+				In_segIDs=abs(vertcat(In{:}));	%	Concatenate loop-wise
+				Vtx_ids=obj.Segments([Out_segIDs; In_segIDs]);
+				A(unique(vertcat(Vtx_ids{:})),i)=true;
+			end
+		end
 
 		%	Set Kernel Geometry
 		if Curv~=0
@@ -286,7 +313,16 @@ function fh=mesh(obj,filepath,varargin)
 				if medium
 					fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),mediumElementSizeName);	%	If the medium is requested, use the related element size by default. Will be overwritten hereafter.
 				else
-					fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),defaultElementSizeName);
+					if isempty(A) || ~any(A(i,:))
+						fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),defaultElementSizeName);
+					else
+						grain_ids=find(A(i,:));
+						if length(grain_ids)==1
+							fprintf(ffid,'Point(%i)={%g,%g,0,%s};\n',i,vtx(i,1),vtx(i,2),local_size_name{grain_ids});
+						else
+							fprintf(ffid,'Point(%i)={%g,%g,0,Min(%s)};\n',i,vtx(i,1),vtx(i,2),strjoin(local_size_name(grain_ids),','));
+						end
+					end
 				end
 			end
 		end
