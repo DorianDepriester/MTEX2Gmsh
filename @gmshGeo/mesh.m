@@ -134,21 +134,6 @@ function fh=mesh(obj,filepath,varargin)
 	
 	
 	%% Format data
-	defaultElementSize=p.Results.ElementSize;
-	medium=~isequal([0 0 0],p.Results.Medium);
-	mediumElementSize=p.Results.MediumElementSize;
-	if ~medium && mediumElementSize %	Missing option 'medium'
-		error('Specify the size of the embedding medium first with option ''medium''.');
-	end
-	if defaultElementSize==0
-		defaultElementSize=obj.Resolution;	%	Use estimate for spatial resolution
-	end		
-	slope=p.Results.gradient;
-	thickness=p.Results.thickness;
-	if thickness==0
-		thickness=defaultElementSize;
-	end
-
 	elem_type= p.Results.ElementType;
 	valid_elem_type={'Wedge','Hex','Tet','Tri','Quad','HexOnly','QuadOnly'};
 	if strcmpi(elem_type,'Tetrahedron')
@@ -166,6 +151,25 @@ function fh=mesh(obj,filepath,varargin)
 	elseif ~any(strcmpi(elem_type,valid_elem_type)) 
 		error('Unrecognized element type. It can be: ''%s''.',strjoin(valid_elem_type,''', '''))
 	end
+	
+	mesh3D = strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly');	
+	defaultElementSize=p.Results.ElementSize;
+	medium=~isequal([0 0 0],p.Results.Medium);
+	mediumElementSize=p.Results.MediumElementSize;
+	if ~medium && mediumElementSize %	Missing option 'medium'
+		error('Specify the size of the embedding medium first with option ''medium''.');
+	end
+	if defaultElementSize==0
+		defaultElementSize=obj.Resolution;	%	Use estimate for spatial resolution
+	end		
+	slope=p.Results.gradient;
+	thickness=p.Results.thickness;
+	if thickness==0
+		thickness=defaultElementSize;
+	elseif ~mesh3D
+		error('%s element are not compatible with 2D mesh.', elem_type);
+	end
+
 
 	Curv=p.Results.Curvature;
 	if Curv~=0
@@ -180,8 +184,6 @@ function fh=mesh(obj,filepath,varargin)
 
 	grainPrefix=p.Results.grainPrefix;
 
-	% Check if the mesh is 2D or 3D
-	mesh3D = strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Wedge')  || strcmpi(elem_type, 'Tet') || strcmpi(elem_type, 'HexOnly');
 	
 	segments=obj.Segments;
 	vtx=obj.V;				
