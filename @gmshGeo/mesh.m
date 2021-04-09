@@ -276,18 +276,19 @@ function fh=mesh(obj,filepath,varargin)
 		
 		% Check if local size is requested
 		local_size=p.Results.LocalSize;
-		n_local_size=size(local_size,1);
-		A=false(n_vtx,n_local_size);		
+		n_local_size=length(local_size);
+		A=false(n_vtx,n_local_size);
+		grains=obj.Grains;
 		if n_local_size
 			local_size_name=cell(0,1);
 			for i=1:n_local_size
-				id_grain=local_size(i,1);
+				id_grain=local_size(i).grainID;
 				local_size_name_i=sprintf('e_Grain_%i',id_grain);
 				local_size_name{i}=local_size_name_i;
-				fprintf(ffid,'%s=%g;\n',local_size_name_i,local_size(i,2));
-				Out=obj.Grains{id_grain,3};
+				fprintf(ffid,'%s=%g;\n',local_size_name_i,local_size(i).sizeAtBoundaries);
+				Out=grains{grains.GrainID==id_grain,3};
 				Out_segIDs=abs(vertcat(Out{:})); %	Concatenate loop-wise
-				In=obj.Grains{id_grain,4};
+				In=grains{grains.GrainID==id_grain,4};
 				In=vertcat(In{:});				%	Concatenate grain-wise
 				In_segIDs=abs(vertcat(In{:}));	%	Concatenate loop-wise
 				Vtx_ids=obj.Segments([Out_segIDs; In_segIDs]);
@@ -461,7 +462,7 @@ function fh=mesh(obj,filepath,varargin)
 		else
 			groupname='Surface';
 		end		
-		Ids=obj.Grains.GrainID(:);
+		Ids=grains.GrainID(:);
 		fprintf(ffid,'\n// Sets\n');
 		if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
 			waitbar(step/n_steps,h,'Physical volumes');
@@ -519,12 +520,25 @@ function fh=mesh(obj,filepath,varargin)
 			fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
 			fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
 		end
-		if slope~=0				
-			fprintf(ffid,'Field[1] = Attractor;\n');
-			fprintf(ffid,'Field[1].EdgesList ={1:%i};\n',n_segments);
-			fprintf(ffid,'Field[2] = MathEval;\n');
-			fprintf(ffid,'Field[2].F = "F1*%g+%g";\n',slope,defaultElementSize(1));
-			fprintf(ffid,'Background Field=2;\n');
+		if slope~=0 || (~isempty(local_size) && any(	[local_size.slope]~=0) )	% Slope is requested for whole mesh or for LocalSize
+			id_field=addAttractorField(ffid, 1, n_segments, defaultElementSize, slope);
+			if ~isempty(local_size)
+				restrict_fields=zeros(1,length(local_size)+1);
+				surface_list=1:n_surfaces;
+				surfaces_with_def_size=surface_list(~ismember(Ids,[local_size.grainID]));
+				id_field=addRestrictField(ffid, id_field+1, surfaces_with_def_size);
+				restrict_fields(1)=id_field;
+				for i=1:length(local_size)
+					id_field=addAttractorField(ffid, id_field+1, n_segments, local_size(i).sizeAtBoundaries, local_size(i).slope);
+					surface_with_local_size=surface_list(ismember(Ids,local_size(i).grainID));
+					id_field=addRestrictField(ffid, id_field+1, surface_with_local_size);
+					restrict_fields(i+1)=id_field;
+				end
+				fprintf(ffid,'Field[%i] = Min;\n',id_field+1);
+				fprintf(ffid,'Field[%i].FieldsList = {%s};\n',id_field+1,strjoin(strsplit(num2str(restrict_fields)),','));
+				id_field=id_field+1;
+			end
+			fprintf(ffid,'Background Field=%i;\n',id_field);
 			fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=0;\n');
 			fprintf(ffid,'Mesh 2;\n');
 			fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');				
