@@ -10,10 +10,12 @@
 			<tocitem target="example.html#7">Export grain properties</tocitem>
 		</tocitem>
 		<tocitem target="meshing.html">Meshing
-			<tocitem target="meshing.html#5">Element size</tocitem>
-			<tocitem target="meshing.html#12">Element type</tocitem>
-			<tocitem target="meshing.html#14">Element order</tocitem>
-			<tocitem target="meshing.html#18">Export as an ASCII file</tocitem>
+			<tocitem target="meshing.html#6">Element size</tocitem>
+			<tocitem target="meshing.html#13">Element type</tocitem>
+			<tocitem target="meshing.html#21">Element order</tocitem>
+			<tocitem target="meshing.html#23">Periodic mesh</tocitem>
+			<tocitem target="meshing.html#26">Export as an ASCII file</tocitem>
+			<tocitem target="AdvancedMeshing.html">Element size depending on grains</tocitem>
 		</tocitem>
 		<tocitem target="plotting.html">Plot</tocitem>
         <tocitem target="custom.html">Customize the geometry

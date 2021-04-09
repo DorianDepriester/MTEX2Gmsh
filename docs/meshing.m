@@ -58,6 +58,10 @@ mesh(G,'sizeGradient.msh','ElementSize',50,'gradient',0.5);
 %
 % <../sizeGradient.msh Open mesh file>
 % 
+% If you need finer control over the element size (for instance if you want
+% to refine the mesh in specific grains), see <AdvancedMeshing.html 
+% advanced options for meshing>.
+%
 
 
 %% Element size Depending on the curvature of grain boundaries
