@@ -273,6 +273,8 @@ function fh=mesh(obj,filepath,varargin)
 			fprintf(ffid,'%s=%g;\n',mediumElementSizeName,mediumElementSize);
 			n_steps=n_steps+1;					
 		end
+		
+		% Check if local size is requested
 		local_size=p.Results.LocalSize;
 		n_local_size=size(local_size,1);
 		A=false(n_vtx,n_local_size);		
