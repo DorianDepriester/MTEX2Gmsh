@@ -63,7 +63,7 @@ function exportGrainProps(obj, filename, varargin)
 		Rodrigues_var_names = {'r_x','r_y','r_z'};
 		flags=horzcat(flags{1:(b-1)},Rodrigues_var_names,flags{(b+1):end});
 		rot=rotation.byEuler(obj.Grains.phi1,obj.Grains.Phi,obj.Grains.phi2);
-		rodr=Rodrigues(rot);
+		rodr=-Rodrigues(rot); % see https://groups.google.com/g/prisms-cpfe-users/c/4B4gRXXa5U0/m/ZJyGmYJaAgAJ
 		newcols = table(rodr.x,rodr.y,rodr.z,'VariableNames',Rodrigues_var_names);
 		data = horzcat(data,newcols);
 	end
