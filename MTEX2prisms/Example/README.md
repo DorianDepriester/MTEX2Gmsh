@@ -16,6 +16,15 @@ The PRISMS-Plasticity parameters are already set in [``prm.prm``](prm.prm) for s
  ---
  **NOTE**
  
-This simulation takes about 5 hours on 32 threads on Intel Xeon Gold 6242 CPU @ 2.80GHz.
+*This simulation takes about 6 hours on 32 threads on Intel Xeon Gold 6242 CPU @ 2.80GHz.*
  
  ---
+ 
+## Results
+Here is an image of the grains we get from MTEX:
+
+<img src="Grains.png" width="400">
+
+and the figure below illustrates the equivalent strain at the end of tensile test:
+
+<img src="Eq_strain.jpeg" width="500">
