@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>AdvancedMeshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-09"><meta name="DC.source" content="AdvancedMeshing.m"><style type="text/css">
+      --><title>AdvancedMeshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-07"><meta name="DC.source" content="AdvancedMeshing.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Set different element size depending on grains</a></li><li><a href="#6">Set different size gradients depending on grains</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Set different element size depending on grains</a></li><li><a href="#7">Set different size gradients depending on grains</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
 </pre><pre class="codeinput">mtexdata <span class="string">small</span>
 [grains, ebsd(<span class="string">'indexed'</span>).grainId]=calcGrains(ebsd(<span class="string">'indexed'</span>));
 ebsd(grains(grains.grainSize&lt;3))=[];	<span class="comment">% Remove small grains</span>
@@ -95,9 +95,6 @@ LS =
     7          30                  0    
 
 </pre><p>Here, the grains labelled 5 and 7 will be meshed with element of size 30. If a unique value is given to as sizes, it is used for all grains (here 5 and 7); multiple values can also be used, e.g.:</p><pre class="codeinput">LS=LocalSize([5 7],[20 30])
-<span class="comment">% Then, pass the object to the mesh command, as a 'LocalSize' name-value</span>
-<span class="comment">% pair argument:</span>
-G.mesh(<span class="string">'small_with_localSize.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
 </pre><pre class="codeoutput">
 LS = 
 
@@ -107,7 +104,8 @@ LS =
     5          20                  0    
     7          30                  0    
 
-</pre><p><img vspace="5" hspace="5" src="small_with_localSize.png" alt=""> </p><p><a href="../small_with_localSize.msh">Open mesh file</a></p><h2>Set different size gradients depending on grains<a name="6"></a></h2><p>In addition to the default size, the slope used for meshing with increasing element size with increasing distance from the grain boundaries can be defined element-wise (see <a href="meshing.html">here</a> for details). For instance, if one wants the set the slope to 0.5 for grains labelled 5 and 7:</p><pre class="codeinput">LS=LocalSize([5 7], 20 , 0.5)
+</pre><p>Then, pass the object to the mesh command, as a 'LocalSize' name-value pair argument:</p><pre class="codeinput">G.mesh(<span class="string">'small_with_localSize.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
+</pre><p><img vspace="5" hspace="5" src="small_with_localSize.png" alt=""> </p><p><a href="../small_with_localSize.msh">Open mesh file</a></p><h2>Set different size gradients depending on grains<a name="7"></a></h2><p>In addition to the default size, the slope used for meshing with increasing element size with increasing distance from the grain boundaries can be defined element-wise (see <a href="meshing.html">here</a> for details). For instance, if one wants the set the slope to 0.5 for grains labelled 5 and 7:</p><pre class="codeinput">LS=LocalSize([5 7], 20 , 0.5)
 G.mesh(<span class="string">'small_with_localGradient.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
 </pre><pre class="codeoutput">
 LS = 
@@ -152,6 +150,8 @@ LS=LocalSize([5 7], 30)
 % If a unique value is given to as sizes, it is used for all grains (here 5
 % and 7); multiple values can also be used, e.g.:
 LS=LocalSize([5 7],[20 30])
+
+%%
 % Then, pass the object to the mesh command, as a 'LocalSize' name-value
 % pair argument:
 G.mesh('small_with_localSize.msh','ElementSize',100,'LocalSize',LS);

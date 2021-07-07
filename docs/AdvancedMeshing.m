@@ -20,6 +20,8 @@ LS=LocalSize([5 7], 30)
 % If a unique value is given to as sizes, it is used for all grains (here 5
 % and 7); multiple values can also be used, e.g.:
 LS=LocalSize([5 7],[20 30])
+
+%%
 % Then, pass the object to the mesh command, as a 'LocalSize' name-value
 % pair argument:
 G.mesh('small_with_localSize.msh','ElementSize',100,'LocalSize',LS);
