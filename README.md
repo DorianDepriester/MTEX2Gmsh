@@ -1,4 +1,6 @@
-# MTEX2Gmsh [![DOI](https://joss.theoj.org/papers/10.21105/joss.02094/status.svg)](https://doi.org/10.21105/joss.02094) [![View MTEX2Gmsh on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://fr.mathworks.com/matlabcentral/fileexchange/71469-mtex2gmsh)
+# MTEX2Gmsh [![DOI](https://joss.theoj.org/papers/10.21105/joss.02094/status.svg)](https://doi.org/10.21105/joss.02094) [![View MTEX2Gmsh on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://fr.mathworks.com/matlabcentral/fileexchange/71469-mtex2gmsh) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 
 This toolbox for Matlab allows to generate meshes from EBSD data. It is intended to perform Finite Element Analysis (FEA) at grain scale on polycrystal imaged by EBSD. It is based on [MTEX](http://mtex-toolbox.github.io/) and [Gmsh](http://gmsh.info/).
 
