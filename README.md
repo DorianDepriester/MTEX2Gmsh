@@ -66,4 +66,4 @@ Please, use the [Issue](https://github.com/DorianDepriester/MTEX2Gmsh/issues) ta
 ## :handshake: Contribute
 You can easily edit the present code so that it fits your needs (as long as this edit complies with the MIT licence). You are also welcome to contribute. In this case, please read [``CONTRIBUTING.md``](CONTRIBUTING.md).
 
-[^1]: There is [a bug](https://gitlab.onelab.info/gmsh/gmsh/-/issues/1796) in Gmsh versions 4.9.0 or earlier which prevent from using the element size gradient, that is why these versions are not recommanded.
+[^1]: There is [a bug](https://gitlab.onelab.info/gmsh/gmsh/-/issues/1796) in Gmsh starting from version 4.9.0 which prevent from using the element size gradient, that is why these versions are not recommended.
