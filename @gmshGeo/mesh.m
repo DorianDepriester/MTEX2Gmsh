@@ -72,6 +72,9 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'partition',p) will create p partitions in the mesh for
 %	parallel compouting.
 %
+%	MESH(...,'Layers',n) will divide the thickness in n layers. The default
+%	value is one.
+%
 %	See also savegeo, addSymmetry.
 
 	%%	Parse optional parameters
@@ -89,6 +92,7 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'partition',0);
 	addOptional(p,'periodic','none');
 	addOptional(p,'LocalSize',[]);	
+    addOptional(p,'Layers',1);
 	parse(p,varargin{:});
 	
 	%% Check whether the file is intended to be mesh or not
@@ -379,7 +383,7 @@ function fh=mesh(obj,filepath,varargin)
 			fprintf(ffid,'\n// 3D geometry\n');
 			fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
 			fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
-			fprintf(ffid,'\tLayers{1};');
+			fprintf(ffid,'\tLayers{%i};',p.Results.Layers); % Number of elements in thickness
 			if ~strcmpi(elem_type, 'Tet')
 				fprintf(ffid,'Recombine;');
 			end
