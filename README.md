@@ -10,7 +10,7 @@ This toolbox defines the class named `gmshGeo`. Once the grains are computed usi
 ## :construction_worker: Requirements
 This toolbox has been designed for MATLAB R2013b, but it may work on newer versions. In addition, the following are required:
 - The [MTEX toolbox](https://mtex-toolbox.github.io/) (v 5.3.1 or newer) should be installed in your MATLAB session;
-- The [Gmsh software](http://gmsh.info/) (v 4.7.1 to 4.8.4[^1]) should be installed on your computer (at least its binary should accessible).
+- The [Gmsh software](http://gmsh.info/) (v 4.7.1 or newer) should be installed on your computer (at least its binary should accessible).
 
 It works on both Windows and Unix-like plateform (Linux and Mac OS).
 
@@ -65,5 +65,3 @@ Please, use the [Issue](https://github.com/DorianDepriester/MTEX2Gmsh/issues) ta
 
 ## :handshake: Contribute
 You can easily edit the present code so that it fits your needs (as long as this edit complies with the MIT licence). You are also welcome to contribute. In this case, please read [``CONTRIBUTING.md``](CONTRIBUTING.md).
-
-[^1]: There is [a bug](https://gitlab.onelab.info/gmsh/gmsh/-/issues/1796) in Gmsh starting from version 4.9.0 which prevent from using the element size gradient, that is why these versions are not recommended.
