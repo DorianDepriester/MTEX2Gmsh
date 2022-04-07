@@ -301,11 +301,7 @@ function fh=mesh(obj,filepath,varargin)
 		end
 
 		%	Set Kernel Geometry
-		if Curv~=0
-			fprintf(ffid,'\nSetFactory("OpenCASCADE");\t // Faster computation of the local curvature\n');
-		else
-			fprintf(ffid,'\nSetFactory("Built-in");\t // Supports squared BSplines\n');					
-		end				
+		fprintf(ffid,'\nSetFactory("OpenCASCADE");\t // Faster computation of the local curvature\n');				
 
 		%	Vertices
 		fprintf(ffid,'\n// Vertices\n');		
