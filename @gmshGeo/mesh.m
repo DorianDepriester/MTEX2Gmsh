@@ -75,6 +75,10 @@ function fh=mesh(obj,filepath,varargin)
 %	MESH(...,'Layers',n) will divide the thickness in n layers. The default
 %	value is one.
 %
+%   MESH(...,'externalizeGBs','GB.msh') will produce an additional surfacic 
+%   mesh consisting of grain boundaries only. This can be usefull for
+%   post-processing representation.
+%
 %	See also savegeo, addSymmetry.
 
 	%%	Parse optional parameters
@@ -93,7 +97,21 @@ function fh=mesh(obj,filepath,varargin)
 	addOptional(p,'periodic','none');
 	addOptional(p,'LocalSize',[]);	
     addOptional(p,'Layers',1);
+    addOptional(p,'GrainBoundariesOnly',false);
+    addOptional(p,'externalizeGBs','');
 	parse(p,varargin{:});
+    
+    
+    externalGBs=p.Results.externalizeGBs;
+    if ~isempty(externalGBs) && ischar(externalGBs)
+        for i=1:length(varargin)-1
+            if isequal(varargin{i},'externalizeGBs')
+                varargin{i}='GrainBoundariesOnly';
+                varargin{i+1}=true;
+            end
+        end
+        obj.mesh(externalGBs, varargin{:});
+    end
 	
 	%% Check whether the file is intended to be mesh or not
 	[~,~,fext] = fileparts(filepath);
@@ -345,159 +363,178 @@ function fh=mesh(obj,filepath,varargin)
 		end
 
 		%	Loops
-		fprintf(ffid,'\n// Closed Loops\n');
-		for i=1:n_loops
-			step=step+1;
-			waitbar(step/n_steps,h,'Line loops')
-			if getappdata(h,'canceling')
-				delete(h)
-				return
-			end					
-			writeSequence(ffid,'Line Loop',i,LineLoops{i});
-		end
+        if p.Results.GrainBoundariesOnly
+            %% The user only requests for Grain boundaries
+            k=1;
+            for i=1:height(obj.Interfaces)
+                fprintf(ffid,'\n// 2D Interfaces\n');
+                Interf=obj.Interfaces(i,1).Row{1};
+                fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
+                surfaces=obj.Interfaces{Interf,'SegmentIDs'}{1};
+                n_surf=length(surfaces);
+                writeSequence(ffid,'Line',[],surfaces)
+                fprintf(ffid,'\tLayers{%i};}\n',p.Results.Layers); % Number of elements in thickness
+                fprintf(ffid,'Physical Surface("%s")={%i:%i};\n',Interf,k,k+n_surf);
+                k=k+n_surf+1;
+            end            
+        else            
+            fprintf(ffid,'\n// Closed Loops\n');
+            for i=1:n_loops
+                step=step+1;
+                waitbar(step/n_steps,h,'Line loops')
+                if getappdata(h,'canceling')
+                    delete(h)
+                    return
+                end					
+                writeSequence(ffid,'Line Loop',i,LineLoops{i});
+            end
 
-		%	Surfaces
-		fprintf(ffid,'\n// Grains\n');
-		for i=1:n_surfaces
-			step=step+1;
-			waitbar(step/n_steps,h,'Individual grains')
-			if getappdata(h,'canceling')
-				delete(h)
-				return
-			end				    
-			writeSequence(ffid,'Plane Surface',i,PlaneSurface{i});
-		end
+            %	Surfaces
+            fprintf(ffid,'\n// Grains\n');
+            for i=1:n_surfaces
+                step=step+1;
+                waitbar(step/n_steps,h,'Individual grains')
+                if getappdata(h,'canceling')
+                    delete(h)
+                    return
+                end				    
+                writeSequence(ffid,'Plane Surface',i,PlaneSurface{i});
+            end
 
-		%	Use quandrangular elements for 2D meshing
-		if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Quad') || strcmpi(elem_type, 'HexOnly') || strcmpi(elem_type, 'QuadOnly')
-			fprintf(ffid,'\n// Quadrangular elements\n');
-			fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
-		end
+            %	Use quandrangular elements for 2D meshing
+            if strcmpi(elem_type, 'Hex') || strcmpi(elem_type, 'Quad') || strcmpi(elem_type, 'HexOnly') || strcmpi(elem_type, 'QuadOnly')
+                fprintf(ffid,'\n// Quadrangular elements\n');
+                fprintf(ffid,'Recombine Surface{1:%i};\n',n_surfaces);
+            end
 
-		%	Extrusions
-		if mesh3D
-			fprintf(ffid,'\n// 3D geometry\n');
-			fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
-			fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
-			fprintf(ffid,'\tLayers{%i};',p.Results.Layers); % Number of elements in thickness
-			if ~strcmpi(elem_type, 'Tet')
-				fprintf(ffid,'Recombine;');
-			end
-			fprintf(ffid,'\n}\n');
-		end
+            %	Extrusions
+            if mesh3D
+                fprintf(ffid,'\n// 3D geometry\n');
+                fprintf(ffid,'Extrude {0,0,%s}{\n\t',thicknessName);
+                fprintf(ffid,'Surface{1:%i};\n',n_surfaces);
+                fprintf(ffid,'\tLayers{%i};',p.Results.Layers); % Number of elements in thickness
+                if ~strcmpi(elem_type, 'Tet')
+                    fprintf(ffid,'Recombine;');
+                end
+                fprintf(ffid,'\n}\n');
+            end
 
-		%	Add surrounding medium (if requested)
-		if medium
-			n_surfaces_tot=n_surfaces+1; %	At least, one more surface exists (surrounding the ROI)
-			waitbar(step/n_steps,h,'Adding surrounding medium...')
-			fprintf(ffid,'\n// Add surrounding medium\n');
+            %	Add surrounding medium (if requested)
+            if medium
+                n_surfaces_tot=n_surfaces+1; %	At least, one more surface exists (surrounding the ROI)
+                waitbar(step/n_steps,h,'Adding surrounding medium...')
+                fprintf(ffid,'\n// Add surrounding medium\n');
 
-			%	Create a volume beneath the grains
-			BL=borderLoop(obj);
-			if dz>thickness		%	Add medium below the ROI
-				fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	%	Extrude each segment of the outer boundary and keep indices of the resulting segments
-				writeSequence(ffid,'Line',[],abs(BL));
-				fprintf(ffid,'};\n');
-				n_loops=n_loops+1;
-				fprintf(ffid,'Line Loop(%i)={',n_loops);			%	Line loop on the opposite side of the ROI
-				for i=1:length(BL)
-					j=(i-1)*4;	%	Index of the opposite segment from segment i
-					if BL(i)>0
-						fprintf(ffid,'L[%i]',j);
-					else
-						fprintf(ffid,'-L[%i]',j);	%	Segments are oriented with respect to their parents
-					end
-					if i~=length(BL)
-						fprintf(ffid,',');
-					else
-						fprintf(ffid,'};\n');
-					end
-					if mod(i,50)==0
-						fprintf(ffid,'\n\t');
-					end
-				end
-				id_SurfaceLoop=n_surfaces+1;
-				writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops);
-				fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
-				for i=1:length(BL)	%	List of side surfaces (results from extrusions)
-					j=i*4-3;
-					fprintf(ffid,'L[%i],',j);
-					if mod(i,50)==0
-						fprintf(ffid,'\n\t');
-					end
-				end
-				fprintf(ffid,'\n\t');
-				fprintf(ffid,'1:%i\n};\n',n_surfaces+1); %	List of upper faces (original grains)
-				writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
-				n_surfaces_tot=n_surfaces_tot+2;	%	Two more surfaces are necessaray 
-			end
+                %	Create a volume beneath the grains
+                BL=borderLoop(obj);
+                if dz>thickness		%	Add medium below the ROI
+                    fprintf(ffid,'L[]=Extrude{0,0,%s-%s}{\n\t',thicknessName,mediumThicknessName);	%	Extrude each segment of the outer boundary and keep indices of the resulting segments
+                    writeSequence(ffid,'Line',[],abs(BL));
+                    fprintf(ffid,'};\n');
+                    n_loops=n_loops+1;
+                    fprintf(ffid,'Line Loop(%i)={',n_loops);			%	Line loop on the opposite side of the ROI
+                    for i=1:length(BL)
+                        j=(i-1)*4;	%	Index of the opposite segment from segment i
+                        if BL(i)>0
+                            fprintf(ffid,'L[%i]',j);
+                        else
+                            fprintf(ffid,'-L[%i]',j);	%	Segments are oriented with respect to their parents
+                        end
+                        if i~=length(BL)
+                            fprintf(ffid,',');
+                        else
+                            fprintf(ffid,'};\n');
+                        end
+                        if mod(i,50)==0
+                            fprintf(ffid,'\n\t');
+                        end
+                    end
+                    id_SurfaceLoop=n_surfaces+1;
+                    writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops);
+                    fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
+                    for i=1:length(BL)	%	List of side surfaces (results from extrusions)
+                        j=i*4-3;
+                        fprintf(ffid,'L[%i],',j);
+                        if mod(i,50)==0
+                            fprintf(ffid,'\n\t');
+                        end
+                    end
+                    fprintf(ffid,'\n\t');
+                    fprintf(ffid,'1:%i\n};\n',n_surfaces+1); %	List of upper faces (original grains)
+                    writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
+                    n_surfaces_tot=n_surfaces_tot+2;	%	Two more surfaces are necessaray 
+                end
 
-			%	Create a volume surrounding the ROI
-			n_loops=n_loops+1;
-			writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		%	Outer boundaries of the medium					
-			n_loops=n_loops+1;
-			writeSequence(ffid,'Line Loop',n_loops,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
-			if mesh3D
-				writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
-			else
-				writeSequence(ffid,'Plane Surface',n_surfaces+1,[n_loops-1 n_loops]);%	Only one extra surface in 2D
-			end
-			if dz>thickness	
-				fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
-				fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
-			end
-			if mesh3D
-				fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
-				fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
-				fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
-			end
+                %	Create a volume surrounding the ROI
+                n_loops=n_loops+1;
+                writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		%	Outer boundaries of the medium					
+                n_loops=n_loops+1;
+                writeSequence(ffid,'Line Loop',n_loops,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
+                if mesh3D
+                    writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
+                else
+                    writeSequence(ffid,'Plane Surface',n_surfaces+1,[n_loops-1 n_loops]);%	Only one extra surface in 2D
+                end
+                if dz>thickness	
+                    fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
+                    fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
+                end
+                if mesh3D
+                    fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
+                    fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
+                    fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
+                end
 
-			%	Set the correct element size in the ROI
-			fprintf(ffid,'Characteristic Length {1:%i} = %s;\n',n_vtx-4,defaultElementSizeName);
-		end
+                %	Set the correct element size in the ROI
+                fprintf(ffid,'Characteristic Length {1:%i} = %s;\n',n_vtx-4,defaultElementSizeName);
+            end
+        
 
-		%	Physical groups
-		if mesh3D
-			groupname='Volume';
-		else
-			groupname='Surface';
-		end		
-		Ids=grains.GrainID(:);
-		fprintf(ffid,'\n// Sets\n');
-		if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
-			waitbar(step/n_steps,h,'Physical volumes');
-			fprintf(ffid,'For k In {1:%i}\n',n_surfaces);
-			if isempty(grainPrefix)
-				fprintf(ffid,'\tPhysical %s(k)={k};\n',groupname);
-			elseif isa(grainPrefix,'char')
-				fprintf(ffid,'\tPhysical %s(Sprintf("%s%%g",k))={k};\n',groupname,grainPrefix);
-			else
-				error('grainPrefix must be a string or empty')
-			end
-			fprintf(ffid,'EndFor\n');
-		else							%	Instead, use the ID given by MTEX
-			for i=1:n_surfaces
-				step=step+1;
-				waitbar(step/n_steps,h,'Physical volumes')
-				if getappdata(h,'canceling')
-					return
-				end
-				if isempty(grainPrefix)
-					fprintf(ffid,'Physical Volume(%i)={%i};\n',grainPrefix,Ids(i),i);
-				elseif isa(grainPrefix,'char')
-					fprintf(ffid,'Physical Volume("%s_%i")={%i};\n',grainPrefix,Ids(i),i);
-				else
-					error('grainPrefix must be a string or empty')
-				end
-			end
-		end
-		if medium
-			if mesh3D
-				writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1:n_surfaces_tot);
-			else
-				writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1);
-			end
-		end
+            %	Physical groups
+            if mesh3D
+                groupname='Volume';
+            else
+                groupname='Surface';
+            end		
+            Ids=grains.GrainID(:);
+            fprintf(ffid,'\n// Sets\n');
+            if all(Ids==(1:n_surfaces)')	%	Grains are numbered subsequently
+                waitbar(step/n_steps,h,'Physical volumes');
+                fprintf(ffid,'For k In {1:%i}\n',n_surfaces);
+                if isempty(grainPrefix)
+                    fprintf(ffid,'\tPhysical %s(k)={k};\n',groupname);
+                elseif isa(grainPrefix,'char')
+                    fprintf(ffid,'\tPhysical %s(Sprintf("%s%%g",k))={k};\n',groupname,grainPrefix);
+                else
+                    error('grainPrefix must be a string or empty')
+                end
+                fprintf(ffid,'EndFor\n');
+            else							%	Instead, use the ID given by MTEX
+                for i=1:n_surfaces
+                    step=step+1;
+                    waitbar(step/n_steps,h,'Physical volumes')
+                    if getappdata(h,'canceling')
+                        return
+                    end
+                    if isempty(grainPrefix)
+                        fprintf(ffid,'Physical Volume(%i)={%i};\n',grainPrefix,Ids(i),i);
+                    elseif isa(grainPrefix,'char')
+                        fprintf(ffid,'Physical Volume("%s_%i")={%i};\n',grainPrefix,Ids(i),i);
+                    else
+                        error('grainPrefix must be a string or empty')
+                    end
+                end
+            end
+            if medium
+                if mesh3D
+                    writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1:n_surfaces_tot);
+                else
+                    writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1);
+                end
+            end
+        
+        end
+        
 		
 		if ~isempty(A_seg)
 			fprintf(ffid,'\n// Periodicity conditions\n');
@@ -506,61 +543,63 @@ function fh=mesh(obj,filepath,varargin)
 			end
 		end
 
-		%	Mesh 2D
+		%	Mesh 2D            
 		fprintf(ffid,'\n// Mesh\n');
-		fprintf(ffid,'Mesh.SubdivisionAlgorithm=0;\n');		% Turn off subdivision
-		if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
-			fprintf(ffid,'Mesh.Algorithm=8;\n');			% Use 'Frontal-Delaunay for quads'
-		else
-			fprintf(ffid,'Mesh.Algorithm=6;\n');			% Use 'Frontal-Delaunay'
-		end		
-		fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
-		fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
-		if Curv~=0
-			fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
-			fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
-		end
-		if slope~=0 || (~isempty(local_size) && any(	[local_size.slope]~=0) )	% Slope is requested for whole mesh or for LocalSize
-			id_field=addAttractorField(ffid, 1, n_segments, defaultElementSize, slope);
-			if ~isempty(local_size)
-				restrict_fields=zeros(1,length(local_size)+1);
-				surface_list=1:n_surfaces;
-				surfaces_with_def_size=surface_list(~ismember(Ids,[local_size.grainID]));
-				id_field=addRestrictField(ffid, id_field+1, surfaces_with_def_size);
-				restrict_fields(1)=id_field;
-				for i=1:length(local_size)
-					id_field=addAttractorField(ffid, id_field+1, n_segments, local_size(i).sizeAtBoundaries, local_size(i).slope);
-					surface_with_local_size=surface_list(ismember(Ids,local_size(i).grainID));
-					id_field=addRestrictField(ffid, id_field+1, surface_with_local_size);
-					restrict_fields(i+1)=id_field;
-				end
-				fprintf(ffid,'Field[%i] = Min;\n',id_field+1);
-				fprintf(ffid,'Field[%i].FieldsList = {%s};\n',id_field+1,strjoin(strsplit(num2str(restrict_fields)),','));
-				id_field=id_field+1;
-			end
-			fprintf(ffid,'Background Field=%i;\n',id_field);
-			fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=0;\n');
-			fprintf(ffid,'Mesh 2;\n');
-			fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');				
-		end
-		if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
-			fprintf(ffid,'Mesh.RecombineAll = 0;\n');
-			fprintf(ffid,'Mesh.SaveParametric = 0;\n');
-			fprintf(ffid,'Mesh.RecombinationAlgorithm = 0;\n');	% Simple algorithm
-			fprintf(ffid,'Mesh.SecondOrderLinear = 1;\n');		% 'we don't have the parametrization of the surface' dixit Geuzaine
-			fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');		% Full quad
-			fprintf(ffid,'Mesh.MeshSizeFactor=%g;\n', 1);
-			fprintf(ffid,'RefineMesh;\n');
-			if slope==0.0
-				fprintf(ffid,'Mesh 2;\n');
-			end
-		end		
-		if medium
-			fprintf(ffid,'Mesh.Algorithm3D=4;\n'); %	Use 'Frontal' algorithm for hybrid structured/unstructured grids
-		end
+        if ~p.Results.GrainBoundariesOnly
+            fprintf(ffid,'Mesh.SubdivisionAlgorithm=0;\n');		% Turn off subdivision
+            if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
+                fprintf(ffid,'Mesh.Algorithm=8;\n');			% Use 'Frontal-Delaunay for quads'
+            else
+                fprintf(ffid,'Mesh.Algorithm=6;\n');			% Use 'Frontal-Delaunay'
+            end		
+            fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
+            fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
+            if Curv~=0
+                fprintf(ffid,'Mesh.CharacteristicLengthFromCurvature = 1;\n');
+                fprintf(ffid,'Mesh.MinimumCirclePoints = %i; // points per 2*pi\n',Curv);
+            end
+            if slope~=0 || (~isempty(local_size) && any(	[local_size.slope]~=0) )	% Slope is requested for whole mesh or for LocalSize
+                id_field=addAttractorField(ffid, 1, n_segments, defaultElementSize, slope);
+                if ~isempty(local_size)
+                    restrict_fields=zeros(1,length(local_size)+1);
+                    surface_list=1:n_surfaces;
+                    surfaces_with_def_size=surface_list(~ismember(Ids,[local_size.grainID]));
+                    id_field=addRestrictField(ffid, id_field+1, surfaces_with_def_size);
+                    restrict_fields(1)=id_field;
+                    for i=1:length(local_size)
+                        id_field=addAttractorField(ffid, id_field+1, n_segments, local_size(i).sizeAtBoundaries, local_size(i).slope);
+                        surface_with_local_size=surface_list(ismember(Ids,local_size(i).grainID));
+                        id_field=addRestrictField(ffid, id_field+1, surface_with_local_size);
+                        restrict_fields(i+1)=id_field;
+                    end
+                    fprintf(ffid,'Field[%i] = Min;\n',id_field+1);
+                    fprintf(ffid,'Field[%i].FieldsList = {%s};\n',id_field+1,strjoin(strsplit(num2str(restrict_fields)),','));
+                    id_field=id_field+1;
+                end
+                fprintf(ffid,'Background Field=%i;\n',id_field);
+                fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=0;\n');
+                fprintf(ffid,'Mesh 2;\n');
+                fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');				
+            end
+            if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
+                fprintf(ffid,'Mesh.RecombineAll = 0;\n');
+                fprintf(ffid,'Mesh.SaveParametric = 0;\n');
+                fprintf(ffid,'Mesh.RecombinationAlgorithm = 0;\n');	% Simple algorithm
+                fprintf(ffid,'Mesh.SecondOrderLinear = 1;\n');		% 'we don't have the parametrization of the surface' dixit Geuzaine
+                fprintf(ffid,'Mesh.SubdivisionAlgorithm=1;\n');		% Full quad
+                fprintf(ffid,'Mesh.MeshSizeFactor=%g;\n', 1);
+                fprintf(ffid,'RefineMesh;\n');
+                if slope==0.0
+                    fprintf(ffid,'Mesh 2;\n');
+                end
+            end		
+            if medium
+                fprintf(ffid,'Mesh.Algorithm3D=4;\n'); %	Use 'Frontal' algorithm for hybrid structured/unstructured grids
+            end
+        end
 		
 		% Mesh 3D
-		if mesh3D
+		if mesh3D && ~p.Results.GrainBoundariesOnly
 			fprintf(ffid,'Mesh 3;\n');
 		else
 			fprintf(ffid,'Mesh 2;\n');
