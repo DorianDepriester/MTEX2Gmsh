@@ -70,8 +70,10 @@ function Gr=fixRectangularROI(obj)
 				Segments{end+1}=new_seg;
 				id_new_seg=length(Segments);
 				for k=1:length(outerLoops)
-					if ismember(id_seg_min,outerLoops{k})
-						outerLoops{k}=[outerLoops{k}; id_new_seg];	% Update definition for the grains
+                    outerLoop_k=outerLoops{k};
+                    p=find(id_seg_min==outerLoop_k);
+					if ~isempty(p)
+						outerLoops{k}=[outerLoop_k(1:p); id_new_seg; outerLoop_k(p+1:end)];	% Update definition for the grains
 					end
 				end
 				border=[border; id_new_seg];	% Add the new segment to border list		
