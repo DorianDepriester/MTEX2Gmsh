@@ -424,6 +424,7 @@ function fh=mesh(obj,filepath,varargin)
                 n_surfaces_tot=n_surfaces+1; %	At least, one more surface exists (surrounding the ROI)
                 waitbar(step/n_steps,h,'Adding surrounding medium...')
                 fprintf(ffid,'\n// Add surrounding medium\n');
+                idx_shift=10000;   % Avoid duplicates line loops
 
                 %	Create a volume beneath the grains
                 BL=borderLoop(obj);
@@ -432,7 +433,7 @@ function fh=mesh(obj,filepath,varargin)
                     writeSequence(ffid,'Line',[],abs(BL));
                     fprintf(ffid,'};\n');
                     n_loops=n_loops+1;
-                    fprintf(ffid,'Line Loop(%i)={',n_loops);			%	Line loop on the opposite side of the ROI
+                    fprintf(ffid,'Line Loop(%i)={',n_loops+idx_shift);			%	Line loop on the opposite side of the ROI
                     for i=1:length(BL)
                         j=(i-1)*4;	%	Index of the opposite segment from segment i
                         if BL(i)>0
@@ -450,8 +451,8 @@ function fh=mesh(obj,filepath,varargin)
                         end
                     end
                     id_SurfaceLoop=n_surfaces+1;
-                    writeSequence(ffid,'Plane Surface',id_SurfaceLoop,n_loops);
-                    fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop);
+                    writeSequence(ffid,'Plane Surface',id_SurfaceLoop+idx_shift+1,n_loops+idx_shift);
+                    fprintf(ffid,'Surface Loop(%i)={\n\t',id_SurfaceLoop+idx_shift+1);
                     for i=1:length(BL)	%	List of side surfaces (results from extrusions)
                         j=i*4-3;
                         fprintf(ffid,'L[%i],',j);
@@ -460,28 +461,28 @@ function fh=mesh(obj,filepath,varargin)
                         end
                     end
                     fprintf(ffid,'\n\t');
-                    fprintf(ffid,'1:%i\n};\n',n_surfaces+1); %	List of upper faces (original grains)
-                    writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop);
+                    fprintf(ffid,'1:%i,%i\n};\n',n_surfaces, id_SurfaceLoop+idx_shift+1); %	List of upper faces (original grains)
+                    writeSequence(ffid,'Volume',n_surfaces+1,id_SurfaceLoop+idx_shift+1);
                     n_surfaces_tot=n_surfaces_tot+2;	%	Two more surfaces are necessaray 
                 end
 
                 %	Create a volume surrounding the ROI
                 n_loops=n_loops+1;
-                writeSequence(ffid,'Line Loop',n_loops,n_segments-3:n_segments);		%	Outer boundaries of the medium					
+                writeSequence(ffid,'Line Loop',n_loops+2*idx_shift+1,n_segments-3:n_segments);		%	Outer boundaries of the medium					
                 n_loops=n_loops+1;
-                writeSequence(ffid,'Line Loop',n_loops,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
+                writeSequence(ffid,'Line Loop',n_loops+2*idx_shift+1,BL);							%	Outer boundaries of the ROI/Inner boundaries of the medium
                 if mesh3D
-                    writeSequence(ffid,'Plane Surface',n_surfaces+2,[n_loops-1 n_loops]);%	Upper surface of the medium
+                    writeSequence(ffid,'Plane Surface',n_surfaces+2+2*idx_shift,[n_loops-1 n_loops]+2*idx_shift+1);%	Upper surface of the medium
                 else
-                    writeSequence(ffid,'Plane Surface',n_surfaces+1,[n_loops-1 n_loops]);%	Only one extra surface in 2D
+                    writeSequence(ffid,'Plane Surface',n_surfaces+1+2*idx_shift,[n_loops-1 n_loops]+2*idx_shift+1);%	Only one extra surface in 2D
                 end
                 if dz>thickness	
                     fprintf(ffid,'Extrude {0,0,%s-%s}{\n',thicknessName,mediumThicknessName);
-                    fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2);
+                    fprintf(ffid,'\tSurface{%i};\n}\n',n_surfaces+2+2*idx_shift);
                 end
                 if mesh3D
                     fprintf(ffid,'Extrude {0,0,%s}{\n',thicknessName);
-                    fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2);
+                    fprintf(ffid,'\tSurface{%i};\n',n_surfaces+2+2*idx_shift);
                     fprintf(ffid,'\tLayers{1}; Recombine;\n}\n');
                 end
 
