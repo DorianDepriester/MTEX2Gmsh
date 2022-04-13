@@ -319,7 +319,7 @@ function fh=mesh(obj,filepath,varargin)
 		end
 
 		%	Set Kernel Geometry
-		fprintf(ffid,'\nSetFactory("OpenCASCADE");\t // Faster computation of the local curvature\n');				
+		fprintf(ffid,'\nSetFactory("OpenCASCADE");\n');				
 
 		%	Vertices
 		fprintf(ffid,'\n// Vertices\n');		
