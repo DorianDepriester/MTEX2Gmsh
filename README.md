@@ -10,7 +10,7 @@ This toolbox defines the class named `gmshGeo`. Once the grains are computed usi
 ## :construction_worker: Requirements
 This toolbox has been designed for MATLAB R2013b, but it may work on newer versions. In addition, the following are required:
 - The [MTEX toolbox](https://mtex-toolbox.github.io/) (v 5.3.1 or newer) should be installed in your MATLAB session;
-- The [Gmsh software](http://gmsh.info/) (v 4.7.1 or newer) should be installed on your computer (at least its binary should accessible).
+- The [Gmsh software](http://gmsh.info/) (v 4.9.5 or newer) should be installed on your computer (at least its binary should accessible).
 
 It works on both Windows and Unix-like plateform (Linux and Mac OS).
 
