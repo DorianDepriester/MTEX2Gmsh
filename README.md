@@ -39,6 +39,13 @@ Visit the corresponding [site](https://doriandepriester.github.io/MTEX2Gmsh/) to
 ## :gear: Unit test
 The aforementioned examples can be easily reproduced. In addition, the reader can check out the reproductibility of minimal example on [Code Ocean](https://codeocean.com/capsule/8758800/tree/v2).
 
+## :sunglasses: Graphical User Interface
+If you don't have time to read the [documentation](https://doriandepriester.github.io/MTEX2Gmsh/html/index.html), check out the Graphical User Interface (GUI) by running:
+
+    MTEX2GmshGUI
+    
+It will open a dialog box gathering all the parameters available in MTEX2Gmsh in a more user-friendly way.
+
 ## :books: Reference
 If you use this work, please cite the following paper:
 
