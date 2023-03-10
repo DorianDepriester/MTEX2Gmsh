@@ -17,8 +17,8 @@ function sp = findSingularPoints(grains)
 	
 	%% Quadruple points
 	gB=grains.boundary;
-    I_VF = gB.I_VF;
-    I_VG = (I_VF * gB.I_FG)==2;
+    I_VF = double(gB.I_VF);
+    I_VG = (I_VF * double(gB.I_FG))==2;
     itP = full(sum(I_VG,2)>2 & sum(I_VF,2)>3);	% Due to Voronoi decomposition, the vertex order can actually be higher than 4
     qp=find(itP);
 	
