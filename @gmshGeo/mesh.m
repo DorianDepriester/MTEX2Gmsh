@@ -530,7 +530,7 @@ function fh=mesh(obj,filepath,varargin)
                 if mesh3D
                     writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1:n_surfaces_tot);
                 else
-                    writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1);
+                    writeSequence(ffid,sprintf('Physical %s',groupname),'"Medium"',n_surfaces+1+2*idx_shift);
                 end
             end
         
