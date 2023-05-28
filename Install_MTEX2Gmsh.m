@@ -24,7 +24,7 @@ else
 end
 answer=questdlg(msg, title,'Yes',no,'Yes');
 if val && ~strcmp(answer,no) || ~val && strcmp(answer,no)
-	if isunix
+	if isunix || ismac
 		[file,folder]=uigetfile('','Locate the executable file for Gmsh');
 	else
 		[file,folder]=uigetfile('*.exe','Locate the executable file for Gmsh');
