@@ -549,10 +549,15 @@ function fh=mesh(obj,filepath,varargin)
         if ~p.Results.GrainBoundariesOnly
             fprintf(ffid,'Mesh.SubdivisionAlgorithm=0;\n');		% Turn off subdivision
             if strcmpi(elem_type, 'HexOnly')  || strcmpi(elem_type, 'QuadOnly')
-                fprintf(ffid,'Mesh.Algorithm=8;\n');			% Use 'Frontal-Delaunay for quads'
+                meshAlgo=8; % Use 'Frontal-Delaunay for quads'
             else
-                fprintf(ffid,'Mesh.Algorithm=6;\n');			% Use 'Frontal-Delaunay'
-            end		
+                if slope~=0 && ~mesh3D
+                    meshAlgo=7; % Use 'bamg' https://gitlab.onelab.info/gmsh/gmsh/-/blob/master/tutorials/t17.geo
+                else
+                    meshAlgo=6; % Use 'Frontal-Delaunay'
+                end
+            end	
+            fprintf(ffid,'Mesh.Algorithm=%i;\n', meshAlgo);
             fprintf(ffid,'Mesh.CharacteristicLengthExtendFromBoundary=1;\n');
             fprintf(ffid,'Mesh.ElementOrder=%i;\n',p.Results.ElementOrder);
             if Curv~=0
