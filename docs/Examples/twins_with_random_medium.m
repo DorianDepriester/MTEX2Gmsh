@@ -1,3 +1,10 @@
+%% Purpose of this file
+% This file illustrates a way to add a medium surounding the RoI where
+% random grains are created. These grains have orientations randomly picked
+% from the Orientation Distribution Function (ODF), so that its the mean
+% behaviour reflects that of the RoI.
+
+%% Load EBSD
 mtexdata twins
 ebsd=ebsd('indexed');
 
@@ -8,15 +15,17 @@ ymin=min(ebsd.y);
 ymax=max(ebsd.y);
 
 med_width=[10 10];  % Width of medium in x and y directions, around the RoI
-n_rand=1000;
+n_rand=1000;        % Number of random points (not the same as the numer of dummy grains!)
 Xmin=xmin-med_width(1);
 Xmax=xmax+med_width(1);
 Ymin=ymin-med_width(2);
 Ymax=ymax+med_width(2);
+
+% Random locations in RoI + medium
 X=rand(n_rand,2).*repmat([Xmax-Xmin Ymax-Ymin],n_rand,1)+repmat([Xmin Ymin],n_rand,1);
 in_roi=(X(:,1)>xmin & X(:,1)<xmax) & (X(:,2)>ymin & X(:,2)<ymax);
-X=X(~in_roi,:);
-n_rand_in=size(X,1);
+X=X(~in_roi,:);     % Only keep points in the medium
+n_rand_in=size(X,1);% This is the actual number of dummy orientations!
 
 %% Compute ODF and create random orientations
 odf=calcDensity(ebsd.orientations);
