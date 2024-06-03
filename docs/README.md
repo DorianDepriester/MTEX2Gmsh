@@ -1,3 +1,6 @@
+# MTEX2Gmsh
+Generates meshes conforming the shapes of grains reconstructed by MTEX.
+
 ## Purpose of this toolbox
 In order to evaluate the thermo-mechanical behaviour of crystalline materials (such as metals or ceramics) at microscopic scale, one usually perform numerical simulation at grain scale using the Finite Element Method. In order to proceed, one must first create a mesh which is representative of the real material.
 
