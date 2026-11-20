@@ -8,8 +8,10 @@ function [ grains ] = cond_smooth(grains,varargin)
 %	See also grain2d/smooth singularPoints.
 	sp = findSingularPoints(grains);
 	sp = vertcat(sp{:});
-	V_old=grains.boundary.V;
+	V_old=grainVertices(grains);
     grains=smooth(grains,varargin{:});
-    grains.boundary.V(sp,:)=V_old(sp,:);
+    V_new=grainVertices(grains);
+    V_new(sp,:)=V_old(sp,:);
+    grains=setGrainVertices(grains,V_new);
 end
 

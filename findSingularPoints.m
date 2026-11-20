@@ -25,7 +25,7 @@ function sp = findSingularPoints(grains)
 	%% Corners of the ROI
 	% Find closest points to the corners of ROI, and move them to the
 	% corners.
-	V=grains.V;
+	V=grainVertices(grains);
 	corners=zeros(2,2);
 	minmax=[min(V); max(V)];
 	meanV2V=mean(grains.perimeter./cellfun('length',grains.poly));	% Mean vertex-to-vertex distance
