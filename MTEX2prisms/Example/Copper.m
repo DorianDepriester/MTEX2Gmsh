@@ -13,7 +13,7 @@ mtexdata copper
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 %% Remove small grains
-ebsd(grains(grains.grainSize<=20)) = [];
+ebsd(grains(grainNumPixel(grains)<=20)) = [];
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
 
 %% Smooth GBs
@@ -21,9 +21,9 @@ grains_smooth=cond_smooth(grains);
 plot(grains_smooth,grains_smooth.meanOrientation, 'noBoundary')
 
 %% Move bottom-left corner to (0,0)
-V=grains_smooth.V;
+V=grainVertices(grains_smooth);
 ori=min(V);
-grains_smooth.V=V-repmat(ori, size(grains_smooth.V, 1), 1) ;
+grains_smooth=setGrainVertices(grains_smooth,V-repmat(ori, size(V, 1), 1));
 
 %% Convert data with MTEX2Gmsh
 G=gmshGeo(grains_smooth);
