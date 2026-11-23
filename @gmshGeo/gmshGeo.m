@@ -44,7 +44,7 @@ classdef gmshGeo
 			parse(p,varargin{:});
 
 			[Segmts,OuterLoop,InnerLoops,G.SingularPoints]=computeSegments(grains);
-			G.V=grains.V;
+			G.V=grainVertices(grains);
 			GrainID=grains.id;
 			phaseList=grains.mineralList;
 			Phase=phaseList(full(grains.phaseId))';
