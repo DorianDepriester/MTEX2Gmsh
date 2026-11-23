@@ -1,5 +1,4 @@
 mtexdata aachen
-ebsd=ebsd('indexed');
 grains=calcGrains(ebsd);
 G=gmshGeo(grains);
 G=simplify(G);
