@@ -9,7 +9,8 @@ function V = grainVertices(grains)
 %
 %	See also setGrainVertices, grainNumPixel, gmshGeo, cond_smooth.
 	if isprop(grains,'allV')		% MTEX >= 6.0
-		V = grains.allV.xyz(:,1:2);
+        xyz = grains.allV.xyz;
+		V = xyz(:,1:2);
 	else							% MTEX <= 5.x
 		V = grains.V;
 	end
