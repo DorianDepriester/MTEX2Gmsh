@@ -3,7 +3,7 @@ setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
 mtexdata small
 [grains, ebsd('indexed').grainId]=calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<3))=[];	% Remove small grains
+ebsd(grains(grainNumPixel(grains)<3))=[];	% Remove small grains
 grains=calcGrains(ebsd('indexed'));
 G=gmshGeo(grains);
 

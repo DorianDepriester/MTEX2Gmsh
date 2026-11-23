@@ -77,9 +77,9 @@ grains=calcGrains(ebsd);
 	\end{lstlisting}
 	and make sure the bottom-left corner of the map is at $(0,0)$ coordinates:
 	\begin{lstlisting}[language=Matlab]
-V=grains.V;
+V=grainVertices(grains);
 ori=min(V);
-grains.V=V-repmat(ori,size(grains.V,1),1);
+grains=setGrainVertices(grains,V-repmat(ori,size(V,1),1));
 	\end{lstlisting}
 	Then, construct the gmshGeo object:
 	\begin{lstlisting}[language=Matlab]
@@ -87,7 +87,7 @@ G=gmshGeo(grains);
 	\end{lstlisting}
 	For the record, check the size of the Region of Interest (RoI):
 	\begin{lstlisting}[language=Matlab]
-max(grains.V)
+max(grainVertices(grains))
 ans =
 	70.0729   70.0611	
 	\end{lstlisting}
