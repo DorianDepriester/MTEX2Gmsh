@@ -1,11 +1,15 @@
 function obj = regularize(obj, epsilon)
 %REGULARIZE Collapse the segments shorter than a given threshold into vertices.
 %	OBJ = REGULARIZE(OBJ, EPSILON) removes every segment whose curvilinear
-%	length is lower than EPSILON. Each removed segment is replaced by a
-%	single vertex located at the barycenter of its knots; the neighbouring
-%	segments, the grain loops and the interfaces are updated accordingly.
+%	length is lower than EPSILON. The endpoints of each removed segment are
+%	merged into a single vertex located at the barycenter of its knots; all
+%	the remaining segments, the grain loops, the interfaces and the
+%	singular points are updated accordingly.
+%
 %	Collapsible segments that are adjacent (sharing an endpoint) are merged
-%	into a single vertex, so that their shared triple point does not split.
+%	into a single vertex, so that their shared singular point does not
+%	split. This also holds at quadruple points, where more than two
+%	neighbouring segments meet.
 %
 %	Segments lying on the border of the ROI are never collapsed, and a
 %	short segment with one endpoint on the ROI border is collapsed onto
@@ -71,6 +75,8 @@ function obj = regularize(obj, epsilon)
 	end
 
 	% Group the collapsible segments into chains of adjacent segments
+	% (sharing an endpoint): all the segments of a chain are merged into
+	% a single vertex
 	n_col = length(collapsible);
 	parent = (1:n_col).';
 	for k = 1:n_col
@@ -89,9 +95,11 @@ function obj = regularize(obj, epsilon)
 		root(k) = findRoot(parent, k);
 	end
 
-	% Each chain is merged into a single vertex: the barycenter of its
-	% knots, or its endpoint if it lies on the ROI border
-	merge_ids = zeros(n_col, 1);
+	% vmap maps each endpoint of a collapsed segment to the vertex of its
+	% chain: the barycenter of the chain knots, or the chain endpoint
+	% lying on the ROI border if any
+	n_vtx = size(V, 1);
+	vmap = zeros(n_vtx, 1);
 	new_vertices = zeros(0, size(V, 2));
 	for r = unique(root).'
 		members = find(root == r);
@@ -100,28 +108,46 @@ function obj = regularize(obj, epsilon)
 			sm = double(seg{collapsible(m)}(:));
 			ends = [ends; sm([1 end])]; %#ok<AGROW>
 		end
-		b = unique(ends(ismember(ends, borderVtx)));
+		ends = unique(ends);
+		b = ends(ismember(ends, borderVtx));
 		if ~isempty(b)
-			merge_ids(members) = b(1);
+			mid = b(1);
 		else
 			knots = unique(vertcat(cellfun(@(m) double(seg{collapsible(m)}(:)), num2cell(members), 'UniformOutput', false){:}));
 			new_vertices = [new_vertices; mean(V(knots, :), 1)]; %#ok<AGROW>
-			merge_ids(members) = size(V, 1) + size(new_vertices, 1);
+			mid = n_vtx + size(new_vertices, 1);
 		end
+		vmap(ends) = mid;
 	end
 
+	% Remove the collapsible segments from the loops
 	for i = 1:height(grains)
-		[outerLoops{i}, seg] = regularizeLoop(outerLoops{i}, collapsible, merge_ids, seg);
+		outerLoops{i} = outerLoops{i}(~ismember(abs(outerLoops{i}), collapsible));
 		inner = innerLoops{i};
 		for j = 1:length(inner)
-			[inner{j}, seg] = regularizeLoop(inner{j}, collapsible, merge_ids, seg);
+			inner{j} = inner{j}(~ismember(abs(inner{j}), collapsible));
 		end
 		innerLoops{i} = inner;
 	end
 
-	% Remove the collapsed segments and remap all the IDs
+	% Replace the collapsed endpoints in the endpoints of all the segments
+	deg = false(n_seg, 1);
+	for j = 1:n_seg
+		k = double(seg{j}(:));
+		deg(j) = vmap(k(1)) ~= 0 && vmap(k(end)) ~= 0 && vmap(k(1)) == vmap(k(end));
+		if vmap(k(1)) ~= 0
+			k(1) = vmap(k(1));
+		end
+		if vmap(k(end)) ~= 0
+			k(end) = vmap(k(end));
+		end
+		seg{j} = k;
+	end
+
+	% Remove the collapsed (and degenerate) segments and remap all the IDs
 	keep = true(n_seg, 1);
 	keep(collapsible) = false;
+	keep(deg) = false;
 	remap = zeros(n_seg, 1);
 	remap(keep) = 1:sum(keep);
 	seg = seg(keep);
@@ -140,6 +166,14 @@ function obj = regularize(obj, epsilon)
 		ids = remap(interfaces.SegmentIDs{i});
 		interfaces.SegmentIDs{i} = ids(ids > 0);
 	end
+	sp = obj.SingularPoints;
+	field_names = fieldnames(sp);
+	for i = 1:length(field_names)
+		ids = double(sp.(field_names{i})(:));
+		m = vmap(ids);
+		ids(m ~= 0) = m(m ~= 0);
+		sp.(field_names{i}) = ids;
+	end
 
 	obj.Segments = seg;
 	obj.V = [V; new_vertices];
@@ -147,46 +181,7 @@ function obj = regularize(obj, epsilon)
 	grains.InnerLoops = innerLoops;
 	obj.Grains = grains;
 	obj.Interfaces = interfaces;
-end
-
-function [loop, seg] = regularizeLoop(loop, collapsible, merge_ids, seg)
-%REGULARIZELOOP Replace each occurrence of the collapsible segments in LOOP
-%	by a single vertex spliced into the neighbouring segments.
-
-	k = 1;
-	while k <= length(collapsible)
-		a = find(abs(loop) == collapsible(k), 1, 'first');
-		if isempty(a) || length(loop) <= 3
-			k = k + 1;
-			continue
-		end
-		if a == 1
-			prev = length(loop);
-			next = 2;
-		elseif a == length(loop)
-			prev = a - 1;
-			next = 1;
-		else
-			prev = a - 1;
-			next = a + 1;
-		end
-		id_new = merge_ids(k);
-		id_prev = loop(prev);
-		s = seg{abs(id_prev)}(:);
-		if id_prev > 0		% Loop end = last stored knot
-			seg{abs(id_prev)} = [s(1:end-1); id_new];
-		else				% Loop end = first stored knot
-			seg{abs(id_prev)} = [id_new; s(2:end)];
-		end
-		id_next = loop(next);
-		s = seg{abs(id_next)}(:);
-		if id_next > 0		% Loop start = first stored knot
-			seg{abs(id_next)} = [id_new; s(2:end)];
-		else				% Loop start = last stored knot
-			seg{abs(id_next)} = [s(1:end-1); id_new];
-		end
-		loop(a) = [];
-	end
+	obj.SingularPoints = sp;
 end
 
 function L = BS_length(V)
