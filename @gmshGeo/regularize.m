@@ -9,7 +9,7 @@ function obj = regularize(obj, epsilon)
 %	ID means that the segment is traversed against its stored knot
 %	sequence.
 %
-%	See also gmshGeo, mesh, fixRectangularROI.
+%	See also gmshGeo, mesh, fixRectangularROI, simplify.
 
 	seg = obj.Segments;
 	V = obj.V;
@@ -31,14 +31,15 @@ function obj = regularize(obj, epsilon)
 	new_vertices_ids = (1:n_new) + size(V, 1);
 
 	grains = obj.Grains;
+	outerLoops = grains.OuterLoop;
+	innerLoops = grains.InnerLoops;
 	for i = 1:height(grains)
-		[outer, seg] = regularizeLoop(grains{i, 'OuterLoop'}{1}, short_segment, new_vertices_ids, seg);
-		grains{i, 'OuterLoop'} = {outer};
-		inner = grains{i, 'InnerLoops'}{1};
+		[outerLoops{i}, seg] = regularizeLoop(outerLoops{i}, short_segment, new_vertices_ids, seg);
+		inner = innerLoops{i};
 		for j = 1:length(inner)
 			[inner{j}, seg] = regularizeLoop(inner{j}, short_segment, new_vertices_ids, seg);
 		end
-		grains{i, 'InnerLoops'} = {inner};
+		innerLoops{i} = inner;
 	end
 
 	% Remove the short segments and remap all the IDs
@@ -48,14 +49,14 @@ function obj = regularize(obj, epsilon)
 	remap(keep) = 1:sum(keep);
 	seg = seg(keep);
 	for i = 1:height(grains)
-		loop = sign(grains{i, 'OuterLoop'}{1}) .* remap(abs(grains{i, 'OuterLoop'}{1}));
-		grains{i, 'OuterLoop'} = {loop(loop ~= 0)};
-		inner = grains{i, 'InnerLoops'}{1};
+		loop = sign(double(outerLoops{i}(:))) .* remap(abs(double(outerLoops{i}(:))));
+		outerLoops{i} = loop(loop ~= 0);
+		inner = innerLoops{i};
 		for j = 1:length(inner)
-			inner{j} = sign(inner{j}) .* remap(abs(inner{j}));
+			inner{j} = sign(double(inner{j}(:))) .* remap(abs(double(inner{j}(:))));
 			inner{j}(inner{j} == 0) = [];
 		end
-		grains{i, 'InnerLoops'} = {inner};
+		innerLoops{i} = inner;
 	end
 	interfaces = obj.Interfaces;
 	for i = 1:height(interfaces)
@@ -65,6 +66,8 @@ function obj = regularize(obj, epsilon)
 
 	obj.Segments = seg;
 	obj.V = [V; new_vertices];
+	grains.OuterLoop = outerLoops;
+	grains.InnerLoops = innerLoops;
 	obj.Grains = grains;
 	obj.Interfaces = interfaces;
 end
@@ -92,16 +95,18 @@ function [loop, seg] = regularizeLoop(loop, short_segment, new_vertices_ids, seg
 		end
 		id_new = new_vertices_ids(k);
 		id_prev = loop(prev);
+		s = seg{abs(id_prev)}(:);
 		if id_prev > 0		% Loop end = last stored knot
-			seg{abs(id_prev)} = [seg{abs(id_prev)}(1:end-1); id_new];
+			seg{abs(id_prev)} = [s(1:end-1); id_new];
 		else				% Loop end = first stored knot
-			seg{abs(id_prev)} = [id_new; seg{abs(id_prev)}(2:end)];
+			seg{abs(id_prev)} = [id_new; s(2:end)];
 		end
 		id_next = loop(next);
+		s = seg{abs(id_next)}(:);
 		if id_next > 0		% Loop start = first stored knot
-			seg{abs(id_next)} = [id_new; seg{abs(id_next)}(2:end)];
+			seg{abs(id_next)} = [id_new; s(2:end)];
 		else				% Loop start = last stored knot
-			seg{abs(id_next)} = [seg{abs(id_next)}(1:end-1); id_new];
+			seg{abs(id_next)} = [s(1:end-1); id_new];
 		end
 		loop(a) = [];
 	end
