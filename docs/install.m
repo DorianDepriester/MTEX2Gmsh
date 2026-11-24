@@ -13,10 +13,10 @@ Install_MTEX2Gmsh
 
 
 %%
-% This function will check that the aforementioned depedencies are
+% This function will check that the aforementioned dependencies are
 % satisfied and eventually ask a few questions about the location of the 
 % Gmsh executable file. This location will be stored persistently (if you 
-% close MATLAB and re-open it, those informations will remain). Rerun the
+% close MATLAB and re-open it, those information will remain). Rerun the
 % previous command if your configuration changes.
 
 %% Uninstall MTEX2Gmsh
