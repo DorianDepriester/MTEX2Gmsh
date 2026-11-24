@@ -47,7 +47,8 @@ function obj = regularize(obj, epsilon)
 	end
 	borderVtx = [];
 	if ~isempty(borderSegs)
-		borderVtx = unique(vertcat(cellfun(@(s) double(s(:)), seg(borderSegs), 'UniformOutput', false){:}));
+        a = cellfun(@(s) double(s(:)), seg(borderSegs), 'UniformOutput', false);
+		borderVtx = unique(vertcat(a{:}));
 	end
 	collapsible = setdiff(short_segment, borderSegs);
 
@@ -112,8 +113,9 @@ function obj = regularize(obj, epsilon)
 		b = ends(ismember(ends, borderVtx));
 		if ~isempty(b)
 			mid = b(1);
-		else
-			knots = unique(vertcat(cellfun(@(m) double(seg{collapsible(m)}(:)), num2cell(members), 'UniformOutput', false){:}));
+        else
+            a = cellfun(@(m) double(seg{collapsible(m)}(:)), num2cell(members), 'UniformOutput', false);
+			knots = unique(vertcat(a{:}));
 			new_vertices = [new_vertices; mean(V(knots, :), 1)]; %#ok<AGROW>
 			mid = n_vtx + size(new_vertices, 1);
 		end
