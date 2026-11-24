@@ -70,13 +70,13 @@ function fh=mesh(obj,filepath,varargin)
 %	for max verbosity. Default: 4.
 %
 %	MESH(...,'partition',p) will create p partitions in the mesh for
-%	parallel compouting.
+%	parallel computing.
 %
 %	MESH(...,'Layers',n) will divide the thickness in n layers. The default
 %	value is one.
 %
 %   MESH(...,'externalizeGBs','GB.msh') will produce an additional surfacic 
-%   mesh consisting of grain boundaries only. This can be usefull for
+%   mesh consisting of grain boundaries only. This can be useful for
 %   post-processing representation.
 %
 %	See also savegeo, addSymmetry.
