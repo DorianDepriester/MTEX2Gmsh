@@ -3,7 +3,7 @@ setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 mtexdata titanium
 ebsd = ebsd('indexed');
 grains = calcGrains(ebsd);
-G=gmshGeo(grains);
+G = gmshGeo(grains);
 
 %% Change thickness
 % The default thickness is equal to the element size at grain boundaries
@@ -23,7 +23,7 @@ mesh(G,'titanium.msh','Thickness',20)
 %
 % E.g.:
 %
-mesh(G,'titanium_medium.msh','elementSize',20,'medium',[2000 2000 200]);
+mesh(G, 'titanium_medium.msh', 'elementSize', 20,'medium', [2000 2000 200]);
 %%
 % 
 % <<medium.png>>
@@ -32,7 +32,7 @@ mesh(G,'titanium_medium.msh','elementSize',20,'medium',[2000 2000 200]);
 % set the element size at the borders of the medium, append the 
 % |mediumElementSize| name-value pair argument. E.g:
 %
-mesh(G,'titanium_medium2.msh','elementSize',20,'medium',[2000 2000 200],'mediumElementSize',180);
+mesh(G, 'titanium_medium2.msh', 'elementSize', 20, 'medium', [2000 2000 200], 'mediumElementSize', 180);
 %%
 % 
 % <<medium_gradient.png>>

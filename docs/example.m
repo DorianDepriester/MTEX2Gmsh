@@ -13,7 +13,7 @@ plot(grains)
 % The command below converts the grain geometries into a Gmsh-like
 % description of the domains:
 
-G=gmshGeo(grains);
+G = gmshGeo(grains);
 
 %%
 % The variable G is an object of class |gmshGeo| . It fully describes the
@@ -22,7 +22,6 @@ G=gmshGeo(grains);
 %% Plot the geometry
 % One can easily plot the geometry using the usual plot function. 
 plot(G);
-
 legend show
 
 %% Mesh the geometry
@@ -38,7 +37,7 @@ mesh(G,'small.inp');
 % In order to retrieve the grain properties when importing the mesh into
 % the FEM code (for assigning materials and orientations), one can export
 % the properties of each grain as Comma-separated values (CSV).
-exportGrainProps(G,'small.csv');
+exportGrainProps(G, 'small.csv');
 
 %% 
 % <html><hr></html>

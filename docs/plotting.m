@@ -1,7 +1,6 @@
 setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %%
 mtexdata small
-ebsd = ebsd('indexed');
 grains = calcGrains(ebsd);
 G=gmshGeo(grains);
 
@@ -13,7 +12,7 @@ plot(G)
 % It ensures consistency between the two kinds of plot. For instance, if
 % you want to superimpose the grains boundaries defined in G and the
 % original grains:
-plot(grains,'noBoundary')
+plot(grains, 'noBoundary')
 hold on
 plot(G)
 

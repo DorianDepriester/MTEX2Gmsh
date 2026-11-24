@@ -2,22 +2,22 @@ setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 
 %%
 mtexdata small
-[grains, ebsd('indexed').grainId]=calcGrains(ebsd('indexed'));
+[grains, ebsd('indexed')]=calcGrains(ebsd('indexed'));
 ebsd(grains(grainNumPixel(grains)<3))=[];	% Remove small grains
 grains=calcGrains(ebsd('indexed'));
 G=gmshGeo(grains);
 
 %% Set different element size depending on grains
 % Element size can be defined grain-wise. To do so, one should call the
-% LocalSize class. This class is intended to define particular size
-% of element whithin certain grains.
+% |LocalSize| class. This class is intended to define particular size
+% of elements whithin certain grains.
 % First, pass the list of grains with particular element size to the
 % constructor, e.g.:
-LS=LocalSize([5 7], 30)
+LS = LocalSize([5 7], 30)
 
 %%
 % Here, the grains labelled 5 and 7 will be meshed with element of size 30.
-% If a unique value is given to as sizes, it is used for all grains (here 5
+% If a unique value is passed as sizes, it is used for all grains (here 5
 % and 7); multiple values can also be used, e.g.:
 LS=LocalSize([5 7],[20 30])
 
@@ -37,8 +37,8 @@ G.mesh('small_with_localSize.msh','ElementSize',100,'LocalSize',LS);
 % boundaries can be defined element-wise (see <meshing.html here> for 
 % details). For instance, if one wants the set the slope to 0.5 for grains 
 % labelled 5 and 7:
-LS=LocalSize([5 7], 20 , 0.5)
-G.mesh('small_with_localGradient.msh','ElementSize',100,'LocalSize',LS);
+LS = LocalSize([5 7], 20 , 0.5)
+G.mesh('small_with_localGradient.msh', 'ElementSize', 100, 'LocalSize', LS);
 %%
 % 
 % <<small_with_localGradient.png>>
@@ -47,7 +47,7 @@ G.mesh('small_with_localGradient.msh','ElementSize',100,'LocalSize',LS);
 
 %%
 % Again, the slope can be different for all specified grains, e.g.;
-LS=LocalSize([5 7], [20 30], [0.5, 0.7])
+LS = LocalSize([5 7], [20 30], [0.5, 0.7])
 
 %% 
 % <html><hr></html>
