@@ -4,6 +4,8 @@ function obj = regularize(obj, epsilon)
 %	length is lower than EPSILON. Each removed segment is replaced by a
 %	single vertex located at the barycenter of its knots; the neighbouring
 %	segments, the grain loops and the interfaces are updated accordingly.
+%	Collapsible segments that are adjacent (sharing an endpoint) are merged
+%	into a single vertex, so that their shared triple point does not split.
 %
 %	Segments lying on the border of the ROI are never collapsed, and a
 %	short segment with one endpoint on the ROI border is collapsed onto
@@ -68,20 +70,43 @@ function obj = regularize(obj, epsilon)
 		return
 	end
 
-	% Each collapsed segment is merged into a single vertex: the barycenter
-	% of its knots, or its endpoint if this endpoint lies on the ROI border
+	% Group the collapsible segments into chains of adjacent segments
 	n_col = length(collapsible);
-	merge_ids = zeros(n_col, 1);
-	new_vertices = zeros(0, size(V, 2));
+	parent = (1:n_col).';
 	for k = 1:n_col
 		s = double(seg{collapsible(k)}(:));
-		if ismember(s(1), borderVtx)
-			merge_ids(k) = s(1);
-		elseif ismember(s(end), borderVtx)
-			merge_ids(k) = s(end);
+		for v = s([1 end]).'
+			for m = (k+1):n_col
+				sm = double(seg{collapsible(m)}(:));
+				if any(sm([1 end]) == v)
+					parent = unionSeg(parent, k, m);
+				end
+			end
+		end
+	end
+	root = zeros(n_col, 1);
+	for k = 1:n_col
+		root(k) = findRoot(parent, k);
+	end
+
+	% Each chain is merged into a single vertex: the barycenter of its
+	% knots, or its endpoint if it lies on the ROI border
+	merge_ids = zeros(n_col, 1);
+	new_vertices = zeros(0, size(V, 2));
+	for r = unique(root).'
+		members = find(root == r);
+		ends = [];
+		for m = members.'
+			sm = double(seg{collapsible(m)}(:));
+			ends = [ends; sm([1 end])]; %#ok<AGROW>
+		end
+		b = unique(ends(ismember(ends, borderVtx)));
+		if ~isempty(b)
+			merge_ids(members) = b(1);
 		else
-			new_vertices = [new_vertices; mean(V(seg{collapsible(k)}, :), 1)]; %#ok<AGROW>
-			merge_ids(k) = size(V, 1) + size(new_vertices, 1);
+			knots = unique(vertcat(cellfun(@(m) double(seg{collapsible(m)}(:)), num2cell(members), 'UniformOutput', false){:}));
+			new_vertices = [new_vertices; mean(V(knots, :), 1)]; %#ok<AGROW>
+			merge_ids(members) = size(V, 1) + size(new_vertices, 1);
 		end
 	end
 
@@ -167,4 +192,19 @@ end
 function L = BS_length(V)
 	bs = BSpline(V);
 	L = sum(vecnorm(diff(bs, 1, 1), 2, 2));
+end
+
+function p = unionSeg(p, a, b)
+	ra = findRoot(p, a);
+	rb = findRoot(p, b);
+	if ra ~= rb
+		p(rb) = ra;
+	end
+end
+
+function r = findRoot(p, x)
+	r = x;
+	while p(r) ~= r
+		r = p(r);
+	end
 end
