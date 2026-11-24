@@ -5,6 +5,12 @@ function obj = regularize(obj, epsilon)
 %	single vertex located at the barycenter of its knots; the neighbouring
 %	segments, the grain loops and the interfaces are updated accordingly.
 %
+%	Segments lying on the border of the ROI are never collapsed, and a
+%	short segment with one endpoint on the ROI border is collapsed onto
+%	that endpoint, so that the border of the domain (and its corners)
+%	remains strictly fixed. Loops that would be left with less than three
+%	segments are left unchanged.
+%
 %	Note that the segment IDs stored in the loops are signed: a negative
 %	ID means that the segment is traversed against its stored knot
 %	sequence.
@@ -23,28 +29,74 @@ function obj = regularize(obj, epsilon)
 		return
 	end
 
-	n_new = length(short_segment);
-	new_vertices = zeros(n_new, size(V, 2));
-	for i = 1:n_new
-		new_vertices(i, :) = mean(V(seg{short_segment(i)}, :), 1);
-	end
-	new_vertices_ids = (1:n_new) + size(V, 1);
-
 	grains = obj.Grains;
 	outerLoops = grains.OuterLoop;
 	innerLoops = grains.InnerLoops;
+
+	% Segments lying on the ROI border must be preserved
+	borderSegs = [];
+	row = strcmp(obj.Interfaces.Properties.RowNames, 'ROI Border');
+	if any(row)
+		borderSegs = double(obj.Interfaces.SegmentIDs{row}(:)).';
+	end
+	borderVtx = [];
+	if ~isempty(borderSegs)
+		borderVtx = unique(vertcat(cellfun(@(s) double(s(:)), seg(borderSegs), 'UniformOutput', false){:}));
+	end
+	collapsible = setdiff(short_segment, borderSegs);
+
+	% Protect the loops that would be left with less than 3 segments
 	for i = 1:height(grains)
-		[outerLoops{i}, seg] = regularizeLoop(outerLoops{i}, short_segment, new_vertices_ids, seg);
+		loops = [{outerLoops{i}}; innerLoops{i}];
+		for j = 1:length(loops)
+			loop = abs(double(loops{j}(:)));
+			n_short = sum(ismember(loop, collapsible));
+			if length(loop) - n_short < 3
+				collapsible = setdiff(collapsible, loop);
+			end
+		end
+	end
+
+	% Protect the segments with both endpoints on the ROI border
+	for k = collapsible
+		s = double(seg{k}(:));
+		if all(ismember(s([1 end]), borderVtx))
+			collapsible = setdiff(collapsible, k);
+		end
+	end
+	if isempty(collapsible)
+		return
+	end
+
+	% Each collapsed segment is merged into a single vertex: the barycenter
+	% of its knots, or its endpoint if this endpoint lies on the ROI border
+	n_col = length(collapsible);
+	merge_ids = zeros(n_col, 1);
+	new_vertices = zeros(0, size(V, 2));
+	for k = 1:n_col
+		s = double(seg{collapsible(k)}(:));
+		if ismember(s(1), borderVtx)
+			merge_ids(k) = s(1);
+		elseif ismember(s(end), borderVtx)
+			merge_ids(k) = s(end);
+		else
+			new_vertices = [new_vertices; mean(V(seg{collapsible(k)}, :), 1)]; %#ok<AGROW>
+			merge_ids(k) = size(V, 1) + size(new_vertices, 1);
+		end
+	end
+
+	for i = 1:height(grains)
+		[outerLoops{i}, seg] = regularizeLoop(outerLoops{i}, collapsible, merge_ids, seg);
 		inner = innerLoops{i};
 		for j = 1:length(inner)
-			[inner{j}, seg] = regularizeLoop(inner{j}, short_segment, new_vertices_ids, seg);
+			[inner{j}, seg] = regularizeLoop(inner{j}, collapsible, merge_ids, seg);
 		end
 		innerLoops{i} = inner;
 	end
 
-	% Remove the short segments and remap all the IDs
+	% Remove the collapsed segments and remap all the IDs
 	keep = true(n_seg, 1);
-	keep(short_segment) = false;
+	keep(collapsible) = false;
 	remap = zeros(n_seg, 1);
 	remap(keep) = 1:sum(keep);
 	seg = seg(keep);
@@ -72,14 +124,14 @@ function obj = regularize(obj, epsilon)
 	obj.Interfaces = interfaces;
 end
 
-function [loop, seg] = regularizeLoop(loop, short_segment, new_vertices_ids, seg)
-%REGULARIZELOOP Replace each occurrence of the short segments in LOOP by a
-%	single vertex spliced into the neighbouring segments.
+function [loop, seg] = regularizeLoop(loop, collapsible, merge_ids, seg)
+%REGULARIZELOOP Replace each occurrence of the collapsible segments in LOOP
+%	by a single vertex spliced into the neighbouring segments.
 
 	k = 1;
-	while k <= length(short_segment)
-		a = find(abs(loop) == short_segment(k), 1, 'first');
-		if isempty(a) || length(loop) <= 2
+	while k <= length(collapsible)
+		a = find(abs(loop) == collapsible(k), 1, 'first');
+		if isempty(a) || length(loop) <= 3
 			k = k + 1;
 			continue
 		end
@@ -93,7 +145,7 @@ function [loop, seg] = regularizeLoop(loop, short_segment, new_vertices_ids, seg
 			prev = a - 1;
 			next = a + 1;
 		end
-		id_new = new_vertices_ids(k);
+		id_new = merge_ids(k);
 		id_prev = loop(prev);
 		s = seg{abs(id_prev)}(:);
 		if id_prev > 0		% Loop end = last stored knot
