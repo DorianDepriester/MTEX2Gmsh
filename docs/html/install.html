@@ -1,13 +1,18 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Prerequities</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-19"><meta name="DC.source" content="install.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      -->
+<title>install</title>
+<meta name="generator" content="MATLAB 26.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-11-24">
+<meta name="DC.source" content="install.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +28,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +57,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,16 +72,63 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Prerequities</h1><!--introduction--><p>In order to install MTEX2Gmsh in MATLAB, first check that:</p><div><ul><li>the <a href="https://mtex-toolbox.github.io/">MTEX toolbox</a> 5.1.1 (or newer) is already installed in your MATLAB sesssion,</li><li><a href="http://gmsh.info/">Gmsh</a> 5.2.2 (or newer) is installed on your computer.</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Install MTEX2Gmsh</a></li><li><a href="#3">Uninstall MTEX2Gmsh</a></li></ul></div><h2>Install MTEX2Gmsh<a name="1"></a></h2><p>Just run the following command for installing the MTEX2Gmsh toolbox:</p><pre class="codeinput">Install_MTEX2Gmsh
-</pre><p>This function will check that the aforementioned depedencies are satisfied and eventually ask a few questions about the location of the Gmsh executable file. This location will be stored persistently (if you close MATLAB and re-open it, those informations will remain). Rerun the previous command if your configuration changes.</p><h2>Uninstall MTEX2Gmsh<a name="3"></a></h2><p>If you have finished with this toolbox, you can uninstall it with:</p><pre class="codeinput">Uninstall_MTEX2Gmsh
-</pre><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013ba</a><br></p></div><!--
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Prerequities</a>
+</li>
+<li>
+<a href="#3">Install MTEX2Gmsh</a>
+</li>
+<li>
+<a href="#5">Uninstall MTEX2Gmsh</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+</pre>
+<h2 id="2">Prerequities</h2>
+<p>In order to install MTEX2Gmsh in MATLAB, first check that:</p>
+<div>
+<ul>
+<li>the <a href="https://mtex-toolbox.github.io/">MTEX toolbox</a> 5.3.1 (or newer, including MTEX 6.x and 7.x) is already installed in your MATLAB sesssion,</li>
+<li>
+<a href="http://gmsh.info/">Gmsh</a> 4.7.1 (or newer) is installed on your computer.</li>
+</ul>
+</div>
+<h2 id="3">Install MTEX2Gmsh</h2>
+<p>Just run the following command for installing the MTEX2Gmsh toolbox:</p>
+<pre class="codeinput">Install_MTEX2Gmsh
+</pre>
+<p>This function will check that the aforementioned dependencies are satisfied and eventually ask a few questions about the location of the Gmsh executable file. This location will be stored persistently (if you close MATLAB and re-open it, those information will remain). Rerun the previous command if your configuration changes.</p>
+<h2 id="5">Uninstall MTEX2Gmsh</h2>
+<p>If you have finished with this toolbox, you can uninstall it with:</p>
+<pre class="codeinput">Uninstall_MTEX2Gmsh
+</pre>
+<p><hr></p>
+<p>
+<a href="index.html">Go back to documentation index</a>
+</p>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2026b</a>
+<br>
+</p>
+</div>
+<!--
 ##### SOURCE BEGIN #####
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% Prerequities
 % In order to install MTEX2Gmsh in MATLAB, first check that: 
 %
-% * the <https://mtex-toolbox.github.io/ MTEX toolbox> 5.1.1 (or newer) is
+% * the <https://mtex-toolbox.github.io/ MTEX toolbox> 5.3.1 (or newer, including MTEX 6.x and 7.x) is
 % already installed in your MATLAB sesssion,
-% * <http://gmsh.info/ Gmsh> 5.2.2 (or newer) is installed on your computer.
+% * <http://gmsh.info/ Gmsh> 4.7.1 (or newer) is installed on your computer.
 % 
 
 %% Install MTEX2Gmsh
@@ -84,10 +137,10 @@ Install_MTEX2Gmsh
 
 
 %%
-% This function will check that the aforementioned depedencies are
+% This function will check that the aforementioned dependencies are
 % satisfied and eventually ask a few questions about the location of the 
 % Gmsh executable file. This location will be stored persistently (if you 
-% close MATLAB and re-open it, those informations will remain). Rerun the
+% close MATLAB and re-open it, those information will remain). Rerun the
 % previous command if your configuration changes.
 
 %% Uninstall MTEX2Gmsh
@@ -100,4 +153,6 @@ Uninstall_MTEX2Gmsh
 %
 % <index.html Go back to documentation index>
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+</html>

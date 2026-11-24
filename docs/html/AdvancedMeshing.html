@@ -1,13 +1,18 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>AdvancedMeshing</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-07"><meta name="DC.source" content="AdvancedMeshing.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      -->
+<title>AdvancedMeshing</title>
+<meta name="generator" content="MATLAB 26.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-11-24">
+<meta name="DC.source" content="AdvancedMeshing.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +28,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +57,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,88 +72,144 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Set different element size depending on grains</a></li><li><a href="#7">Set different size gradients depending on grains</a></li></ul></div><pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
-</pre><pre class="codeinput">mtexdata <span class="string">small</span>
-[grains, ebsd(<span class="string">'indexed'</span>).grainId]=calcGrains(ebsd(<span class="string">'indexed'</span>));
-ebsd(grains(grains.grainSize&lt;3))=[];	<span class="comment">% Remove small grains</span>
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#3">Set different element size depending on grains</a>
+</li>
+<li>
+<a href="#7">Set different size gradients depending on grains</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+</pre>
+<pre class="codeinput">mtexdata <span class="string">small</span>
+[grains, ebsd(<span class="string">'indexed'</span>)]=calcGrains(ebsd(<span class="string">'indexed'</span>));
+ebsd(grains(grainNumPixel(grains)&lt;3))=[];	<span class="comment">% Remove small grains</span>
 grains=calcGrains(ebsd(<span class="string">'indexed'</span>));
 G=gmshGeo(grains);
-</pre><pre class="codeoutput"> 
-ebsd = EBSD  
+</pre>
+<pre class="codeoutput"> 
+ebsd = EBSD (y&darr;&rarr;x)
  
  Phase  Orientations     Mineral         Color  Symmetry  Crystal reference frame
-     0    1197 (32%)  notIndexed                                                 
+     0    1197 (32%)  notIndexed          none                                   
      1    1952 (52%)  Forsterite  LightSkyBlue       mmm                         
      2    290 (7.8%)   Enstatite  DarkSeaGreen       mmm                         
      3    282 (7.6%)    Diopside     Goldenrod     12/m1        X||a*, Y||b, Z||c
  
- Properties: bands, bc, bs, error, mad, x, y
+ Properties: bands, bc, bs, error, mad, oldId
  Scan unit : um
+ X &times; Y &times; Z : [33000 &rarr; 36000] &times; [4500 &rarr; 7500] &times; [0 &rarr; 0]
+ Normal vector: (0,0,1)
  
-</pre><h2>Set different element size depending on grains<a name="3"></a></h2><p>Element size can be defined grain-wise. To do so, one should call the LocalSize class. This class is intended to define particular size of element whithin certain grains. First, pass the list of grains with particular element size to the constructor, e.g.:</p><pre class="codeinput">LS=LocalSize([5 7], 30)
-</pre><pre class="codeoutput">
+</pre>
+<h2 id="3">Set different element size depending on grains</h2>
+<p>Element size can be defined grain-wise. To do so, one should call the <tt>LocalSize</tt> class. This class is intended to define particular size of elements whithin certain grains. First, pass the list of grains with particular element size to the constructor, e.g.:</p>
+<pre class="codeinput">LS = LocalSize([5 7], 30)
+</pre>
+<pre class="codeoutput">
 LS = 
 
     GrainID    SizeAtBoundaries    Slope
     _______    ________________    _____
 
-    5          30                  0    
-    7          30                  0    
+       5              30             0  
+       7              30             0  
 
-</pre><p>Here, the grains labelled 5 and 7 will be meshed with element of size 30. If a unique value is given to as sizes, it is used for all grains (here 5 and 7); multiple values can also be used, e.g.:</p><pre class="codeinput">LS=LocalSize([5 7],[20 30])
-</pre><pre class="codeoutput">
+</pre>
+<p>Here, the grains labelled 5 and 7 will be meshed with element of size 30. If a unique value is passed as sizes, it is used for all grains (here 5 and 7); multiple values can also be used, e.g.:</p>
+<pre class="codeinput">LS=LocalSize([5 7],[20 30])
+</pre>
+<pre class="codeoutput">
 LS = 
 
     GrainID    SizeAtBoundaries    Slope
     _______    ________________    _____
 
-    5          20                  0    
-    7          30                  0    
+       5              20             0  
+       7              30             0  
 
-</pre><p>Then, pass the object to the mesh command, as a 'LocalSize' name-value pair argument:</p><pre class="codeinput">G.mesh(<span class="string">'small_with_localSize.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
-</pre><p><img vspace="5" hspace="5" src="small_with_localSize.png" alt=""> </p><p><a href="../small_with_localSize.msh">Open mesh file</a></p><h2>Set different size gradients depending on grains<a name="7"></a></h2><p>In addition to the default size, the slope used for meshing with increasing element size with increasing distance from the grain boundaries can be defined element-wise (see <a href="meshing.html">here</a> for details). For instance, if one wants the set the slope to 0.5 for grains labelled 5 and 7:</p><pre class="codeinput">LS=LocalSize([5 7], 20 , 0.5)
-G.mesh(<span class="string">'small_with_localGradient.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
-</pre><pre class="codeoutput">
+</pre>
+<p>Then, pass the object to the mesh command, as a 'LocalSize' name-value pair argument:</p>
+<pre class="codeinput">G.mesh(<span class="string">'small_with_localSize.msh'</span>,<span class="string">'ElementSize'</span>,100,<span class="string">'LocalSize'</span>,LS);
+</pre>
+<p>
+<img vspace="5" hspace="5" src="small_with_localSize.png" alt=""> </p>
+<p>
+<a href="../small_with_localSize.msh">Open mesh file</a>
+</p>
+<h2 id="7">Set different size gradients depending on grains</h2>
+<p>In addition to the default size, the slope used for meshing with increasing element size with increasing distance from the grain boundaries can be defined element-wise (see <a href="meshing.html">here</a> for details). For instance, if one wants the set the slope to 0.5 for grains labelled 5 and 7:</p>
+<pre class="codeinput">LS = LocalSize([5 7], 20 , 0.5)
+G.mesh(<span class="string">'small_with_localGradient.msh'</span>, <span class="string">'ElementSize'</span>, 100, <span class="string">'LocalSize'</span>, LS);
+</pre>
+<pre class="codeoutput">
 LS = 
 
     GrainID    SizeAtBoundaries    Slope
     _______    ________________    _____
 
-    5          20                  0.5  
-    7          20                  0.5  
+       5              20            0.5 
+       7              20            0.5 
 
-</pre><p><img vspace="5" hspace="5" src="small_with_localGradient.png" alt=""> </p><p><a href="../small_with_localGradient.msh">Open mesh file</a></p><p>Again, the slope can be different for all specified grains, e.g.;</p><pre class="codeinput">LS=LocalSize([5 7], [20 30], [0.5, 0.7])
-</pre><pre class="codeoutput">
+</pre>
+<p>
+<img vspace="5" hspace="5" src="small_with_localGradient.png" alt=""> </p>
+<p>
+<a href="../small_with_localGradient.msh">Open mesh file</a>
+</p>
+<p>Again, the slope can be different for all specified grains, e.g.;</p>
+<pre class="codeinput">LS = LocalSize([5 7], [20 30], [0.5, 0.7])
+</pre>
+<pre class="codeoutput">
 LS = 
 
     GrainID    SizeAtBoundaries    Slope
     _______    ________________    _____
 
-    5          20                  0.5  
-    7          30                  0.7  
+       5              20            0.5 
+       7              30            0.7 
 
-</pre><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+</pre>
+<p><hr></p>
+<p>
+<a href="index.html">Go back to documentation index</a>
+</p>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2026b</a>
+<br>
+</p>
+</div>
+<!--
 ##### SOURCE BEGIN #####
 setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 
 %%
 mtexdata small
-[grains, ebsd('indexed').grainId]=calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<3))=[];	% Remove small grains
+[grains, ebsd('indexed')]=calcGrains(ebsd('indexed'));
+ebsd(grains(grainNumPixel(grains)<3))=[];	% Remove small grains
 grains=calcGrains(ebsd('indexed'));
 G=gmshGeo(grains);
 
 %% Set different element size depending on grains
 % Element size can be defined grain-wise. To do so, one should call the
-% LocalSize class. This class is intended to define particular size
-% of element whithin certain grains.
+% |LocalSize| class. This class is intended to define particular size
+% of elements whithin certain grains.
 % First, pass the list of grains with particular element size to the
 % constructor, e.g.:
-LS=LocalSize([5 7], 30)
+LS = LocalSize([5 7], 30)
 
 %%
 % Here, the grains labelled 5 and 7 will be meshed with element of size 30.
-% If a unique value is given to as sizes, it is used for all grains (here 5
+% If a unique value is passed as sizes, it is used for all grains (here 5
 % and 7); multiple values can also be used, e.g.:
 LS=LocalSize([5 7],[20 30])
 
@@ -167,8 +229,8 @@ G.mesh('small_with_localSize.msh','ElementSize',100,'LocalSize',LS);
 % boundaries can be defined element-wise (see <meshing.html here> for 
 % details). For instance, if one wants the set the slope to 0.5 for grains 
 % labelled 5 and 7:
-LS=LocalSize([5 7], 20 , 0.5)
-G.mesh('small_with_localGradient.msh','ElementSize',100,'LocalSize',LS);
+LS = LocalSize([5 7], 20 , 0.5)
+G.mesh('small_with_localGradient.msh', 'ElementSize', 100, 'LocalSize', LS);
 %%
 % 
 % <<small_with_localGradient.png>>
@@ -177,11 +239,13 @@ G.mesh('small_with_localGradient.msh','ElementSize',100,'LocalSize',LS);
 
 %%
 % Again, the slope can be different for all specified grains, e.g.;
-LS=LocalSize([5 7], [20 30], [0.5, 0.7])
+LS = LocalSize([5 7], [20 30], [0.5, 0.7])
 
 %% 
 % <html><hr></html>
 %
 % <index.html Go back to documentation index>
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+</html>
