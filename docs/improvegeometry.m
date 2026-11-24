@@ -27,13 +27,13 @@ plot(G_smooth);
 
 %%
 % Note that smoothing is also accompanied with the |simplifyBoundary| 
-% function, which applies a Douglas-Peucker to reduce the number of 
-% vertices used for describing the geometry. 
+% function, which applies a Douglas-Peucker algorithm to reduce the number 
+% of vertices describing the grain boundaries. 
 figure
 n_o=cellfun('length',G.Segments);
 n_s=cellfun('length',G_smooth.Segments);
 hist([n_o n_s])
-legend({'Raw','Smoothed'})
+legend({'Raw','Smoothed & simplified'})
 xlabel('Number of vertices per segment')
 ylabel('Frequency')
 

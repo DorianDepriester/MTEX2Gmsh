@@ -129,12 +129,12 @@ plot(grains_smooth,grains_smooth.meanOrientation)
 <pre class="codeinput">G_smooth=gmshGeo(grains_smooth);
 plot(G_smooth);
 </pre>
-<img vspace="5" hspace="5" src="improvegeometry_04.png" alt=""> <p>Note that smoothing is also accompanied with the <tt>simplifyBoundary</tt> function, which applies a Douglas-Peucker to reduce the number of vertices used for describing the geometry.</p>
+<img vspace="5" hspace="5" src="improvegeometry_04.png" alt=""> <p>Note that smoothing is also accompanied with the <tt>simplifyBoundary</tt> function, which applies a Douglas-Peucker algorithm to reduce the number of vertices describing the grain boundaries.</p>
 <pre class="codeinput">figure
 n_o=cellfun(<span class="string">'length'</span>,G.Segments);
 n_s=cellfun(<span class="string">'length'</span>,G_smooth.Segments);
 hist([n_o n_s])
-legend({<span class="string">'Raw'</span>,<span class="string">'Smoothed'</span>})
+legend({<span class="string">'Raw'</span>,<span class="string">'Smoothed &amp; simplified'</span>})
 xlabel(<span class="string">'Number of vertices per segment'</span>)
 ylabel(<span class="string">'Frequency'</span>)
 </pre>
@@ -179,13 +179,13 @@ plot(G_smooth);
 
 %%
 % Note that smoothing is also accompanied with the |simplifyBoundary| 
-% function, which applies a Douglas-Peucker to reduce the number of 
-% vertices used for describing the geometry. 
+% function, which applies a Douglas-Peucker algorithm to reduce the number 
+% of vertices describing the grain boundaries. 
 figure
 n_o=cellfun('length',G.Segments);
 n_s=cellfun('length',G_smooth.Segments);
 hist([n_o n_s])
-legend({'Raw','Smoothed'})
+legend({'Raw','Smoothed & simplified'})
 xlabel('Number of vertices per segment')
 ylabel('Frequency')
 
