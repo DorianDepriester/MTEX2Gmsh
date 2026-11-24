@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title }} | {{ site.title }}</title>
+<style>
+.doc-page { display: flex; min-height: 100vh; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #24292f; }
+.doc-page .doc-sidebar { flex: 0 0 280px; width: 280px; position: fixed; top: 0; bottom: 0; overflow-y: auto; box-sizing: border-box; padding: 16px; background: #f6f8fa; border-right: 1px solid #d0d7de; }
+.doc-page .doc-sidebar .doc-brand { display: block; margin-bottom: 12px; font-size: 18px; font-weight: bold; color: #0969da; text-decoration: none; }
+.doc-page .doc-sidebar .doc-home { display: block; margin-top: 16px; font-size: 13px; color: #0969da; text-decoration: none; }
+.doc-page .doc-sidebar ul.toc { list-style: none; margin: 0; padding-left: 14px; }
+.doc-page .doc-sidebar > ul.toc { padding-left: 0; }
+.doc-page .doc-sidebar ul.toc li { margin: 2px 0; }
+.doc-page .doc-sidebar ul.toc a { display: block; padding: 3px 8px; border-radius: 4px; color: #0969da; text-decoration: none; font-size: 14px; }
+.doc-page .doc-sidebar ul.toc a:hover { background: #e2e8f0; }
+.doc-page .doc-sidebar ul.toc a.active { background: #0969da; color: #ffffff; }
+.doc-page .doc-content { flex: 1; margin-left: 280px; padding: 24px 40px; max-width: 1000px; }
+@media (max-width: 900px) {
+  .doc-page { display: block; }
+  .doc-page .doc-sidebar { position: static; width: auto; flex: none; border-right: none; border-bottom: 1px solid #d0d7de; }
+  .doc-page .doc-content { margin-left: 0; padding: 16px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="doc-page">
+  <nav class="doc-sidebar">
+    <a class="doc-brand" href="{{ site.baseurl }}/html/index.html">{{ site.title }}</a>
+    {% include toc.html items=site.data.toc %}
+    <a class="doc-home" href="{{ site.baseurl }}/">&larr; Project page</a>
+  </nav>
+  <main class="doc-content">
+{{ content }}
+  </main>
+</div>
+</body>
+</html>
