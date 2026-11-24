@@ -38,7 +38,7 @@ setpref('MTEX2Gmsh','gmsh_path',path_to_gmsh)
 
 %% Add MTEX2Gmsh to the path
 fp=fileparts(mfilename('fullpath'));	% Path to the present file
-if isempty(strfind(path,fp))
+if ~contains(path,fp)
 	addpath(fp);
 end
 
