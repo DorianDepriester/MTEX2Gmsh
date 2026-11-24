@@ -1,0 +1,10 @@
+<ul class="toc">
+{% for item in include.items %}
+  <li>
+    <a href="{{ site.baseurl }}/html/{{ item.target }}"{% if page.url contains item.target %} class="active"{% endif %}>{{ item.title }}</a>
+    {% if item.children %}
+    {% include toc.html items=item.children %}
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>

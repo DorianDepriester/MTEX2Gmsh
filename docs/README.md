@@ -19,7 +19,7 @@ The microstructure of crystalline materials is usually made from Electron Backsc
 
 ## Documentation
 ### Online
-You can navigate the documentation [here](html/index.html).
+You can navigate the documentation [here](html/index.html). Its sidebar menu is generated from [``html/helptoc.xml``](html/helptoc.xml) (the same file used by the MATLAB help browser): after editing it, run ``helptoc2yml`` to regenerate ``_data/toc.yml``.
 
 ### From MATLAB
 #### Full documentation
