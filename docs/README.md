@@ -1,5 +1,5 @@
 # MTEX2Gmsh
-Generates meshes conforming the shapes of grains reconstructed by MTEX.
+Generates conforming meshes from grains reconstructed by MTEX.
 
 ## Purpose of this toolbox
 In order to evaluate the thermo-mechanical behaviour of crystalline materials (such as metals or ceramics) at microscopic scale, one usually perform numerical simulation at grain scale using the Finite Element Method. In order to proceed, one must first create a mesh which is representative of the real material.
@@ -19,22 +19,14 @@ The microstructure of crystalline materials is usually made from Electron Backsc
 
 ## Documentation
 ### Online
-You can navigate the documentation [here](html/index.html). Its sidebar menu is generated from [``html/helptoc.xml``](html/helptoc.xml) (the same file used by the MATLAB help browser): after editing it, run ``helptoc2yml`` to regenerate ``_data/toc.yml``.
-
-### From MATLAB
-#### Full documentation
-Once the toolbox is installed on your Matlab session, open the documentation of the present toolbox by typing:
-
-    doc
-    
-Then, click on "MTEX2Gmsh toolbox", under the _Supplemental Software_ section (bottom right).
+You can navigate the documentation [here](html/index.html). 
 
 #### Help functions
 The ``gmshGeo`` class is the core of this toolbox. For comprehensive details about it, just type
 
     help gmshGeo
     
-The following command will print all the ``GmshGeo`` methods:
+The following command will print all the ``gmshGeo`` methods:
 
     methods gmshGeo
     
