@@ -21,7 +21,7 @@ The microstructure of crystalline materials is usually made from Electron Backsc
 ### Online
 You can navigate the documentation [here](html/index.html). 
 
-#### Help functions
+### From Matlab
 The ``gmshGeo`` class is the core of this toolbox. For comprehensive details about it, just type
 
     help gmshGeo
