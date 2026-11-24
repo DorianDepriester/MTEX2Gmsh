@@ -1,13 +1,18 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>example</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-19"><meta name="DC.source" content="example.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      -->
+<title>example</title>
+<meta name="generator" content="MATLAB 26.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-11-24">
+<meta name="DC.source" content="example.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +28,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +57,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,31 +72,85 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MTEX stuff</a></li><li><a href="#2">Compute the meshable geometry and plot it</a></li><li><a href="#4">Plot the geometry</a></li><li><a href="#5">Mesh the gemetry</a></li><li><a href="#7">Export the grain properties</a></li></ul></div><h2>MTEX stuff<a name="1"></a></h2><p>In this example, EBSD are loaded from the dataset named 'small', provided along with the MTEX toolbox. Once loaded, they can used for reconstructing grains (of class <tt>grain2d</tt> ).</p><pre class="codeinput">mtexdata <span class="string">small</span>
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">MTEX stuff</a>
+</li>
+<li>
+<a href="#3">Compute the meshable geometry and plot it</a>
+</li>
+<li>
+<a href="#5">Plot the geometry</a>
+</li>
+<li>
+<a href="#6">Mesh the geometry</a>
+</li>
+<li>
+<a href="#8">Export the grain properties</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
+</pre>
+<h2 id="2">MTEX stuff</h2>
+<p>In this example, EBSD are loaded from the dataset named 'small', provided along with the MTEX toolbox. Once loaded, they can used for reconstructing grains (of class <tt>grain2d</tt> ).</p>
+<pre class="codeinput">mtexdata <span class="string">small</span>
 ebsd = ebsd(<span class="string">'indexed'</span>);		<span class="comment">% Remove unindexed points</span>
 grains = calcGrains(ebsd);	<span class="comment">% Compute grains</span>
 plot(grains)
-</pre><pre class="codeoutput">SMALL data loaded in variables
-    'ebsd'
-
+</pre>
+<pre class="codeoutput"> 
+ebsd = EBSD (y&darr;&rarr;x)
  
-ebsd = EBSD (&lt;a href="matlab:docmethods(ebsd)"&gt;show methods&lt;/a&gt;, &lt;a href="matlab:plot(ebsd)"&gt;plot&lt;/a&gt;)
+ Phase  Orientations     Mineral         Color  Symmetry  Crystal reference frame
+     0    1197 (32%)  notIndexed          none                                   
+     1    1952 (52%)  Forsterite  LightSkyBlue       mmm                         
+     2    290 (7.8%)   Enstatite  DarkSeaGreen       mmm                         
+     3    282 (7.6%)    Diopside     Goldenrod     12/m1        X||a*, Y||b, Z||c
  
- Phase  Orientations     Mineral        Color  Symmetry  Crystal reference frame
-     0    1197 (32%)  notIndexed                                                
-     1    1952 (52%)  Forsterite   light blue       mmm                         
-     2    290 (7.8%)   Enstatite  light green       mmm                         
-     3    282 (7.6%)    Diopside    light red     12/m1       X||a*, Y||b*, Z||c
- 
- Properties: bands, bc, bs, error, mad, x, y
+ Properties: bands, bc, bs, error, mad, oldId
  Scan unit : um
+ X &times; Y &times; Z : [33000 &rarr; 36000] &times; [4500 &rarr; 7500] &times; [0 &rarr; 0]
+ Normal vector: (0,0,1)
  
-</pre><img vspace="5" hspace="5" src="example_01.png" alt=""> <h2>Compute the meshable geometry and plot it<a name="2"></a></h2><p>The command below converts the grain geometries into a Gmsh-like description of the domains:</p><pre class="codeinput">G=gmshGeo(grains);
-</pre><p>The variable G is an object of class <tt>gmshGeo</tt> . It fully describes the geometries of all grains and their intrisic properties.</p><h2>Plot the geometry<a name="4"></a></h2><p>One can easily plot the geometry using the usual plot fonction.</p><pre class="codeinput">plot(G);
-</pre><img vspace="5" hspace="5" src="example_02.png" alt=""> <h2>Mesh the gemetry<a name="5"></a></h2><pre class="codeinput">mesh(G,<span class="string">'small.inp'</span>);
-</pre><p>This command runs Gmsh within Matlab and exports the mesh into the specified format (Abaqus INP here). Extensive tweaks are available for meshing, as detailed in <a href="mesh.html">the corresponding section</a> .</p><h2>Export the grain properties<a name="7"></a></h2><p>In order to retrieve the grain properties when importing the mesh into the FEM code (for assigning materials and orientations), one can export the properties of each grain as Comma-separated values (CSV).</p><pre class="codeinput">exportGrainProps(G,<span class="string">'small.csv'</span>);
-</pre><p><hr></p><p><a href="index.html">Go back to documentation index</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013ba</a><br></p></div><!--
+</pre>
+<img vspace="5" hspace="5" src="example_01.png" alt=""> <h2 id="3">Compute the meshable geometry and plot it</h2>
+<p>The command below converts the grain geometries into a Gmsh-like description of the domains:</p>
+<pre class="codeinput">G = gmshGeo(grains);
+</pre>
+<p>The variable G is an object of class <tt>gmshGeo</tt> . It fully describes the geometries of all grains and their intrisic properties.</p>
+<h2 id="5">Plot the geometry</h2>
+<p>One can easily plot the geometry using the usual plot function.</p>
+<pre class="codeinput">plot(G);
+legend <span class="string">show</span>
+</pre>
+<img vspace="5" hspace="5" src="example_02.png" alt=""> <h2 id="6">Mesh the geometry</h2>
+<pre class="codeinput">mesh(G,<span class="string">'small.inp'</span>);
+</pre>
+<p>This command runs Gmsh within Matlab and exports the mesh into the specified format (Abaqus INP here). Extensive tweaks are available for meshing, as detailed in <a href="mesh.html">the corresponding section</a> .</p>
+<h2 id="8">Export the grain properties</h2>
+<p>In order to retrieve the grain properties when importing the mesh into the FEM code (for assigning materials and orientations), one can export the properties of each grain as Comma-separated values (CSV).</p>
+<pre class="codeinput">exportGrainProps(G, <span class="string">'small.csv'</span>);
+</pre>
+<p><hr></p>
+<p>
+<a href="index.html">Go back to documentation index</a>
+</p>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2026b</a>
+<br>
+</p>
+</div>
+<!--
 ##### SOURCE BEGIN #####
+setMTEXpref('generatingHelpMode',true); % Avoid some artefact (fix issue #5)
 %% MTEX stuff
 % In this example, EBSD are loaded from the dataset named 'small', provided
 % along with the MTEX toolbox. Once loaded, they can used for
@@ -104,17 +164,22 @@ plot(grains)
 %% Compute the meshable geometry and plot it
 % The command below converts the grain geometries into a Gmsh-like
 % description of the domains:
-G=gmshGeo(grains);
+
+G = gmshGeo(grains);
+
 %%
 % The variable G is an object of class |gmshGeo| . It fully describes the
 % geometries of all grains and their intrisic properties.
 
 %% Plot the geometry
-% One can easily plot the geometry using the usual plot fonction. 
+% One can easily plot the geometry using the usual plot function. 
 plot(G);
+legend show
 
-%% Mesh the gemetry
+%% Mesh the geometry
+
 mesh(G,'small.inp');
+
 %% 
 % This command runs Gmsh within Matlab and exports the mesh into the
 % specified format (Abaqus INP here). Extensive tweaks are available for
@@ -124,11 +189,13 @@ mesh(G,'small.inp');
 % In order to retrieve the grain properties when importing the mesh into
 % the FEM code (for assigning materials and orientations), one can export
 % the properties of each grain as Comma-separated values (CSV).
-exportGrainProps(G,'small.csv');
+exportGrainProps(G, 'small.csv');
 
 %% 
 % <html><hr></html>
 %
 % <index.html Go back to documentation index>
 ##### SOURCE END #####
---></body></html>
+-->
+</body>
+</html>
