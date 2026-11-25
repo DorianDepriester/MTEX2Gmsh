@@ -1,15 +1,16 @@
-function obj = regularize(obj, epsilon)
+function obj = regularize(obj, varargin)
 %REGULARIZE Collapse the segments shorter than a given threshold into vertices.
-%	OBJ = REGULARIZE(OBJ, EPSILON) removes every segment whose curvilinear
-%	length is lower than EPSILON. The endpoints of each removed segment are
+%	OBJ = REGULARIZE(OBJ) removes every segment whose curvilinear length is 
+%   lower than a threshold value. The endpoints of each removed segment are
 %	merged into a single vertex located at the barycenter of its knots; all
 %	the remaining segments, the grain loops, the interfaces and the
-%	singular points are updated accordingly.
+%	singular points are updated accordingly. The default threshold value is
+%	set to the spatial resolution.
 %
 %	Collapsible segments that are adjacent (sharing an endpoint) are merged
 %	into a single vertex, so that their shared singular point does not
 %	split. This also holds at quadruple points, where more than two
-%	neighbouring segments meet.
+%	neighboring segments meet.
 %
 %	Segments lying on the border of the ROI are never collapsed, and a
 %	short segment with one endpoint on the ROI border is collapsed onto
@@ -21,15 +22,21 @@ function obj = regularize(obj, epsilon)
 %	ID means that the segment is traversed against its stored knot
 %	sequence.
 %
-%	See also gmshGeo, mesh, fixRectangularROI, simplify.
+%   REGULARIZE(G) use the spatial resolution of gmshGeo object G as a
+%   threshold value.
+%
+%   REGULARIZE(G, epsilon) use EPSILON as a threshold value.
+%
+%	See also gmshGeo, gmshGeo/mesh, fixRectangularROI.
+
+    ip = inputParser;
+    addOptional(ip,'epsilon', obj.Resolution)
+    parse(ip,varargin{:});
+    epsilon = ip.Results.epsilon;
 
 	seg = obj.Segments;
-	V = obj.V;
 	n_seg = length(seg);
-	L = zeros(n_seg, 1);
-	for i = 1:n_seg
-		L(i) = BS_length(V(seg{i}, :));
-	end
+	L = obj.segmentLenghts;
 	short_segment = find(L < epsilon).';
 	if isempty(short_segment)
 		return
@@ -99,6 +106,7 @@ function obj = regularize(obj, epsilon)
 	% vmap maps each endpoint of a collapsed segment to the vertex of its
 	% chain: the barycenter of the chain knots, or the chain endpoint
 	% lying on the ROI border if any
+    V = obj.V;
 	n_vtx = size(V, 1);
 	vmap = zeros(n_vtx, 1);
 	new_vertices = zeros(0, size(V, 2));
@@ -184,11 +192,6 @@ function obj = regularize(obj, epsilon)
 	obj.Grains = grains;
 	obj.Interfaces = interfaces;
 	obj.SingularPoints = sp;
-end
-
-function L = BS_length(V)
-	bs = BSpline(V);
-	L = sum(vecnorm(diff(bs, 1, 1), 2, 2));
 end
 
 function p = unionSeg(p, a, b)
