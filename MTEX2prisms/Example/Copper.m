@@ -9,15 +9,18 @@
 mtexdata copper
 % This is an example dataset provided by MTEX
 
+%% Keep indexed point only
+ebsd = ebsd('indexed');
+
 %% Compute grains
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains, ebsd] = calcGrains(ebsd);
 
 %% Remove small grains
 ebsd(grains(grainNumPixel(grains)<=20)) = [];
-[grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
+[grains, ebsd] = calcGrains(ebsd);
 
 %% Smooth GBs
-grains_smooth=cond_smooth(grains);
+grains_smooth=grains.smoothBoundary;
 plot(grains_smooth,grains_smooth.meanOrientation, 'noBoundary')
 
 %% Move bottom-left corner to (0,0)
