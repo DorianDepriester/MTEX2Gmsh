@@ -19,7 +19,9 @@ The microstructure of crystalline materials is usually made from Electron Backsc
 
 ## Documentation
 ### Online
-You can navigate the documentation [here](html/index.html). 
+You can navigate the documentation [here](html/index.html). Its sidebar menu is generated from [``html/helptoc.xml``](html/helptoc.xml) (the same file used by the MATLAB help browser): after editing it, run ``helptoc2yml`` to regenerate ``_data/toc.yml``.
+
+Note: each page in ``html/`` must start with the Jekyll front matter (``layout: doc`` + ``title``) to be displayed with the sidebar. Since MATLAB ``publish`` overwrites the HTML files and strips this front matter, re-add it after each republication (or re-apply it to every file in ``html/``) before committing.
 
 ### From Matlab
 The ``gmshGeo`` class is the core of this toolbox. For comprehensive details about it, just type

@@ -4,7 +4,7 @@
     <tocitem target="index.html">MTEX2Gmsh
 		<tocitem target="install.html">Install/uninstall this toolbox</tocitem>
         <tocitem target="example.html">Minimal Working Example
-			<tocitem target="example.html#1">Load and process EBSD data</tocitem>
+			<tocitem target="example.html#2">Load and process EBSD data</tocitem>
 			<tocitem target="example.html#3">Convert grain-related data</tocitem>
 			<tocitem target="example.html#6">Mesh the geometry</tocitem>
 			<tocitem target="example.html#8">Export grain properties</tocitem>
