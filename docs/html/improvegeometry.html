@@ -1,7 +1,3 @@
----
-layout: doc
-title: "Improve the grain boundaries"
----
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -13,7 +9,7 @@ To make changes, update the MATLAB code and republish this document.
 <title>improvegeometry</title>
 <meta name="generator" content="MATLAB 26.2">
 <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
-<meta name="DC.date" content="2026-11-24">
+<meta name="DC.date" content="2026-11-26">
 <meta name="DC.source" content="improvegeometry.m">
 <style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
@@ -92,6 +88,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <li>
 <a href="#4">Smoothing the grain boundaries</a>
 </li>
+<li>
+<a href="#7">Regularization</a>
+</li>
 </ul>
 </div>
 <pre class="codeinput">setMTEXpref(<span class="string">'generatingHelpMode'</span>,true); <span class="comment">% Avoid some artefact (fix issue #5)</span>
@@ -118,27 +117,52 @@ ebsd = EBSDhex (y&darr;&rarr;x)
 <img vspace="5" hspace="5" src="improvegeometry_01.png" alt=""> <h2 id="3">Compute the serrated geometry</h2>
 <p>As you can see, the grain boundaries are heavily serrated because of the hexagonal grid used for EBSD indexing. This drawback obviously also apply when constructing the gmshGeo object (despite the smoothing property of the BSpline approximation). Indeed:</p>
 <pre class="codeinput">G=gmshGeo(grains);
+h = figure;
 plot(G);
 </pre>
 <img vspace="5" hspace="5" src="improvegeometry_02.png" alt=""> <h2 id="4">Smoothing the grain boundaries</h2>
 <p>One can take advantage of the MTEX <tt>smoothBoundary</tt> function before constructing the gmshGeo object:</p>
 <pre class="codeinput">grains_smooth=grains.smoothBoundary;
-plot(grains_smooth,grains_smooth.meanOrientation)
 </pre>
-<img vspace="5" hspace="5" src="improvegeometry_03.png" alt=""> <p>The resulting geometry is obviously smoother than the original one.</p>
+<p>The resulting geometry is obviously smoother than the original one.</p>
 <pre class="codeinput">G_smooth=gmshGeo(grains_smooth);
 plot(G_smooth);
 </pre>
-<img vspace="5" hspace="5" src="improvegeometry_04.png" alt=""> <p>Note that smoothing is also accompanied with the <tt>simplifyBoundary</tt> function, which applies a Douglas-Peucker algorithm to reduce the number of vertices describing the grain boundaries.</p>
+<img vspace="5" hspace="5" src="improvegeometry_03.png" alt=""> <p>Note that smoothing is also accompanied with the <tt>simplifyBoundary</tt> function, which applies a Douglas-Peucker algorithm to reduce the number of vertices describing the grain boundaries.</p>
 <pre class="codeinput">figure
-n_o=cellfun(<span class="string">'length'</span>,G.Segments);
-n_s=cellfun(<span class="string">'length'</span>,G_smooth.Segments);
-hist([n_o n_s])
-legend({<span class="string">'Raw'</span>,<span class="string">'Smoothed &amp; simplified'</span>})
+hold <span class="string">on</span>
+G_array = {G, G_smooth};
+<span class="keyword">for</span> i=1:2
+    n=cellfun(<span class="string">'length'</span>,G_array{i}.Segments);
+    histogram(n)
+<span class="keyword">end</span>
+legend(<span class="string">'Raw'</span>,<span class="string">'Smoothed &amp; simplified'</span>)
 xlabel(<span class="string">'Number of vertices per segment'</span>)
 ylabel(<span class="string">'Frequency'</span>)
 </pre>
-<img vspace="5" hspace="5" src="improvegeometry_05.png" alt=""> <p><hr></p>
+<img vspace="5" hspace="5" src="improvegeometry_04.png" alt=""> <h2 id="7">Regularization</h2>
+<p>Small segments in the constructed geometry can be automatically collapsed. This can be useful if one wants to avoid very small elements when meshing.</p>
+<pre class="codeinput">G_regul = G_smooth.regularize(20);
+</pre>
+<p>One can check that the regularized geometry is close to the initial one:</p>
+<pre class="codeinput">figure(h)
+hold <span class="string">on</span>
+plot(G_regul)
+
+<span class="comment">% Still, small edges have indeed been removed:</span>
+figure
+hold <span class="string">on</span>
+G_array = {G, G_smooth, G_regul};
+<span class="keyword">for</span> i=1:2
+    L = G_array{i}.segmentLenghts;
+    h = histogram(L);
+    h.BinWidth = 5;
+<span class="keyword">end</span>
+legend(<span class="string">'Smooth geometry'</span>, <span class="string">'Smooth &amp; regularized'</span>)
+xlabel(<span class="string">'Segment lengths'</span>)
+ylabel(<span class="string">'Counts'</span>)
+</pre>
+<img vspace="5" hspace="5" src="improvegeometry_05.png" alt=""> <img vspace="5" hspace="5" src="improvegeometry_06.png" alt=""> <p><hr></p>
 <p>
 <a href="index.html">Go back to documentation index</a>
 </p>
@@ -162,14 +186,14 @@ plot(grains,grains.meanOrientation)
 % hexagonal grid used for EBSD indexing. This drawback obviously also apply
 % when constructing the gmshGeo object (despite the smoothing property of 
 % the BSpline approximation). Indeed:
-G=gmshGeo(grains);	
+G=gmshGeo(grains);
+h = figure;
 plot(G);
 
 %% Smoothing the grain boundaries
 % One can take advantage of the MTEX |smoothBoundary| function before
 % constructing the gmshGeo object:
 grains_smooth=grains.smoothBoundary;
-plot(grains_smooth,grains_smooth.meanOrientation)
 
 %%
 % The resulting geometry is obviously smoother than the original one.
@@ -182,12 +206,41 @@ plot(G_smooth);
 % function, which applies a Douglas-Peucker algorithm to reduce the number 
 % of vertices describing the grain boundaries. 
 figure
-n_o=cellfun('length',G.Segments);
-n_s=cellfun('length',G_smooth.Segments);
-hist([n_o n_s])
-legend({'Raw','Smoothed & simplified'})
+hold on
+G_array = {G, G_smooth};
+for i=1:2
+    n=cellfun('length',G_array{i}.Segments);
+    histogram(n)
+end
+legend('Raw','Smoothed & simplified')
 xlabel('Number of vertices per segment')
 ylabel('Frequency')
+
+%% Regularization
+% Small segments in the constructed geometry can be automatically 
+% collapsed. This can be useful if one wants to avoid very small elements 
+% when meshing.
+G_regul = G_smooth.regularize(20);
+
+%%
+% One can check that the regularized geometry is close to the initial one:
+figure(h)
+hold on
+plot(G_regul)
+
+% Still, small edges have indeed been removed:
+figure
+hold on
+G_array = {G, G_smooth, G_regul};
+for i=1:2
+    L = G_array{i}.segmentLenghts;
+    h = histogram(L);
+    h.BinWidth = 5;
+end
+legend('Smooth geometry', 'Smooth & regularized')
+xlabel('Segment lengths')
+ylabel('Counts')
+
 
 %% 
 % <html><hr></html>
