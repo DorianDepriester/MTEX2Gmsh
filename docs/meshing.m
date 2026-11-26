@@ -7,7 +7,7 @@ G=gmshGeo(grains);
 %% Basic use
 % The geometry described by the object |G| can be meshed using the Gmsh
 % software as follows:
-mesh(G, 'default.msh')
+G.mesh('default.msh')
 %%
 % <../default.msh Open mesh file>
 % 
@@ -19,7 +19,7 @@ mesh(G, 'default.msh')
 
 %% Constant element size
 % The default element size can be set as follows:
-mesh(G, 'constant_elmtSize.msh', 'ElementSize', 50)
+G.mesh('constant_elmtSize.msh', 'ElementSize', 50)
 %%
 % The resulting mesh cannot be (easily) displayed in MATLAB. Thus, the
 % following illustrates the geometry when opening the mesh file with Gmsh:
@@ -48,7 +48,7 @@ mesh(G, 'constant_elmtSize.msh', 'ElementSize', 50)
 % If one wants to mesh with element size equal to 50 at grain boundaries
 % and a slope of k=0.5:
 % 
-mesh(G, 'sizeGradient.msh', 'ElementSize', 50, 'gradient', 0.5);
+G.mesh('sizeGradient.msh', 'ElementSize', 50, 'gradient', 0.5);
  
 %%
 % 
@@ -66,7 +66,7 @@ mesh(G, 'sizeGradient.msh', 'ElementSize', 50, 'gradient', 0.5);
 % The local curvature of grain boundaries can be used to set the element
 % size. For instance, the following command use 5 nodes to describe a full 
 % circle:
-mesh(G, 'curvature.msh', 'Curvature', 5);
+G.mesh('curvature.msh', 'Curvature', 5);
 %%
 % 
 % <<msh_curvature.png>>
@@ -77,7 +77,7 @@ mesh(G, 'curvature.msh', 'Curvature', 5);
 %% Element type
 % The default element type for meshing is linear wedge. It can be
 % changed to hexahedron (or brick element).
-mesh(G, 'brick.msh', 'ElementType', 'Hex');
+G.mesh('brick.msh', 'ElementType', 'Hex');
 %%
 % 
 % <<msh_brick.png>>
@@ -90,7 +90,7 @@ mesh(G, 'brick.msh', 'ElementType', 'Hex');
 
 %%
 % Tetrahedron can also be used:
-mesh(G, 'tet.msh', 'ElementType', 'Tet');
+G.mesh('tet.msh', 'ElementType', 'Tet');
 %%
 %
 % <../tet.msh Open mesh file>
@@ -99,12 +99,12 @@ mesh(G, 'tet.msh', 'ElementType', 'Tet');
 %%
 % If you wants to work in 2D only, use triangular (|'Tri'|) or quandrangular
 % (|'Quad'|) elements instead:
-mesh(G, 'Tri.msh', 'ElementType', 'Tri');
+G.mesh('Tri.msh', 'ElementType', 'Tri');
 %%
 %
 % <../Tri.msh Open mesh file>
 
-mesh(G, 'Quad.msh', 'ElementType', 'Quad');
+G.mesh('Quad.msh', 'ElementType', 'Quad');
 %%
 %
 % <../Quad.msh Open mesh file>
@@ -117,7 +117,7 @@ mesh(G, 'Quad.msh', 'ElementType', 'Quad');
 %% Element order
 % The default element order is 1 (linear elements). It can be changed with
 % the |ElementOrder| option. E.g.:
-mesh(G, 'brick-quadratic.msh', 'ElementType', 'Hex', 'ElementOrder', 2);
+G.mesh('brick-quadratic.msh', 'ElementType', 'Hex', 'ElementOrder', 2);
 %%
 %
 % <../brick-quadratic.msh Open mesh file>
@@ -129,12 +129,12 @@ mesh(G, 'brick-quadratic.msh', 'ElementType', 'Hex', 'ElementOrder', 2);
 % consists in ensuring that nodes at opposite borders are at the same 
 % coordinates. This is usually requested for periodic conditions in FEM in 
 % order to take into account the medium surrounding the RoI.
-mesh(G, 'Periodic-x.msh', 'elementSize', 100, 'periodic', 'x');
+G.mesh('Periodic-x.msh', 'elementSize', 100, 'periodic', 'x');
 %%
 %
 % <../Periodic-x.msh Open mesh file>
 
-mesh(G, 'Periodic-xy.msh', 'elementSize', 100, 'periodic', 'both');
+G.mesh('Periodic-xy.msh', 'elementSize', 100, 'periodic', 'both');
 %%
 %
 % <../Periodic-xy.msh Open mesh file>
@@ -143,7 +143,7 @@ mesh(G, 'Periodic-xy.msh', 'elementSize', 100, 'periodic', 'both');
 %% Dump the geometry in an ASCII file
 % The geometry can be exported into a Gmsh-readable (and somehow 
 % human-readable) format using the following command:
-savegeo(G, 'geometry.geo')
+G.savegeo('geometry.geo')
 %%
 %
 % <../geometry.geo Open geo file>
