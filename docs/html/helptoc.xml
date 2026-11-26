@@ -5,9 +5,9 @@
 		<tocitem target="install.html">Install/uninstall this toolbox</tocitem>
         <tocitem target="example.html">Minimal Working Example
 			<tocitem target="example.html#1">Load and process EBSD data</tocitem>
-			<tocitem target="example.html#2">Convert grain-related data</tocitem>
-			<tocitem target="example.html#5">Mesh the geometry</tocitem>
-			<tocitem target="example.html#7">Export grain properties</tocitem>
+			<tocitem target="example.html#3">Convert grain-related data</tocitem>
+			<tocitem target="example.html#6">Mesh the geometry</tocitem>
+			<tocitem target="example.html#8">Export grain properties</tocitem>
 		</tocitem>
 		<tocitem target="meshing.html">Meshing
 			<tocitem target="meshing.html#6">Element size</tocitem>
@@ -19,12 +19,12 @@
 		</tocitem>
 		<tocitem target="plotting.html">Plot</tocitem>
         <tocitem target="custom.html">Customize the geometry
-            <tocitem target="custom.html#2">Extrusion thickness</tocitem>
-            <tocitem target="custom.html#3">Add surrounding medium</tocitem>			
+            <tocitem target="custom.html#3">Extrusion thickness</tocitem>
+            <tocitem target="custom.html#4">Add surrounding medium</tocitem>			
         </tocitem>
-		<tocitem target="improvegeometry.html">Improve the grain boundaries
-			<tocitem target="improvegeometry.html#3">Smoothing</tocitem>
-			<tocitem target="improvegeometry.html#5">Simplification</tocitem>
+		<tocitem target="improvegeometry.html">Improve the grain geometries
+			<tocitem target="improvegeometry.html#4">Smoothing</tocitem>
+            <tocitem target="improvegeometry.html#7">Regularization</tocitem>
 		</tocitem>
     </tocitem>
 
