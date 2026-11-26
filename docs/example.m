@@ -26,18 +26,18 @@ legend show
 
 %% Mesh the geometry
 
-mesh(G,'small.inp');
+G.mesh('small.inp');
 
 %% 
 % This command runs Gmsh within Matlab and exports the mesh into the
 % specified format (Abaqus INP here). Extensive tweaks are available for
-% meshing, as detailed in <mesh.html the corresponding section> .
+% meshing, as detailed in <meshing.html the corresponding section> .
 
 %% Export the grain properties
 % In order to retrieve the grain properties when importing the mesh into
 % the FEM code (for assigning materials and orientations), one can export
 % the properties of each grain as Comma-separated values (CSV).
-exportGrainProps(G, 'small.csv');
+G.exportGrainProps('small.csv');
 
 %% 
 % <html><hr></html>
