@@ -1,7 +1,7 @@
 {
   "name": "MTEX2Gmsh",
   "description": "Generate meshes from EBSD data",
-  "version": "1.0",
+  "version": "5.0.0",
   "keywords": [
     "polycrystal",
     "FEM",
@@ -26,17 +26,13 @@
     "https://github.com/DorianDepriester/mtex2Gmsh/blob/master/Example.m"
   ],
   "dependencies": {
-    "Matlab": ">2013b",
-    "Gmsh": ">4.4.1",
-    "MTEX": "5.1.1"
+    "Matlab": ">=2022b",
+    "Gmsh": ">=4.4.1",
+    "MTEX": ">=5.3.1"
   },
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/DorianDepriester/mtex2Gmsh.git"
-    },
-    {
-      "type": "svn",
       "url": "https://github.com/DorianDepriester/mtex2Gmsh.git"
     }
   ],
@@ -46,5 +42,5 @@
       "url": "https://github.com/DorianDepriester/mtex2Gmsh/blob/master/LICENSE"
     }
   ],
-  "homepage": "https://github.com/DorianDepriester/mtex2Gmsh"
+  "homepage": "https://doriandepriester.github.io/MTEX2Gmsh/"
 }
