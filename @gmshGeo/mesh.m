@@ -1,4 +1,4 @@
-function fh=mesh(obj,filepath,varargin)
+function status=mesh(obj,filepath,varargin)
 %MESH Mesh the geometry and export the mesh into the
 %requested file.
 %
@@ -78,6 +78,8 @@ function fh=mesh(obj,filepath,varargin)
 %   MESH(...,'externalizeGBs','GB.msh') will produce an additional surfacic 
 %   mesh consisting of grain boundaries only. This can be useful for
 %   post-processing representation.
+%
+%   status = MESH(...) returns the status number of the gmsh command.
 %
 %	See also savegeo, addSymmetry.
 
@@ -625,11 +627,11 @@ function fh=mesh(obj,filepath,varargin)
 	v=p.Results.verbosity;
 	if ~export_geo
 		str=sprintf('"%s" "%s" -o "%s" -v %i -save',path_to_gmsh,path_to_geo,filepath,v);
-		system(str);
+		status = system(str);
 		delete(path_to_geo)	%	delete temp file
 	end
 	
 	if nargout==1
-		fh=filepath;
+		status=status;
 	end
 end
