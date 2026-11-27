@@ -1,4 +1,4 @@
 mtexdata aachen
 grains=calcGrains(ebsd);
 G=gmshGeo(grains.simplifyBoundary);
-mesh(G,'aachen.msh','ElementSize',0.7,'gradient',0.5)
+G.mesh('aachen.msh','ElementSize',0.7,'gradient',0.5)
