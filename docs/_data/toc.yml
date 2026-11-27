@@ -7,7 +7,7 @@
       target: "example.html"
       children:
         - title: "Load and process EBSD data"
-          target: "example.html#1"
+          target: "example.html#2"
         - title: "Convert grain-related data"
           target: "example.html#3"
         - title: "Mesh the geometry"
