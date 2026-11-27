@@ -18,31 +18,35 @@ for i=1:length(examples)
 	
 	%% Process the grains
 	% Construct gmshGeo objects different ways depending on the dataset
-	switch examples{i}
+    switch examples{i}
 		case 'small'
 			% Use default meshing parameters (Wedge elements, element size
 			% equal to EBSD resolution)
 			G=gmshGeo(grains);
-			mesh(G,'small.msh')
+			status = G.mesh('small.msh');
 		
 		case 'aachen'
 			% Use simplified GBs and apply size gradient to elements
 			G=gmshGeo(grains.simplifyBoundary);
-			mesh(G,'aachen.msh','ElementSize',0.7,'gradient',0.2)
+			status = G.mesh('aachen.msh','ElementSize',0.7,'gradient',0.2);
 		
 		case 'titanium'
 			% Smooth the GBs and add a medium surrounding the ROI
 			G=gmshGeo(grains.smoothBoundary);
-			mesh(G,'titanium_medium.msh','elementSize',40,'medium',[2000 2000 200],'mediumElementSize',180);
+			status = G.mesh('titanium_medium.msh','elementSize',40,'medium',[2000 2000 200],'mediumElementSize',180);
 		
         case 'twins'
 			% Smooth the GBs and mesh using brick element and size gradient
 			G=gmshGeo(grains.smoothBoundary);
-			mesh(G,'twins.msh','ElementSize',0.2,'gradient',0.5,'elementType','Brick');	
+			status = G.mesh('twins.msh','ElementSize',0.2,'gradient',0.5,'elementType','Brick');	
 
         otherwise
             error('Unknown dataset!')
-	end
+    end
+
+    if status ~= 0
+        error('Test failed!')
+    end
 	
 	%% Plot Grain Boundaries for comparison
 	% Visual comparison between the GBs given by MTEX and the approximated
